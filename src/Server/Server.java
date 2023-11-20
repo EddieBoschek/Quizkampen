@@ -31,7 +31,6 @@ public class Server extends Thread {
             boolean result;
             out.writeObject(question1);
 
-            //servar frågeloopen
             while ((inputLine = (String)in.readObject()) != null) {
                 int number = (Integer.parseInt(inputLine)) - 1;
                 result = question1.checkAnswer(question1.getAnswer(number));

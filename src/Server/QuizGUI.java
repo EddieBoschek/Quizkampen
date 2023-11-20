@@ -6,24 +6,27 @@ import java.awt.event.ActionListener;
 
 public class QuizGUI {
 
-    private static void GUI() {
+    public static void GUI() {
         JFrame frame = new JFrame("Quiz GUI");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(300, 200);
+        frame.setSize(400, 400);
         frame.setLayout(new FlowLayout());
 
         JPanel categoryPanel = new JPanel();
         categoryPanel.setLayout(new GridLayout(4, 1));
 
+        Category category = new Category();
+        String[] categories = category.shuffleCategories();
+
         JLabel categoryLabel = new JLabel("Välj en kategori");
-        JButton categoryButton1 = new JButton("Kategori 1");
-        JButton categoryButton2 = new JButton("Kategori 2");
-        JButton categoryButton3 = new JButton("Kategori 3");
+        JButton categoryButton1 = new JButton(categories[0]);
+        JButton categoryButton2 = new JButton(categories[1]);
+        //JButton categoryButton3 = new JButton("Kategori 3");
 
         categoryPanel.add(categoryLabel);
         categoryPanel.add(categoryButton1);
         categoryPanel.add(categoryButton2);
-        categoryPanel.add(categoryButton3);
+        //categoryPanel.add(categoryButton3);
 
         frame.getContentPane().add(categoryPanel);
 
@@ -42,10 +45,20 @@ public class QuizGUI {
         questionPanel.add(questionButton3);
         questionPanel.add(questionButton4);
 
+        QuestionCollection qCollection = new QuestionCollection("qCollection");
+        //Question[] questions = new Question[3];
+
         categoryButton1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.getContentPane().removeAll();
+                Question[] questions = qCollection.getSubjectQuestion(categoryButton1.getText());
+                System.out.println(categoryButton1.getText());
+                questionLabel.setText(questions[0].getQuestion());
+                questionButton1.setText(questions[0].getAnswerOption(0));
+                questionButton2.setText(questions[0].getAnswerOption(1));
+                questionButton3.setText(questions[0].getAnswerOption(2));
+                questionButton4.setText(questions[0].getAnswerOption(3));
                 frame.getContentPane().add(questionPanel);
                 frame.revalidate();
                 frame.repaint();
@@ -56,13 +69,19 @@ public class QuizGUI {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.getContentPane().removeAll();
+                Question[] questions = qCollection.getSubjectQuestion(categoryButton2.getText());
+                questionLabel.setText(questions[0].getQuestion());
+                questionButton1.setText(questions[0].getAnswerOption(0));
+                questionButton2.setText(questions[0].getAnswerOption(1));
+                questionButton3.setText(questions[0].getAnswerOption(2));
+                questionButton4.setText(questions[0].getAnswerOption(3));
                 frame.getContentPane().add(questionPanel);
                 frame.revalidate();
                 frame.repaint();
             }
         });
 
-        categoryButton3.addActionListener(new ActionListener() {
+        /*categoryButton3.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.getContentPane().removeAll();
@@ -70,7 +89,7 @@ public class QuizGUI {
                 frame.revalidate();
                 frame.repaint();
             }
-        });
+        });*/
 
         frame.setVisible(true);
     }

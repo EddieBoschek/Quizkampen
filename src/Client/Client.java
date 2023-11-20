@@ -1,6 +1,7 @@
 package Client;
 
 import Server.Question;
+import Server.QuizGUI;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -20,6 +21,8 @@ public class Client {
             Object fromServer;
             String fromUser;
             BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
+
+            QuizGUI.GUI();
 
             fromServer = in.readObject();
 
