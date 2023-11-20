@@ -3,26 +3,30 @@ package Server;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.List;
 
-public class Server {
+public class Server extends Thread {
 
     protected String question = "Vilket år blev Gustav Vasa kung över Sverige?";
     protected List<String> answers = Arrays.asList("1609", "1462", "1523", "1789");
     protected String correctAnswer = "1523";
 
-    public Server() {
+    Socket s;
+    public Server(Socket s) {
+        this.s = s;
+    }
+
+    public void run() {
 
         Question question1 = new Question(question, answers, correctAnswer);
 
-        try(ServerSocket ss = new ServerSocket(12345);
-            Socket s = ss.accept();
+        try(
             ObjectOutputStream out = new ObjectOutputStream(s.getOutputStream());
             ObjectInputStream in = new ObjectInputStream(s.getInputStream());)
         {
+
             String inputLine;
             boolean result;
             out.writeObject(question1);
@@ -36,9 +40,5 @@ public class Server {
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public static void main(String[] args) {
-        Server serv = new Server();
     }
 }
