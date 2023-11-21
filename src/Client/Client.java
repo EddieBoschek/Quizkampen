@@ -33,6 +33,14 @@ public class Client {
         System.out.println(obj);
         return obj;
     }
+    public Object connectSendAndReceive(String message) throws IOException, ClassNotFoundException {
+        System.out.println("Inside SendAndReceive");
+        out.writeObject(message);
+        Object obj = in.readObject();
+        System.out.println("Inside SendAndReceive (2)");
+        System.out.println(obj);
+        return obj;
+    }
 
     public void close() {
         try {

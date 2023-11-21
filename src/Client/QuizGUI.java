@@ -12,7 +12,7 @@ public class QuizGUI {
     private Client client;
     Object serverMessage;
     String[] categories;
-    Question[] questions;
+    Question[] questions = new Question[3];
 
     public QuizGUI() throws IOException, ClassNotFoundException {
         JFrame frame = new JFrame("Quiz GUI");
@@ -110,12 +110,11 @@ public class QuizGUI {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.getContentPane().removeAll();
-                sendMessageToServer(categoryButton1.getText());
-                serverMessage = receiveMessageFromServer();
-                    if (serverMessage instanceof Question[] quests) {
-                        questions = quests;
-                    }
+                serverMessage = sendAndReceive(categoryButton1.getText());
+                System.out.println(serverMessage);
+                questions = (Question[]) serverMessage;
 
+                System.out.println(questions[0]);
                 askedQuest = questions[0];
                 questionLabel.setText(questions[0].getQuestion());
                 questionButton1.setText(questions[0].getAnswerOption(0));
@@ -132,8 +131,7 @@ public class QuizGUI {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.getContentPane().removeAll();
-                sendMessageToServer(categoryButton2.getText());
-                serverMessage = receiveMessageFromServer();
+                serverMessage = sendAndReceive(categoryButton2.getText());
                 if (serverMessage instanceof Question[] quests) {
                     questions = quests;
                 }
@@ -180,6 +178,22 @@ public class QuizGUI {
         Object receivedMessage = null;
         try {
             receivedMessage = client.connectAndReceive();
+            //receivedMessage = client.receiveMessage();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        } /*finally {
+            try {
+                client.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }*/
+        return receivedMessage;
+    }
+    private Object sendAndReceive(String message) {
+        Object receivedMessage = null;
+        try {
+            receivedMessage = client.connectSendAndReceive(message);
             //receivedMessage = client.receiveMessage();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
