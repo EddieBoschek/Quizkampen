@@ -6,32 +6,32 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 
-public class QuizGUI extends JFrame{
+public class QuizGUI {
 
     Question askedQuest = null;
     private Client client;
     Object serverMessage;
     String[] categories;
     Question[] questions;
-    static JFrame frame;
 
     public QuizGUI() throws IOException, ClassNotFoundException {
-        //frame = new JFrame("Quiz GUI");
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setSize(400, 250);
-        this.setLayout(new FlowLayout());
+        JFrame frame = new JFrame("Quiz GUI");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(400, 250);
+        frame.setLayout(new FlowLayout());
 
         client = new Client("127.0.0.1", 12345);
 
         JPanel categoryPanel = new JPanel();
         categoryPanel.setLayout(new GridLayout(4, 1));
-        System.out.println("innan första mottagande");
 
+        sendMessageToServer("Start");
+        System.out.println("efter start");
         serverMessage = receiveMessageFromServer();
-        if (serverMessage instanceof String[] strings) {
-            categories = strings;
-        }
-        System.out.println("efter första mottagande");
+        categories = (String[]) serverMessage;
+
+
+
         JLabel categoryLabel = new JLabel("Välj en kategori");
         JButton categoryButton1 = new JButton(categories[0]);
         JButton categoryButton2 = new JButton(categories[1]);
@@ -160,39 +160,36 @@ public class QuizGUI extends JFrame{
             }
         });*/
 
-        this.setVisible(true);
+        frame.setVisible(true);
     }
     private void sendMessageToServer(String message) {
         try {
-            client.connect();
-            client.sendMessage(message);
+            client.connectAndSend(message);
+            //client.sendMessage(message);
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
+        } /*finally {
             try {
                 client.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
+        }*/
     }
     private Object receiveMessageFromServer() {
         Object receivedMessage = null;
-        System.out.println("inne i metod");
         try {
-            client.connect();
-            receivedMessage = client.receiveMessage();
-            System.out.println(receivedMessage);
-            System.out.println("inne i metod efter receive");
+            receivedMessage = client.connectAndReceive();
+            //receivedMessage = client.receiveMessage();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
-        } finally {
+        } /*finally {
             try {
                 client.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
+        }*/
         return receivedMessage;
     }
     public static void main(String[] args) {
@@ -201,12 +198,12 @@ public class QuizGUI extends JFrame{
             public void run() {
                 try {
                     QuizGUI quizGUI = new QuizGUI();
-                    QuizGUI.frame.setVisible(true);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 } catch (ClassNotFoundException e) {
                     throw new RuntimeException(e);
                 }
+                //QuizGUI.setVisible(true);
             }
         });
     }

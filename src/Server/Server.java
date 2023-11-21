@@ -29,10 +29,12 @@ public class Server extends Thread {
             ObjectInputStream in = new ObjectInputStream(s.getInputStream());)
         {
             String inputLine;
-            out.writeObject(categories.shuffleCategories());
-
-            while ((inputLine = (String)in.readObject()) != null) {
+            if ((inputLine = (String)in.readObject()).equals("Start")) {
+                out.writeObject(categories.shuffleCategories());
+                //out.reset();
+            } else {
                 out.writeObject(questColl.getSubjectQuestion(inputLine));
+                //out.reset();
             }
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);

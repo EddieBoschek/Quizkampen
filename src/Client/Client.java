@@ -1,7 +1,8 @@
 package Client;
 
-import Server.Question;
-import java.io.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 public class Client {
@@ -12,65 +13,35 @@ public class Client {
     private ObjectOutputStream out;
     private ObjectInputStream in;
 
-    public Client(String hostName, int portNumber) throws IOException, ClassNotFoundException {
+    public Client(String hostName, int portNumber) throws IOException {
         this.hostName = hostName;
         this.portNumber = portNumber;
-    }
-    /*public void sendMessage(String message) {
-        try(Socket addressSocket = new Socket(hostName, portNumber);
-            ObjectOutputStream out = new ObjectOutputStream(addressSocket.getOutputStream());
-            ObjectInputStream in = new ObjectInputStream(addressSocket.getInputStream());){
-
-            Object fromServer;
-            String fromUser;
-            BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
-
-            fromServer = in.readObject();
-
-            if (fromServer instanceof Question question){
-                int count = 1;
-                for (String s : question.getAnswerOptions()) {
-                    System.out.println(count + ": " + s);
-                    count++;
-                }
-            }
-            fromUser = stdIn.readLine();
-            while (fromServer != null) {
-                out.writeObject(fromUser);
-                fromServer = in.readObject();
-                if (fromServer instanceof Boolean bool) {
-                    if (bool) {
-                        System.out.println("Du svarade rätt!");
-                        break;
-                    } else {
-                        System.out.println("Du svarade fel, testa igen: ");
-                        fromUser = stdIn.readLine();
-                    }
-                }
-            }
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
-    }*/
-    public void connect() throws IOException {
-        addressSocket = new Socket(hostName, portNumber);
-        out = new ObjectOutputStream(addressSocket.getOutputStream());
-        in = new ObjectInputStream(addressSocket.getInputStream());
-        System.out.println("inne i connect");
+        this.addressSocket = new Socket(hostName, portNumber);
+        this.out = new ObjectOutputStream(addressSocket.getOutputStream());
+        this.in = new ObjectInputStream(addressSocket.getInputStream());
     }
 
-    public void sendMessage(String message) throws IOException {
+    public void connectAndSend(String message) throws IOException {
+        System.out.println("Inside connectSend");
         out.writeObject(message);
     }
 
-    public Object receiveMessage() throws IOException, ClassNotFoundException {
-        System.out.println("inne i receiveMessage");
-        return in.readObject();
+    public Object connectAndReceive() throws IOException, ClassNotFoundException {
+        System.out.println("Inside connectReceive");
+        Object obj = in.readObject();
+        System.out.println("Inside connectReceive (2)");
+        System.out.println(obj);
+        return obj;
     }
 
-    public void close() throws IOException {
-        addressSocket.close();
+    public void close() {
+        try {
+            if (in != null) in.close();
+            if (out != null) out.close();
+            if (addressSocket != null) addressSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
 
