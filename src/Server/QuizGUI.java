@@ -1,24 +1,35 @@
 package Server;
+import Client.Client;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 public class QuizGUI {
 
     static Question askedQuest = null;
+    private Client client;
+    Object serverMessage;
+    String[] categories;
+    Question[] questions;
 
-    public static void GUI() {
+    public QuizGUI() throws IOException, ClassNotFoundException {
         JFrame frame = new JFrame("Quiz GUI");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(400, 250);
         frame.setLayout(new FlowLayout());
 
+        client = new Client("127.0.0.1", 12345);
+
         JPanel categoryPanel = new JPanel();
         categoryPanel.setLayout(new GridLayout(4, 1));
 
-        Category category = new Category();
-        String[] categories = category.shuffleCategories();
+        serverMessage = client.receiveMessage();
+        if (serverMessage instanceof String[] strings) {
+            categories = strings;
+        }
 
         JLabel categoryLabel = new JLabel("Välj en kategori");
         JButton categoryButton1 = new JButton(categories[0]);
@@ -98,7 +109,15 @@ public class QuizGUI {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.getContentPane().removeAll();
-                Question[] questions = qCollection.getSubjectQuestion(categoryButton1.getText());
+                try {
+                    client.sendMessage(categoryButton1.getText());
+                    serverMessage = client.receiveMessage();
+                    if (serverMessage instanceof Question[] quests) {
+                        questions = quests;
+                    }
+                } catch (IOException | ClassNotFoundException ex) {
+                    throw new RuntimeException(ex);
+                }
                 askedQuest = questions[0];
                 questionLabel.setText(questions[0].getQuestion());
                 questionButton1.setText(questions[0].getAnswerOption(0));
@@ -108,8 +127,8 @@ public class QuizGUI {
                 frame.getContentPane().add(questionPanel);
                 frame.revalidate();
                 frame.repaint();
-            }
-        });
+                }
+            });
 
         categoryButton2.addActionListener(new ActionListener() {
             @Override
@@ -139,5 +158,43 @@ public class QuizGUI {
         });*/
 
         frame.setVisible(true);
+    }
+    private void sendMessageToServer(String message) {
+        try {
+            client.connect();
+            client.sendMessage(message);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                client.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    private void receiveAndDisplayMessageFromServer() {
+        try {
+            client.connect();
+            Object receivedMessage = client.receiveMessage();
+            textArea.append("Servern svarade: " + receivedMessage + "\n");
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                client.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                QuizGUI quizGUI = new QuizGUI();
+                QuizGUI.setVisible(true);
+            }
+        });
     }
 }

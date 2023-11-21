@@ -1,19 +1,22 @@
 package Client;
 
 import Server.Question;
-import Server.QuizGUI;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.Socket;
 
 public class Client {
-    Client() {
-        String hostName = "127.0.0.1";
-        int portNumber = 12345;
+    String hostName = "127.0.0.1";
+    int portNumber = 12345;
 
+    private Socket addressSocket;
+    private ObjectOutputStream out;
+    private ObjectInputStream in;
+
+    public Client(String hostName, int portNumber) throws IOException, ClassNotFoundException {
+        this.hostName = hostName;
+        this.portNumber = portNumber;
+    }
+    /*public void sendMessage(String message) {
         try(Socket addressSocket = new Socket(hostName, portNumber);
             ObjectOutputStream out = new ObjectOutputStream(addressSocket.getOutputStream());
             ObjectInputStream in = new ObjectInputStream(addressSocket.getInputStream());){
@@ -22,24 +25,17 @@ public class Client {
             String fromUser;
             BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
 
-            QuizGUI.GUI();
-
             fromServer = in.readObject();
 
             if (fromServer instanceof Question question){
-                System.out.println(question.getQuestion());
-                System.out.println();
                 int count = 1;
                 for (String s : question.getAnswerOptions()) {
                     System.out.println(count + ": " + s);
                     count++;
                 }
-                System.out.println();
-                System.out.println("Ange 1, 2, 3 eller 4: ");
             }
             fromUser = stdIn.readLine();
             while (fromServer != null) {
-                System.out.println("Du väljer svarsalternativ " + fromUser + ".");
                 out.writeObject(fromUser);
                 fromServer = in.readObject();
                 if (fromServer instanceof Boolean bool) {
@@ -56,12 +52,24 @@ public class Client {
         catch (Exception e){
             e.printStackTrace();
         }
+    }*/
+    public void connect() throws IOException {
+        addressSocket = new Socket(hostName, portNumber);
+        out = new ObjectOutputStream(addressSocket.getOutputStream());
+        in = new ObjectInputStream(addressSocket.getInputStream());
     }
 
-    public static void main(String[] args) throws Exception{
-        Client c = new Client();
+    public void sendMessage(String message) throws IOException {
+        out.writeObject(message);
     }
 
+    public Object receiveMessage() throws IOException, ClassNotFoundException {
+        return in.readObject();
+    }
+
+    public void close() throws IOException {
+        addressSocket.close();
+    }
 }
 
 /*
