@@ -1,5 +1,6 @@
-package Server;
-import Client.Client;
+package Client;
+import Server.Question;
+import Server.QuestionCollection;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,11 +10,11 @@ import java.io.IOException;
 
 public class QuizGUI {
 
-    static Question askedQuest = null;
+    static Server.Question askedQuest = null;
     private Client client;
     Object serverMessage;
     String[] categories;
-    Question[] questions;
+    Server.Question[] questions;
 
     public QuizGUI() throws IOException, ClassNotFoundException {
         JFrame frame = new JFrame("Quiz GUI");
@@ -112,7 +113,7 @@ public class QuizGUI {
                 try {
                     client.sendMessage(categoryButton1.getText());
                     serverMessage = client.receiveMessage();
-                    if (serverMessage instanceof Question[] quests) {
+                    if (serverMessage instanceof Server.Question[] quests) {
                         questions = quests;
                     }
                 } catch (IOException | ClassNotFoundException ex) {
