@@ -57,6 +57,7 @@ public class Client {
         addressSocket = new Socket(hostName, portNumber);
         out = new ObjectOutputStream(addressSocket.getOutputStream());
         in = new ObjectInputStream(addressSocket.getInputStream());
+        System.out.println("inne i connect");
     }
 
     public void sendMessage(String message) throws IOException {
@@ -64,6 +65,7 @@ public class Client {
     }
 
     public Object receiveMessage() throws IOException, ClassNotFoundException {
+        System.out.println("inne i receiveMessage");
         return in.readObject();
     }
 

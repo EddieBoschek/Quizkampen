@@ -1,6 +1,4 @@
 package Client;
-import Server.Question;
-import Server.QuestionCollection;
 
 import javax.swing.*;
 import java.awt.*;
@@ -8,30 +6,32 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 
-public class QuizGUI {
+public class QuizGUI extends JFrame{
 
-    static Server.Question askedQuest = null;
+    Question askedQuest = null;
     private Client client;
     Object serverMessage;
     String[] categories;
-    Server.Question[] questions;
+    Question[] questions;
+    static JFrame frame;
 
     public QuizGUI() throws IOException, ClassNotFoundException {
-        JFrame frame = new JFrame("Quiz GUI");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 250);
-        frame.setLayout(new FlowLayout());
+        //frame = new JFrame("Quiz GUI");
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setSize(400, 250);
+        this.setLayout(new FlowLayout());
 
         client = new Client("127.0.0.1", 12345);
 
         JPanel categoryPanel = new JPanel();
         categoryPanel.setLayout(new GridLayout(4, 1));
+        System.out.println("innan första mottagande");
 
-        serverMessage = client.receiveMessage();
+        serverMessage = receiveMessageFromServer();
         if (serverMessage instanceof String[] strings) {
             categories = strings;
         }
-
+        System.out.println("efter första mottagande");
         JLabel categoryLabel = new JLabel("Välj en kategori");
         JButton categoryButton1 = new JButton(categories[0]);
         JButton categoryButton2 = new JButton(categories[1]);
@@ -102,7 +102,7 @@ public class QuizGUI {
         questionPanel.add(questionButton4);
         questionPanel.add(result);
 
-        QuestionCollection qCollection = new QuestionCollection("qCollection");
+        //QuestionCollection qCollection = new QuestionCollection("qCollection");
         //Question[] questions = new Question[3];
 
 
@@ -110,15 +110,12 @@ public class QuizGUI {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.getContentPane().removeAll();
-                try {
-                    client.sendMessage(categoryButton1.getText());
-                    serverMessage = client.receiveMessage();
-                    if (serverMessage instanceof Server.Question[] quests) {
+                sendMessageToServer(categoryButton1.getText());
+                serverMessage = receiveMessageFromServer();
+                    if (serverMessage instanceof Question[] quests) {
                         questions = quests;
                     }
-                } catch (IOException | ClassNotFoundException ex) {
-                    throw new RuntimeException(ex);
-                }
+
                 askedQuest = questions[0];
                 questionLabel.setText(questions[0].getQuestion());
                 questionButton1.setText(questions[0].getAnswerOption(0));
@@ -135,8 +132,13 @@ public class QuizGUI {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.getContentPane().removeAll();
-                Question[] questions = qCollection.getSubjectQuestion(categoryButton2.getText());
+                sendMessageToServer(categoryButton2.getText());
+                serverMessage = receiveMessageFromServer();
+                if (serverMessage instanceof Question[] quests) {
+                    questions = quests;
+                }
                 askedQuest = questions[0];
+                //System.out.println(questions[0]);
                 questionLabel.setText(questions[0].getQuestion());
                 questionButton1.setText(questions[0].getAnswerOption(0));
                 questionButton2.setText(questions[0].getAnswerOption(1));
@@ -158,7 +160,7 @@ public class QuizGUI {
             }
         });*/
 
-        frame.setVisible(true);
+        this.setVisible(true);
     }
     private void sendMessageToServer(String message) {
         try {
@@ -174,11 +176,14 @@ public class QuizGUI {
             }
         }
     }
-    private void receiveAndDisplayMessageFromServer() {
+    private Object receiveMessageFromServer() {
+        Object receivedMessage = null;
+        System.out.println("inne i metod");
         try {
             client.connect();
-            Object receivedMessage = client.receiveMessage();
-            textArea.append("Servern svarade: " + receivedMessage + "\n");
+            receivedMessage = client.receiveMessage();
+            System.out.println(receivedMessage);
+            System.out.println("inne i metod efter receive");
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         } finally {
@@ -188,13 +193,20 @@ public class QuizGUI {
                 e.printStackTrace();
             }
         }
+        return receivedMessage;
     }
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                QuizGUI quizGUI = new QuizGUI();
-                QuizGUI.setVisible(true);
+                try {
+                    QuizGUI quizGUI = new QuizGUI();
+                    QuizGUI.frame.setVisible(true);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
     }
