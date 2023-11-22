@@ -20,26 +20,15 @@ public class Client {
         this.out = new ObjectOutputStream(addressSocket.getOutputStream());
         this.in = new ObjectInputStream(addressSocket.getInputStream());
     }
-
     public void connectAndSend(String message) throws IOException {
-        System.out.println("Inside connectSend");
         out.writeObject(message);
     }
-
     public Object connectAndReceive() throws IOException, ClassNotFoundException {
-        System.out.println("Inside connectReceive");
-        Object obj = in.readObject();
-        System.out.println("Inside connectReceive (2)");
-        System.out.println(obj);
-        return obj;
+        return in.readObject();
     }
     public Object connectSendAndReceive(String message) throws IOException, ClassNotFoundException {
-        System.out.println("Inside SendAndReceive");
         out.writeObject(message);
-        Object obj = in.readObject();
-        System.out.println("Inside SendAndReceive (2)");
-        System.out.println(obj);
-        return obj;
+        return in.readObject();
     }
 
     public void close() {
@@ -52,9 +41,3 @@ public class Client {
         }
     }
 }
-
-/*
-Klient kopplar upp sig mot en server. Klienten laddar sedan ner en fråga
-med 4 svarsalternativ från servern. Användaren svarar på frågan i klientapplikationen
-och får feedback om svaret är rätt eller fel.
- */

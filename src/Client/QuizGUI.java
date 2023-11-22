@@ -1,5 +1,7 @@
 package Client;
 
+import POJOs.Question;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -17,7 +19,7 @@ public class QuizGUI {
     public QuizGUI() throws IOException, ClassNotFoundException {
         JFrame frame = new JFrame("Quiz GUI");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 250);
+        frame.setSize(500, 250);
         frame.setLayout(new FlowLayout());
 
         client = new Client("127.0.0.1", 12345);
@@ -26,11 +28,8 @@ public class QuizGUI {
         categoryPanel.setLayout(new GridLayout(4, 1));
 
         sendMessageToServer("Start");
-        System.out.println("efter start");
         serverMessage = receiveMessageFromServer();
         categories = (String[]) serverMessage;
-
-
 
         JLabel categoryLabel = new JLabel("Välj en kategori");
         JButton categoryButton1 = new JButton(categories[0]);
@@ -111,13 +110,9 @@ public class QuizGUI {
             public void actionPerformed(ActionEvent e) {
                 frame.getContentPane().removeAll();
                 serverMessage = sendAndReceive(categoryButton1.getText());
-                System.out.println(serverMessage);
-
-                questions = (Question[]) serverMessage;
-
-                //questions = (Question[]) serverMessage;
-
-                System.out.println(questions[0]);
+                if (serverMessage instanceof Question[] quests) {
+                    questions = quests;
+                }
                 askedQuest = questions[0];
                 questionLabel.setText(questions[0].getQuestion());
                 questionButton1.setText(questions[0].getAnswerOption(0));
@@ -139,7 +134,6 @@ public class QuizGUI {
                     questions = quests;
                 }
                 askedQuest = questions[0];
-                //System.out.println(questions[0]);
                 questionLabel.setText(questions[0].getQuestion());
                 questionButton1.setText(questions[0].getAnswerOption(0));
                 questionButton2.setText(questions[0].getAnswerOption(1));

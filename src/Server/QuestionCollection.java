@@ -1,8 +1,8 @@
 package Server;
 
-import java.io.Serializable;
+import POJOs.Question;
+
 import java.util.*;
-import java.io.Serializable;
 import java.util.List;
 
 public class QuestionCollection {
