@@ -8,7 +8,6 @@ import java.net.Socket;
 public class Server extends Thread {
     Socket s;
     Category categories = new Category();
-    QuestionCollection questColl = new QuestionCollection("questColl");
     public Server(Socket s) {
         this.s = s;
     }
@@ -25,7 +24,7 @@ public class Server extends Thread {
                     out.writeObject(categories.shuffleCategories());
                     //out.reset();
                 } else {
-                    out.writeObject(questColl.getSubjectQuestion(inputLine));
+                    out.writeObject(QuestionCollection.getSubjectQuestion(inputLine));
                     //out.reset();
                 }
             }
