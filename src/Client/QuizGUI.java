@@ -1,5 +1,6 @@
 package Client;
 
+import POJOs.GameInstance;
 import POJOs.Player;
 import POJOs.Question;
 
@@ -206,12 +207,30 @@ public class QuizGUI {
         return receivedMessage;
     }
 
-    public void startGame(){ //startas av en JButton
-        sendMessageToServer("READY" + player);
-        while(true)
+    public void startGame(){ //startas senare av en JButton
+        sendMessageToServer("READY" + player.getName());
+        Player player1;
+        Player player2;
+        GameInstance gI;
+        Object recievedMessage = null;
+        while(true) {
+            recievedMessage = receiveMessageFromServer();
+
+            if (recievedMessage instanceof GameInstance)
+                player.addGame((GameInstance) recievedMessage);
+            else if (recievedMessage instanceof String && !player.getName().equals(recievedMessage))
+                    player.setOpponent(new Player((String) recievedMessage));
+
+           if (player.getOpponent() != null && player.getGame() != null) {
+               break;
+           }
+
+        }
     }
 
     public static void main(String[] args) {
+
+
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {

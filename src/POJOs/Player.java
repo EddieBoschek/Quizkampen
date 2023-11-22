@@ -11,7 +11,27 @@ public class Player {
 
     public Player(){}
 
+    public void setOpponent(Player opponent) {
+        this.opponent = opponent;
+    }
+
+    public void addGame(GameInstance game) {
+        this.game = game;
+    }
+
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public GameInstance getGame() {
+        return game;
+    }
+
+    public Player getOpponent() {
+        return opponent;
     }
 }
