@@ -1,4 +1,4 @@
-package Server;
+package POJOs;
 
 import java.io.Serializable;
 import java.util.List;
@@ -18,6 +18,9 @@ public class Question implements Serializable {
         return question;
     }
 
+    public String getAnswerOption(int i) {
+        return answerOptions.get(i);
+    }
     public List<String> getAnswerOptions() {
         return answerOptions;
     }
