@@ -10,11 +10,18 @@ import java.io.IOException;
 
 public class QuizGUI {
 
-    Question askedQuest = null;
     private Client client;
-    Object serverMessage;
-    String[] categories;
-    Question[] questions = new Question[3];
+    private ScoreCounter scoreCounter;
+    private Question askedQuest;
+    private Object serverMessage;
+    private String[] categories;
+    private Question[] questions = new Question[3];
+    private JLabel result;
+    private JLabel questionLabel;  // Added declaration for 'questionLabel'
+    private JButton questionButton1;
+    private JButton questionButton2;
+    private JButton questionButton3;
+    private JButton questionButton4;
 
     public QuizGUI() throws IOException, ClassNotFoundException {
         JFrame frame = new JFrame("Quiz GUI");
@@ -23,6 +30,7 @@ public class QuizGUI {
         frame.setLayout(new FlowLayout());
 
         client = new Client("127.0.0.1", 12345);
+        scoreCounter = new ScoreCounter();
 
         JPanel categoryPanel = new JPanel();
         categoryPanel.setLayout(new GridLayout(4, 1));
@@ -34,12 +42,10 @@ public class QuizGUI {
         JLabel categoryLabel = new JLabel("Välj en kategori");
         JButton categoryButton1 = new JButton(categories[0]);
         JButton categoryButton2 = new JButton(categories[1]);
-        //JButton categoryButton3 = new JButton("Kategori 3");
 
         categoryPanel.add(categoryLabel);
         categoryPanel.add(categoryButton1);
         categoryPanel.add(categoryButton2);
-        //categoryPanel.add(categoryButton3);
 
         frame.getContentPane().add(categoryPanel);
 
@@ -57,35 +63,7 @@ public class QuizGUI {
         ActionListener commonActionListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (e.getSource() == questionButton1) {
-                    if (askedQuest.checkAnswer(questionButton1.getText())) {
-                        result.setVisible(true);
-                    } else {
-                        result.setText("Du svarade fel.");
-                        result.setVisible(true);
-                    }
-                } else if (e.getSource() == questionButton2) {
-                    if (askedQuest.checkAnswer(questionButton2.getText())) {
-                        result.setVisible(true);
-                    } else {
-                        result.setText("Du svarade fel.");
-                        result.setVisible(true);
-                    }
-                } else if (e.getSource() == questionButton3) {
-                    if (askedQuest.checkAnswer(questionButton3.getText())) {
-                        result.setVisible(true);
-                    } else {
-                        result.setText("Du svarade fel.");
-                        result.setVisible(true);
-                    }
-                } else if (e.getSource() == questionButton4) {
-                    if (askedQuest.checkAnswer(questionButton4.getText())) {
-                        result.setVisible(true);
-                    } else {
-                        result.setText("Du svarade fel.");
-                        result.setVisible(true);
-                    }
-                }
+                handleAnswer(((JButton) e.getSource()).getText());
             }
         };
 
@@ -101,10 +79,6 @@ public class QuizGUI {
         questionPanel.add(questionButton4);
         questionPanel.add(result);
 
-        //QuestionCollection qCollection = new QuestionCollection("qCollection");
-        //Question[] questions = new Question[3];
-
-
         categoryButton1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -114,16 +88,12 @@ public class QuizGUI {
                     questions = quests;
                 }
                 askedQuest = questions[0];
-                questionLabel.setText(questions[0].getQuestion());
-                questionButton1.setText(questions[0].getAnswerOption(0));
-                questionButton2.setText(questions[0].getAnswerOption(1));
-                questionButton3.setText(questions[0].getAnswerOption(2));
-                questionButton4.setText(questions[0].getAnswerOption(3));
+                setNextQuestion();
                 frame.getContentPane().add(questionPanel);
                 frame.revalidate();
                 frame.repaint();
-                }
-            });
+            }
+        });
 
         categoryButton2.addActionListener(new ActionListener() {
             @Override
@@ -134,87 +104,89 @@ public class QuizGUI {
                     questions = quests;
                 }
                 askedQuest = questions[0];
-                questionLabel.setText(questions[0].getQuestion());
-                questionButton1.setText(questions[0].getAnswerOption(0));
-                questionButton2.setText(questions[0].getAnswerOption(1));
-                questionButton3.setText(questions[0].getAnswerOption(2));
-                questionButton4.setText(questions[0].getAnswerOption(3));
+                setNextQuestion();
                 frame.getContentPane().add(questionPanel);
                 frame.revalidate();
                 frame.repaint();
             }
         });
 
-        /*categoryButton3.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                frame.getContentPane().removeAll();
-                frame.getContentPane().add(questionPanel);
-                frame.revalidate();
-                frame.repaint();
-            }
-        });*/
-
         frame.setVisible(true);
     }
+
     private void sendMessageToServer(String message) {
         try {
             client.connectAndSend(message);
-            //client.sendMessage(message);
         } catch (IOException e) {
             e.printStackTrace();
-        } /*finally {
-            try {
-                client.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }*/
+        }
     }
+
     private Object receiveMessageFromServer() {
         Object receivedMessage = null;
         try {
             receivedMessage = client.connectAndReceive();
-            //receivedMessage = client.receiveMessage();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
-        } /*finally {
-            try {
-                client.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }*/
+        }
         return receivedMessage;
     }
+
     private Object sendAndReceive(String message) {
         Object receivedMessage = null;
         try {
             receivedMessage = client.connectSendAndReceive(message);
-            //receivedMessage = client.receiveMessage();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
-        } /*finally {
-            try {
-                client.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }*/
+        }
         return receivedMessage;
     }
+
+    private void handleAnswer(String selectedAnswer) {
+        if (askedQuest.checkAnswer(selectedAnswer)) {
+            scoreCounter.increaseScore();
+            result.setText("Du svarade rätt! Poäng: " + scoreCounter.getScore());
+        } else {
+            result.setText("Du svarade fel. Poäng: " + scoreCounter.getScore());
+        }
+        result.setVisible(true);
+
+        // Proceed to the next question or end the quiz as needed.
+        setNextQuestion();
+    }
+
+    private void setNextQuestion() {
+        if (askedQuest != null) {
+            int nextIndex = askedQuest.getQuestionIndex() + 1;
+            if (nextIndex < questions.length) {
+                askedQuest = questions[nextIndex];
+                updateQuestionPanel();
+            } else {
+                // Quiz has ended. You can implement end-of-quiz logic here.
+                // For example, display a summary or return to the main menu.
+                System.out.println("Quiz ended. Final score: " + scoreCounter.getScore());
+            }
+        }
+    }
+
+    private void updateQuestionPanel() {
+        questionLabel.setText(askedQuest.getQuestion());
+        questionButton1.setText(askedQuest.getAnswerOption(0));
+        questionButton2.setText(askedQuest.getAnswerOption(1));
+        questionButton3.setText(askedQuest.getAnswerOption(2));
+        questionButton4.setText(askedQuest.getAnswerOption(3));
+        result.setVisible(false);
+    }
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
                 try {
                     QuizGUI quizGUI = new QuizGUI();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                } catch (ClassNotFoundException e) {
-                    throw new RuntimeException(e);
+                } catch (IOException | ClassNotFoundException e) {
+                    e.printStackTrace();
                 }
-                //QuizGUI.setVisible(true);
             }
         });
     }
