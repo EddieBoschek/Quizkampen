@@ -9,6 +9,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class QuizGUI {
 
@@ -17,7 +19,7 @@ public class QuizGUI {
     Object serverMessage;
     String[] categories;
     Question[] questions = new Question[3];
-    Player player = new Player("spelare1");
+
 
     public QuizGUI() throws IOException, ClassNotFoundException {
         JFrame frame = new JFrame("Quiz GUI");
@@ -125,8 +127,8 @@ public class QuizGUI {
                 frame.getContentPane().add(questionPanel);
                 frame.revalidate();
                 frame.repaint();
-                }
-            });
+            }
+        });
 
         categoryButton2.addActionListener(new ActionListener() {
             @Override
@@ -160,6 +162,7 @@ public class QuizGUI {
 
         frame.setVisible(true);
     }
+
     private void sendMessageToServer(String message) {
         try {
             client.connectAndSend(message);
@@ -174,6 +177,7 @@ public class QuizGUI {
             }
         }*/
     }
+
     private Object receiveMessageFromServer() {
         Object receivedMessage = null;
         try {
@@ -190,6 +194,7 @@ public class QuizGUI {
         }*/
         return receivedMessage;
     }
+
     private Object sendAndReceive(String message) {
         Object receivedMessage = null;
         try {
@@ -207,30 +212,13 @@ public class QuizGUI {
         return receivedMessage;
     }
 
-    public void startGame(){ //startas senare av en JButton
-        sendMessageToServer("READY" + player.getName());
-        Player player1;
-        Player player2;
-        GameInstance gI;
-        Object recievedMessage = null;
-        while(true) {
-            recievedMessage = receiveMessageFromServer();
-
-            if (recievedMessage instanceof GameInstance)
-                player.addGame((GameInstance) recievedMessage);
-            else if (recievedMessage instanceof String && !player.getName().equals(recievedMessage))
-                    player.setOpponent(new Player((String) recievedMessage));
-
-           if (player.getOpponent() != null && player.getGame() != null) {
-               break;
-           }
-
-        }
-    }
-
-    public static void main(String[] args) {
 
 
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
+
+        Relocate.startGame();
+
+        System.out.println("Kommer hit innan spelet ska vara startat.");
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {

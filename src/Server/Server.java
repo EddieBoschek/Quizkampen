@@ -51,9 +51,9 @@ public class Server extends Thread {
             if (player1.getName() != null && player2.getName() != null){
                 GameInstance gI = new GameInstance(player1,player2);
 
-                out.writeObject("GAME" + gI); //sending gameInstance
-                out.writeObject("PLAYER1" + player1);
-                out.writeObject("PLAYER2" + player2);
+                out.writeObject(gI); //sending gameInstance
+                out.writeObject(player1.getName());
+                out.writeObject(player2.getName());
 
             }
 
