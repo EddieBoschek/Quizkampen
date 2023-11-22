@@ -112,7 +112,10 @@ public class QuizGUI {
                 frame.getContentPane().removeAll();
                 serverMessage = sendAndReceive(categoryButton1.getText());
                 System.out.println(serverMessage);
+
                 questions = (Question[]) serverMessage;
+
+                //questions = (Question[]) serverMessage;
 
                 System.out.println(questions[0]);
                 askedQuest = questions[0];
