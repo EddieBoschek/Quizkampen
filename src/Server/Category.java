@@ -5,10 +5,10 @@ import java.util.List;
 import java.util.Random;
 
 public class Category {
-    private List<String> categories = Arrays.asList("Math", "History", "Science");
+    private List<String> categories = Arrays.asList("Math", "History", "Science", "Music", "Sports", "Geography");
 
     public String[] shuffleCategories() {
-        String[] returnList = new String[2];
+        String[] returnList = new String[5];
         Random random = new Random();
         int randomNumber;
         boolean inArray;
