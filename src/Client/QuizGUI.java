@@ -19,7 +19,7 @@ public class QuizGUI {
     public QuizGUI() throws IOException, ClassNotFoundException {
         JFrame frame = new JFrame("Quiz GUI");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(500, 250);
+        frame.setSize(600, 250);
         frame.setLayout(new FlowLayout());
 
         client = new Client("127.0.0.1", 12345);

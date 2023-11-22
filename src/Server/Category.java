@@ -8,7 +8,7 @@ public class Category {
     private List<String> categories = Arrays.asList("Math", "History", "Science", "Music", "Sports", "Geography");
 
     public String[] shuffleCategories() {
-        String[] returnList = new String[5];
+        String[] returnList = new String[6];
         Random random = new Random();
         int randomNumber;
         boolean inArray;

@@ -22,11 +22,9 @@ public class Server extends Thread {
             String inputLine;
             while ((inputLine = (String)in.readObject()) != null) {
                 if (inputLine.equals("Start")) {
-                    System.out.println("Start");
                     out.writeObject(categories.shuffleCategories());
                     //out.reset();
                 } else {
-                    System.out.println("Inte Start");
                     out.writeObject(questColl.getSubjectQuestion(inputLine));
                     //out.reset();
                 }
