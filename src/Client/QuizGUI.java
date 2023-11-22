@@ -1,5 +1,6 @@
 package Client;
 
+import POJOs.Player;
 import POJOs.Question;
 
 import javax.swing.*;
@@ -15,6 +16,7 @@ public class QuizGUI {
     Object serverMessage;
     String[] categories;
     Question[] questions = new Question[3];
+    Player player = new Player("spelare1");
 
     public QuizGUI() throws IOException, ClassNotFoundException {
         JFrame frame = new JFrame("Quiz GUI");
@@ -203,6 +205,12 @@ public class QuizGUI {
         }*/
         return receivedMessage;
     }
+
+    public void startGame(){ //startas av en JButton
+        sendMessageToServer("READY" + player);
+        while(true)
+    }
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
