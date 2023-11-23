@@ -1,16 +1,11 @@
-package Server;
+package POJOs;
 
-import POJOs.Question;
-
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class Category {
+public class Category implements Serializable {
     private String subjectName;
     private ArrayList<Question> qList;
 
@@ -24,9 +19,9 @@ public class Category {
     public String getSubjectName() {
         return subjectName;
     }
-    public static String[] shuffleCategories(ArrayList<Category> categories) {
+    public static Category[] shuffleCategories(ArrayList<Category> categories) {
         //ArrayList<String> categories = new ArrayList<>(Arrays.asList("Math", "History", "Science", "Music", "Sports", "Geography"));
-        String[] returnList = new String[categories.size()];
+        Category[] returnList = new Category[categories.size()];
         Random random = new Random();
         int randomNumber;
         boolean inArray;
@@ -35,33 +30,18 @@ public class Category {
             do {
                 randomNumber = random.nextInt(categories.size());
                 inArray = false;
-                for (String s : returnList) {
-                    if (categories.get(randomNumber).getSubjectName().equals(s)) {
+                for (Category c : returnList) {
+                    if (categories.get(randomNumber) == c) {
                         inArray = true;
                         break;
                     }
                 }
             } while (inArray);
-            returnList[i] = categories.get(randomNumber).getSubjectName();
+            returnList[i] = categories.get(randomNumber);
         }
         return returnList;
     }
     public static Question[] getSubjectQuestion(String chosenSubject, ArrayList<Category> categories) {
-        /*ArrayList<Category> categories = new ArrayList<>();
-        Category math = new Category("Math", readDataFromFile("src/Server/TextFiles/Math"));
-        Category history = new Category("History", readDataFromFile("src/Server/TextFiles/History"));
-        Category science = new Category("Science", readDataFromFile("src/Server/TextFiles/Science"));
-        Category music = new Category("Music", readDataFromFile("src/Server/TextFiles/Music"));
-        Category sports = new Category("Sports", readDataFromFile("src/Server/TextFiles/Sports"));
-        Category geography = new Category("Geography", readDataFromFile("src/Server/TextFiles/Geography"));
-
-        subjectList.add(math);
-        subjectList.add(history);
-        subjectList.add(science);
-        subjectList.add(music);
-        subjectList.add(sports);
-        subjectList.add(geography);*/
-
         Question[] questions = new Question[3];
         Random r = new Random();
         int numberOfSubjects = categories.size();
