@@ -214,7 +214,7 @@ public class QuizGUI {
 
 
 
-    public static void main(String[] args) throws IOException, ClassNotFoundException {
+    public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
 
         Relocate.startGame();
 
