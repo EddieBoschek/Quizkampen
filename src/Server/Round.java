@@ -1,40 +1,120 @@
 package Server;
 
-
-import POJOs.GameInstance;
-import POJOs.Player;
 import POJOs.Question;
 
-import java.util.ArrayList;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
-public class Round {
+public class Round extends JFrame {
 
-    int questionsCreated = 0;
+    private JLabel questionLabel;
+    private JButton option1, option2, option3, option4;
 
-    Question tempQ;
+    private JLabel result;
+    boolean correctAnswer;
 
-    List<Question> roundQuestionsP1 = new ArrayList<>();
+    boolean answerSelected;
 
-    List<Question> roundQuestionsP2 = new ArrayList<>();
+    Question[] round = new Question[2];
 
-
-
-
-    public Round(int qPerR, Player p1, Player p2, Category c) {
-
-        while(questionsCreated < qPerR) {
-
-            //tempQ = getQuestion(c);
-            //getQuestion = metod för att hämta frågor, vet inte var den borde ligga
+    int counter;
 
 
-            roundQuestionsP1.add(tempQ);
-            roundQuestionsP2.add(tempQ);
+    public Round() throws InterruptedException {
 
-            questionsCreated++;
+
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        add(questionLabel);
+        add(option1);
+        add(option2);
+        add(option3);
+        add(option4);
+        add(result);
+        setSize(600, 250);
+        setLayout(new FlowLayout());
+
+
+        counter = 0;
+
+        while(counter < round.length) {
+
+            answerSelected = false;
+
+            List<String> tempList = round[counter].getAnswerOptions();
+
+            questionLabel.setText(round[counter].getQuestion());
+            option1.setText(tempList.get(0));
+            option2.setText(tempList.get(1));
+            option3.setText(tempList.get(2));
+            option4.setText(tempList.get(3));
+            result = new JLabel("Du svarade rätt!");
+            result.setVisible(answerSelected);
+
+            TimeUnit.SECONDS.sleep(1);
+            counter++;
+
         }
 
+
     }
+
+
+    ActionListener commonActionListener = new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (e.getSource() == option1) {
+                if (round[counter].checkAnswer(option1.getText())) {
+                    answerSelected = true;
+                } else {
+                    result.setText("Du svarade fel.");
+                    result.setVisible(true);
+                }
+            } else if (e.getSource() == option2) {
+                if (round[counter].checkAnswer(option2.getText())) {
+                    result.setVisible(true);
+                } else {
+                    result.setText("Du svarade fel.");
+                    result.setVisible(true);
+                }
+            } else if (e.getSource() == option3) {
+                if (round[counter].checkAnswer(option3.getText())) {
+                    result.setVisible(true);
+                } else {
+                    result.setText("Du svarade fel.");
+                    result.setVisible(true);
+                }
+            } else if (e.getSource() == option4) {
+                if (round[counter].checkAnswer(option4.getText())) {
+                    result.setVisible(true);
+                } else {
+                    result.setText("Du svarade fel.");
+                    result.setVisible(true);
+                }
+            }
+        }
+    };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public static void main(String[] args) throws InterruptedException {Round round = new Round();}
+
+
 
 }
