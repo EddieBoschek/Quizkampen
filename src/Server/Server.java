@@ -22,10 +22,8 @@ public class Server extends Thread {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        String questionsQuantity = p.getProperty("questions", "2");
+        int questionsQuantity = Integer.parseInt(p.getProperty("questions", "2"));
         int roundsQuantity = Integer.parseInt(p.getProperty("rounds", "2"));
-        System.out.println(questionsQuantity);
-        System.out.println(roundsQuantity);
 
         try(
             ObjectOutputStream out = new ObjectOutputStream(s.getOutputStream());
