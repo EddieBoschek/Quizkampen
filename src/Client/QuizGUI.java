@@ -1,5 +1,6 @@
 package Client;
 
+import POJOs.Category;
 import POJOs.Question;
 
 import javax.swing.*;
@@ -13,13 +14,13 @@ public class QuizGUI {
     Question askedQuest = null;
     private Client client;
     Object serverMessage;
-    String[] categories;
+    Category[] categories;
     Question[] questions = new Question[3];
 
     public QuizGUI() throws IOException, ClassNotFoundException {
         JFrame frame = new JFrame("Quiz GUI");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(600, 250);
+        frame.setSize(650, 250);
         frame.setLayout(new FlowLayout());
 
         client = new Client("127.0.0.1", 12345);
@@ -29,12 +30,14 @@ public class QuizGUI {
 
         sendMessageToServer("Start");
         serverMessage = receiveMessageFromServer();
-        categories = (String[]) serverMessage;
+        if (serverMessage instanceof Category[] c) {
+            categories = c;
+        }
 
         JLabel categoryLabel = new JLabel("Välj en kategori");
-        JButton categoryButton1 = new JButton(categories[0]);
-        JButton categoryButton2 = new JButton(categories[1]);
-        //JButton categoryButton3 = new JButton("Kategori 3");
+        JButton categoryButton1 = new JButton(categories[0].getSubjectName());
+        JButton categoryButton2 = new JButton(categories[1].getSubjectName());
+        //JButton categoryButton3 = new JButton(categories[2].getSubjectName());
 
         categoryPanel.add(categoryLabel);
         categoryPanel.add(categoryButton1);
