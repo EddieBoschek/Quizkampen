@@ -26,28 +26,35 @@ public class QuizGUI {
     JButton categoryButton1;
     JButton categoryButton2;
     String message;
+    Object oMessage;
 
 
-    public QuizGUI() throws IOException, ClassNotFoundException, NullPointerException {
+    public QuizGUI() throws IOException, ClassNotFoundException, NullPointerException, InterruptedException {
+
+//        Thread.sleep(1000);
 
         client = new Client("127.0.0.1", 12345);
 
-        while(!Objects.equals(message = (String) receiveMessageFromServer(), "START")){
-            System.out.println(message);
+        while (!Objects.equals(message = (String) receiveMessageFromServer(), "START")) {
+//            System.out.println(message);
         }
 
 
-
-        if (startOfGame) {
+        while (startOfGame) {
             sendMessageToServer("Start");
-            startOfGame = false;
-            myTurn = (boolean) receiveMessageFromServer();
+            oMessage = receiveMessageFromServer();
+            if (oMessage instanceof Boolean) {
+//                System.out.println(receiveMessageFromServer().getClass());
+//                System.out.println(Boolean.class);
+                myTurn = (boolean) oMessage;
+                startOfGame = false;
+            }
         }
 
-        while(true) {
-            if (receiveMessageFromServer() == "GameStart")
-                break;
-        }
+//        while(true) {
+//            if (receiveMessageFromServer() == "GameStart")
+//                break;
+//        }
 
         JFrame frame = new JFrame("Quiz GUI");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -55,14 +62,13 @@ public class QuizGUI {
         frame.setLayout(new FlowLayout());
 
 
-
         JPanel categoryPanel = new JPanel();
         categoryPanel.setLayout(new GridLayout(4, 1));
 
 
-
         if (myTurn) {
-            categories = (String[]) serverMessage;
+            categories = (String[]) receiveMessageFromServer();
+            sendMessageToServer(categories);
 
             JLabel categoryLabel = new JLabel("Välj en kategori");
             JButton categoryButton1 = new JButton(categories[0]);
@@ -75,6 +81,9 @@ public class QuizGUI {
             //categoryPanel.add(categoryButton3);
 
             frame.getContentPane().add(categoryPanel);
+        } else {
+            categoryButton1 = new JButton((String) receiveMessageFromServer());
+            categoryButton1.doClick();
         }
 
         JPanel questionPanel = new JPanel();
@@ -159,25 +168,27 @@ public class QuizGUI {
             }
         });
 
-        categoryButton2.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                frame.getContentPane().removeAll();
-                serverMessage = sendAndReceive(categoryButton2.getText());
-                if (serverMessage instanceof Question[] quests) {
-                    questions = quests;
+        if (myTurn) {
+            categoryButton2.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    frame.getContentPane().removeAll();
+                    serverMessage = sendAndReceive(categoryButton2.getText());
+                    if (serverMessage instanceof Question[] quests) {
+                        questions = quests;
+                    }
+                    askedQuest = questions[0];
+                    questionLabel.setText(questions[0].getQuestion());
+                    questionButton1.setText(questions[0].getAnswerOption(0));
+                    questionButton2.setText(questions[0].getAnswerOption(1));
+                    questionButton3.setText(questions[0].getAnswerOption(2));
+                    questionButton4.setText(questions[0].getAnswerOption(3));
+                    frame.getContentPane().add(questionPanel);
+                    frame.revalidate();
+                    frame.repaint();
                 }
-                askedQuest = questions[0];
-                questionLabel.setText(questions[0].getQuestion());
-                questionButton1.setText(questions[0].getAnswerOption(0));
-                questionButton2.setText(questions[0].getAnswerOption(1));
-                questionButton3.setText(questions[0].getAnswerOption(2));
-                questionButton4.setText(questions[0].getAnswerOption(3));
-                frame.getContentPane().add(questionPanel);
-                frame.revalidate();
-                frame.repaint();
-            }
-        });
+            });
+        }
 
         /*categoryButton3.addActionListener(new ActionListener() {
             @Override
@@ -192,7 +203,7 @@ public class QuizGUI {
         frame.setVisible(true);
     }
 
-    private void sendMessageToServer(String message) {
+    private void sendMessageToServer(Object message) {
         try {
             client.connectAndSend(message);
             //client.sendMessage(message);
@@ -258,7 +269,7 @@ public class QuizGUI {
 
                 } catch (IOException e) {
                     throw new RuntimeException(e);
-                } catch (ClassNotFoundException e) {
+                } catch (ClassNotFoundException | InterruptedException e) {
                     throw new RuntimeException(e);
                 }
 //                QuizGUI.setVisible(true);

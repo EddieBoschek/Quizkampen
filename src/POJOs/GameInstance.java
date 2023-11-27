@@ -32,34 +32,43 @@ public class GameInstance extends Thread {
 
         Object inputLine;
         System.out.println("GameStart");
-        try (
-                ObjectOutputStream outp1 = new ObjectOutputStream(player1.socket.getOutputStream());
-                ObjectInputStream inp1 = new ObjectInputStream(player1.socket.getInputStream());
-                ObjectOutputStream outp2 = new ObjectOutputStream(player2.socket.getOutputStream());
-                ObjectInputStream inp2 = new ObjectInputStream(player2.socket.getInputStream());
-                ObjectOutputStream outCurr = new ObjectOutputStream(currentPlayer.socket.getOutputStream());
-                ObjectInputStream inCurr = new ObjectInputStream(currentPlayer.socket.getInputStream());) {
+        try {
+//                (
+//                ObjectOutputStream outp1 = new ObjectOutputStream(player1.socket.getOutputStream());
+////                ObjectInputStream inp1 = new ObjectInputStream(player1.socket.getInputStream());
+//                ObjectOutputStream outp2 = new ObjectOutputStream(player2.socket.getOutputStream());
+////                ObjectInputStream inp2 = new ObjectInputStream(player2.socket.getInputStream());
+//                ObjectOutputStream outCurr = new ObjectOutputStream(currentPlayer.socket.getOutputStream());
+//                ObjectInputStream inCurr = new ObjectInputStream(currentPlayer.socket.getInputStream());) {
 
             //Start of game
-                while ((inputLine = inp1.readObject()) != null || (inputLine = inp2.readObject()) != null) {
-                    //while (inputLine = player1.receive()) != null || (inputLine = player2.receive()) != null) {
-
+//                while ((inputLine = inp1.readObject()) != null || (inputLine = inp2.readObject()) != null) {
+            while (true) {
+//                            if ((inputLine = player1.receive()) != null || (inputLine = player2.receive()) != null);
+                if ((inputLine = currentPlayer.receive()) != null) {
 
                     if (inputLine.equals("Start")) {
                         System.out.println("Start");
-                        outp1.writeObject(player1.isCurrentPlayer); ///tillfällig
-                        outp2.writeObject(player2.isCurrentPlayer);
+                        try {
+                            player1.send(player1.isCurrentPlayer);
+                            player2.send(player2.isCurrentPlayer);
+                            currentPlayer.send(categories.shuffleCategories());
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
+                        }
+
 
 //                        out.writeObject(categories.shuffleCategories());
                         //out.reset();
-                    } else {
+                    } else { //Sends questions to currentPlayer, sends the picked subject and qustions to the other player
                         System.out.println("Inte Start");
-                        outCurr.writeObject(questColl.getSubjectQuestion((String) inputLine));
-
+                        currentPlayer.send(questColl.getSubjectQuestion((String) inputLine));
+                        currentPlayer.getOpponent().send((String) inputLine);
+                        currentPlayer.getOpponent().send(questColl.getSubjectQuestion((String) inputLine));
                     }
 
                 }
-
+            }
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }

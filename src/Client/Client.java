@@ -21,13 +21,13 @@ public class Client {
         this.in = new ObjectInputStream(addressSocket.getInputStream());
         this.input = new BufferedReader(new InputStreamReader(addressSocket.getInputStream()));
     }
-    public void connectAndSend(String message) throws IOException {
+    public void connectAndSend(Object message) throws IOException {
         out.writeObject(message);
     }
     public Object connectAndReceive() throws IOException, ClassNotFoundException {
         return in.readObject();
     }
-    public Object connectSendAndReceive(String message) throws IOException, ClassNotFoundException, NullPointerException {
+    public Object connectSendAndReceive(Object message) throws IOException, ClassNotFoundException, NullPointerException {
         out.writeObject(message);
         return in.readObject();
     }
