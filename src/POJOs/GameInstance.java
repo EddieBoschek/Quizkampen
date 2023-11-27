@@ -1,30 +1,67 @@
 package POJOs;
 
+import Client.QuizGUI;
+import Server.Category;
+import Server.QuestionCollection;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.util.Arrays;
 
 public class GameInstance extends Thread {
     boolean[][] gameScore = new boolean[5][3]; //5an ska sen ersättas med antal ronder
-    String[] gameCatergories = new String[5]; //Samma här
-    Player[] players = new Player[2];
+    String[] gameCategories = new String[5]; //Samma här
+    Category categories = new Category();
+    QuestionCollection questColl = new QuestionCollection("questColl");
+    Player player1;
+    Player player2;
+    Player currentPlayer;
 
-    public GameInstance(Player player1, Player player2) {
-        this.players = new Player[]{player1, player2};
+    public GameInstance(Player p1, Player p2) {
+        this.player1 = p1;
+        this.player2 = p2;
+        currentPlayer = p1;
+        this.player1.setOpponent(p2);
+        this.player2.setOpponent(p1);
     }
 
-    public GameInstance(String playerName) {
-        this.players[0] = new Player(playerName);
-    }
+    public void run() {
+        // Skickar förfrågan till currentPlayer och tar emot data som sparas i GameInstance
 
-    public void addSecondPlayer(String playerName) {
-        if (players[0] == null)
-            players[0] = new Player(playerName);
-        else if (!players[0].getName().equals(playerName))
-            players[1] = new Player(playerName);
-    }
+        Object inputLine;
+        System.out.println("GameStart");
+        try (
+                ObjectOutputStream outp1 = new ObjectOutputStream(player1.socket.getOutputStream());
+                ObjectInputStream inp1 = new ObjectInputStream(player1.socket.getInputStream());
+                ObjectOutputStream outp2 = new ObjectOutputStream(player2.socket.getOutputStream());
+                ObjectInputStream inp2 = new ObjectInputStream(player2.socket.getInputStream());
+                ObjectOutputStream outCurr = new ObjectOutputStream(currentPlayer.socket.getOutputStream());
+                ObjectInputStream inCurr = new ObjectInputStream(currentPlayer.socket.getInputStream());) {
 
-    public boolean arePlayersConnected() {
-        boolean connected = players[0] != null && players[1] != null;
-        return connected;
+            //Start of game
+                while ((inputLine = inp1.readObject()) != null || (inputLine = inp2.readObject()) != null) {
+                    //while (inputLine = player1.receive()) != null || (inputLine = player2.receive()) != null) {
+
+
+                    if (inputLine.equals("Start")) {
+                        System.out.println("Start");
+                        outp1.writeObject(player1.isCurrentPlayer); ///tillfällig
+                        outp2.writeObject(player2.isCurrentPlayer);
+
+//                        out.writeObject(categories.shuffleCategories());
+                        //out.reset();
+                    } else {
+                        System.out.println("Inte Start");
+                        outCurr.writeObject(questColl.getSubjectQuestion((String) inputLine));
+
+                    }
+
+                }
+
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

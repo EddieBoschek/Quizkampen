@@ -9,8 +9,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.net.Socket;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class QuizGUI {
 
@@ -19,34 +21,61 @@ public class QuizGUI {
     Object serverMessage;
     String[] categories;
     Question[] questions = new Question[3];
+    boolean myTurn;
+    boolean startOfGame = true;
+    JButton categoryButton1;
+    JButton categoryButton2;
+    String message;
 
 
-    public QuizGUI() throws IOException, ClassNotFoundException {
+    public QuizGUI() throws IOException, ClassNotFoundException, NullPointerException {
+
+        client = new Client("127.0.0.1", 12345);
+
+        while(!Objects.equals(message = (String) receiveMessageFromServer(), "START")){
+            System.out.println(message);
+        }
+
+
+
+        if (startOfGame) {
+            sendMessageToServer("Start");
+            startOfGame = false;
+            myTurn = (boolean) receiveMessageFromServer();
+        }
+
+        while(true) {
+            if (receiveMessageFromServer() == "GameStart")
+                break;
+        }
+
         JFrame frame = new JFrame("Quiz GUI");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(500, 250);
         frame.setLayout(new FlowLayout());
 
-        client = new Client("127.0.0.1", 12345);
+
 
         JPanel categoryPanel = new JPanel();
         categoryPanel.setLayout(new GridLayout(4, 1));
 
-        sendMessageToServer("Start");
-        serverMessage = receiveMessageFromServer();
-        categories = (String[]) serverMessage;
 
-        JLabel categoryLabel = new JLabel("Välj en kategori");
-        JButton categoryButton1 = new JButton(categories[0]);
-        JButton categoryButton2 = new JButton(categories[1]);
-        //JButton categoryButton3 = new JButton("Kategori 3");
 
-        categoryPanel.add(categoryLabel);
-        categoryPanel.add(categoryButton1);
-        categoryPanel.add(categoryButton2);
-        //categoryPanel.add(categoryButton3);
+        if (myTurn) {
+            categories = (String[]) serverMessage;
 
-        frame.getContentPane().add(categoryPanel);
+            JLabel categoryLabel = new JLabel("Välj en kategori");
+            JButton categoryButton1 = new JButton(categories[0]);
+            JButton categoryButton2 = new JButton(categories[1]);
+            //JButton categoryButton3 = new JButton("Kategori 3");
+
+            categoryPanel.add(categoryLabel);
+            categoryPanel.add(categoryButton1);
+            categoryPanel.add(categoryButton2);
+            //categoryPanel.add(categoryButton3);
+
+            frame.getContentPane().add(categoryPanel);
+        }
 
         JPanel questionPanel = new JPanel();
         questionPanel.setLayout(new GridLayout(6, 1));
@@ -213,23 +242,26 @@ public class QuizGUI {
     }
 
 
-
-    public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
-
-        Relocate.startGame();
-
-        System.out.println("Kommer hit innan spelet ska vara startat.");
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
+//        QuizGUI quizGUI = new QuizGUI();
+//        while(true) {
+//            if (quizGUI.receiveMessageFromServer() == "GameStart")
+//                break;
+//        }
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
                 try {
+                    System.out.println("Innan JFrame");
                     QuizGUI quizGUI = new QuizGUI();
+                    System.out.println("JFrame borde starta");
+
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 } catch (ClassNotFoundException e) {
                     throw new RuntimeException(e);
                 }
-                //QuizGUI.setVisible(true);
+//                QuizGUI.setVisible(true);
             }
         });
     }
