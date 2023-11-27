@@ -6,7 +6,6 @@ import java.net.Socket;
 public class Client {
     String hostName = "127.0.0.1";
     int portNumber = 12345;
-
     private Socket addressSocket;
     private ObjectOutputStream out;
     private ObjectInputStream in;

@@ -1,8 +1,6 @@
 package Client;
 
 import POJOs.Category;
-import POJOs.GameInstance;
-import POJOs.Player;
 import POJOs.Question;
 
 import javax.swing.*;
@@ -10,9 +8,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.net.Socket;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class QuizGUI {
@@ -24,11 +19,8 @@ public class QuizGUI {
     Question[] questions = new Question[3];
     boolean myTurn;
     boolean startOfGame = true;
-    JButton categoryButton1;
-    JButton categoryButton2;
     String message;
     Object oMessage;
-
     int opponentDoClickValue = -1;
 
 
@@ -37,6 +29,8 @@ public class QuizGUI {
 //        Thread.sleep(1000);
 
         client = new Client("127.0.0.1", 12345);
+
+        System.out.println("innan loopen");
 
         while (!Objects.equals(message = (String) receiveMessageFromServer(), "START")) {
 //            System.out.println(message);
@@ -62,17 +56,10 @@ public class QuizGUI {
         frame.setSize(650, 250);
         frame.setLayout(new FlowLayout());
 
-        client = new Client("127.0.0.1", 12345);
-
         JPanel categoryPanel = new JPanel();
         categoryPanel.setLayout(new GridLayout(4, 1));
 
-        sendMessageToServer("Start");
-        serverMessage = receiveMessageFromServer();
-        if (serverMessage instanceof Category[] c) {
-            categories = c;
-        }
-        categories = (String[]) receiveMessageFromServer();
+        categories = (Category[]) receiveMessageFromServer();
 
         JLabel categoryLabel = new JLabel("Välj en kategori");
         JButton categoryButton1 = new JButton(categories[0].getSubjectName());
@@ -89,14 +76,11 @@ public class QuizGUI {
         if (!myTurn){
             while(true) {
                 if((oMessage = receiveMessageFromServer()) != null) {
-                    System.out.println("innan if");
-                    if (oMessage.equals(categories[0])) {
-                        System.out.println(oMessage.equals(categories[0]));
+                    if (oMessage.equals(categories[0].getSubjectName())) {
                         opponentDoClickValue = 0;
-                    } else if (((String) oMessage).equals(categories[1])) {
+                    } else if (((String) oMessage).equals(categories[1].getSubjectName())) {
                         opponentDoClickValue = 1;
                     }
-                    System.out.println("inte myTurn");
                     break;
                 }
             }
@@ -213,9 +197,6 @@ public class QuizGUI {
         questionPanel.add(questionButton3);
         questionPanel.add(questionButton4);
         questionPanel.add(result);
-
-        //QuestionCollection qCollection = new QuestionCollection("qCollection");
-        //Question[] questions = new Question[3];
 
         /*categoryButton3.addActionListener(new ActionListener() {
             @Override
