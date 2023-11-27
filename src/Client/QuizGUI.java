@@ -28,6 +28,8 @@ public class QuizGUI {
     String message;
     Object oMessage;
 
+    int opponentDoClickValue = -1;
+
 
     public QuizGUI() throws IOException, ClassNotFoundException, NullPointerException, InterruptedException {
 
@@ -38,7 +40,6 @@ public class QuizGUI {
         while (!Objects.equals(message = (String) receiveMessageFromServer(), "START")) {
 //            System.out.println(message);
         }
-
 
         while (startOfGame) {
             sendMessageToServer("Start");
@@ -57,28 +58,40 @@ public class QuizGUI {
 
         JFrame frame = new JFrame("Quiz GUI");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(500, 250);
+        frame.setSize(600, 250);
         frame.setLayout(new FlowLayout());
-
 
         JPanel categoryPanel = new JPanel();
         categoryPanel.setLayout(new GridLayout(4, 1));
 
+        categories = (String[]) receiveMessageFromServer();
 
+        JLabel categoryLabel = new JLabel("Välj en kategori");
+        categoryButton1 = new JButton(categories[0]);
+        categoryButton2 = new JButton(categories[1]);
+        //JButton categoryButton3 = new JButton("Kategori 3");
+
+        categoryPanel.add(categoryLabel);
+        categoryPanel.add(categoryButton1);
+        categoryPanel.add(categoryButton2);
+        //categoryPanel.add(categoryButton3);
         if (myTurn) {
-            categories = (String[]) receiveMessageFromServer();
-
-            JLabel categoryLabel = new JLabel("Välj en kategori");
-            categoryButton1 = new JButton(categories[0]);
-            categoryButton2 = new JButton(categories[1]);
-            //JButton categoryButton3 = new JButton("Kategori 3");
-
-            categoryPanel.add(categoryLabel);
-            categoryPanel.add(categoryButton1);
-            categoryPanel.add(categoryButton2);
-            //categoryPanel.add(categoryButton3);
-
             frame.getContentPane().add(categoryPanel);
+        }
+        if (!myTurn){
+            while(true) {
+                if((oMessage = receiveMessageFromServer()) != null) {
+                    System.out.println("innan if");
+                    if (oMessage.equals(categories[0])) {
+                        System.out.println(oMessage.equals(categories[0]));
+                        opponentDoClickValue = 0;
+                    } else if (((String) oMessage).equals(categories[1])) {
+                        opponentDoClickValue = 1;
+                    }
+                    System.out.println("inte myTurn");
+                    break;
+                }
+            }
         }
 
         JPanel questionPanel = new JPanel();
@@ -92,14 +105,58 @@ public class QuizGUI {
         JLabel result = new JLabel("Du svarade rätt!");
         result.setVisible(false);
 
-        if (!myTurn){
-            while(true) {
-                if((oMessage = receiveMessageFromServer()) != null) {
-                    categoryButton1 = new JButton((String) oMessage);
-                    categoryButton1.doClick();
-                    break;
+        categoryButton1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Button 1");
+                frame.getContentPane().removeAll();
+                if (myTurn)
+                    serverMessage = sendAndReceive(categoryButton1.getText());
+                else {
+                    serverMessage = receiveMessageFromServer();
+                    System.out.println(serverMessage);
                 }
+                if (serverMessage instanceof Question[] quests) {
+                    questions = quests;
+                }
+                System.out.println();
+                askedQuest = questions[0];
+                questionLabel.setText(questions[0].getQuestion());
+                questionButton1.setText(questions[0].getAnswerOption(0));
+                questionButton2.setText(questions[0].getAnswerOption(1));
+                questionButton3.setText(questions[0].getAnswerOption(2));
+                questionButton4.setText(questions[0].getAnswerOption(3));
+                frame.getContentPane().add(questionPanel);
+                frame.revalidate();
+                frame.repaint();
             }
+        });
+
+        if (myTurn) {
+            categoryButton2.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    frame.getContentPane().removeAll();
+                    if (myTurn)
+                        serverMessage = sendAndReceive(categoryButton1.getText());
+                    else {
+                        serverMessage = receiveMessageFromServer();
+                        System.out.println(serverMessage);
+                    }
+                    if (serverMessage instanceof Question[] quests) {
+                        questions = quests;
+                    }
+                    askedQuest = questions[0];
+                    questionLabel.setText(questions[0].getQuestion());
+                    questionButton1.setText(questions[0].getAnswerOption(0));
+                    questionButton2.setText(questions[0].getAnswerOption(1));
+                    questionButton3.setText(questions[0].getAnswerOption(2));
+                    questionButton4.setText(questions[0].getAnswerOption(3));
+                    frame.getContentPane().add(questionPanel);
+                    frame.revalidate();
+                    frame.repaint();
+                }
+            });
         }
 
         ActionListener commonActionListener = new ActionListener() {
@@ -152,52 +209,6 @@ public class QuizGUI {
         //QuestionCollection qCollection = new QuestionCollection("qCollection");
         //Question[] questions = new Question[3];
 
-
-        categoryButton1.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                frame.getContentPane().removeAll();
-                if (myTurn)
-                    serverMessage = sendAndReceive(categoryButton1.getText());
-                else
-                    serverMessage = receiveMessageFromServer();
-                if (serverMessage instanceof Question[] quests) {
-                    questions = quests;
-                }
-                askedQuest = questions[0];
-                questionLabel.setText(questions[0].getQuestion());
-                questionButton1.setText(questions[0].getAnswerOption(0));
-                questionButton2.setText(questions[0].getAnswerOption(1));
-                questionButton3.setText(questions[0].getAnswerOption(2));
-                questionButton4.setText(questions[0].getAnswerOption(3));
-                frame.getContentPane().add(questionPanel);
-                frame.revalidate();
-                frame.repaint();
-            }
-        });
-
-        if (myTurn) {
-            categoryButton2.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    frame.getContentPane().removeAll();
-                    serverMessage = sendAndReceive(categoryButton2.getText());
-                    if (serverMessage instanceof Question[] quests) {
-                        questions = quests;
-                    }
-                    askedQuest = questions[0];
-                    questionLabel.setText(questions[0].getQuestion());
-                    questionButton1.setText(questions[0].getAnswerOption(0));
-                    questionButton2.setText(questions[0].getAnswerOption(1));
-                    questionButton3.setText(questions[0].getAnswerOption(2));
-                    questionButton4.setText(questions[0].getAnswerOption(3));
-                    frame.getContentPane().add(questionPanel);
-                    frame.revalidate();
-                    frame.repaint();
-                }
-            });
-        }
-
         /*categoryButton3.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -209,6 +220,12 @@ public class QuizGUI {
         });*/
 
         frame.setVisible(true);
+        System.out.println(opponentDoClickValue);
+        if (opponentDoClickValue == 0) {
+            categoryButton1.doClick();
+        } else if (opponentDoClickValue == 1) {
+            categoryButton2.doClick();
+        }
     }
 
     private void sendMessageToServer(Object message) {

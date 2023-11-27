@@ -52,7 +52,9 @@ public class GameInstance extends Thread {
                         try {
                             player1.send(player1.isCurrentPlayer);
                             player2.send(player2.isCurrentPlayer);
-                            currentPlayer.send(categories.shuffleCategories());
+                            String[] sendBack = categories.shuffleCategories();
+                            currentPlayer.send(sendBack);
+                            currentPlayer.getOpponent().send(sendBack);
                         } catch (IOException ex) {
                             throw new RuntimeException(ex);
                         }
@@ -62,9 +64,10 @@ public class GameInstance extends Thread {
                         //out.reset();
                     } else { //Sends questions to currentPlayer, sends the picked subject and qustions to the other player
                         System.out.println("Inte Start");
-                        currentPlayer.send(questColl.getSubjectQuestion((String) inputLine));
+                        Question[] q = questColl.getSubjectQuestion((String) inputLine);
+                        currentPlayer.send(q);
                         currentPlayer.getOpponent().send((String) inputLine);
-                        currentPlayer.getOpponent().send(questColl.getSubjectQuestion((String) inputLine));
+                        currentPlayer.getOpponent().send(q);
                     }
 
                 }
