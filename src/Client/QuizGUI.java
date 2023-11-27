@@ -44,9 +44,8 @@ public class QuizGUI {
             sendMessageToServer("Start");
             oMessage = receiveMessageFromServer();
             if (oMessage instanceof Boolean) {
-//                System.out.println(receiveMessageFromServer().getClass());
-//                System.out.println(Boolean.class);
                 myTurn = (boolean) oMessage;
+                System.out.println("It is my turn: " + myTurn);
                 startOfGame = false;
             }
         }
@@ -68,11 +67,10 @@ public class QuizGUI {
 
         if (myTurn) {
             categories = (String[]) receiveMessageFromServer();
-            sendMessageToServer(categories);
 
             JLabel categoryLabel = new JLabel("Välj en kategori");
-            JButton categoryButton1 = new JButton(categories[0]);
-            JButton categoryButton2 = new JButton(categories[1]);
+            categoryButton1 = new JButton(categories[0]);
+            categoryButton2 = new JButton(categories[1]);
             //JButton categoryButton3 = new JButton("Kategori 3");
 
             categoryPanel.add(categoryLabel);
@@ -81,9 +79,6 @@ public class QuizGUI {
             //categoryPanel.add(categoryButton3);
 
             frame.getContentPane().add(categoryPanel);
-        } else {
-            categoryButton1 = new JButton((String) receiveMessageFromServer());
-            categoryButton1.doClick();
         }
 
         JPanel questionPanel = new JPanel();
@@ -96,6 +91,16 @@ public class QuizGUI {
         JButton questionButton4 = new JButton("Svar 4");
         JLabel result = new JLabel("Du svarade rätt!");
         result.setVisible(false);
+
+        if (!myTurn){
+            while(true) {
+                if((oMessage = receiveMessageFromServer()) != null) {
+                    categoryButton1 = new JButton((String) oMessage);
+                    categoryButton1.doClick();
+                    break;
+                }
+            }
+        }
 
         ActionListener commonActionListener = new ActionListener() {
             @Override
@@ -152,7 +157,10 @@ public class QuizGUI {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.getContentPane().removeAll();
-                serverMessage = sendAndReceive(categoryButton1.getText());
+                if (myTurn)
+                    serverMessage = sendAndReceive(categoryButton1.getText());
+                else
+                    serverMessage = receiveMessageFromServer();
                 if (serverMessage instanceof Question[] quests) {
                     questions = quests;
                 }
