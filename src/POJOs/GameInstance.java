@@ -1,10 +1,8 @@
 package POJOs;
 
-import POJOs.Category;
+import Server.DAO;
 import java.io.FileInputStream;
 import java.io.IOException;
-
-import java.util.ArrayList;
 import java.util.Properties;
 
 import static POJOs.Category.getSubjectQuestion;
@@ -17,6 +15,7 @@ public class GameInstance extends Thread {
     Player player2;
     Player currentPlayer;
     Properties p = new Properties();
+    private DAO dao = new DAO();
 
     public GameInstance(Player p1, Player p2) {
         this.player1 = p1;
@@ -28,21 +27,6 @@ public class GameInstance extends Thread {
 
     public void run() {
         // Skickar förfrågan till currentPlayer och tar emot data som sparas i GameInstance
-
-        ArrayList<Category> categories = new ArrayList<>();
-        Category math = new Category("Math", Category.readDataFromFile("src/Server/TextFiles/Math"));
-        Category history = new Category("History", Category.readDataFromFile("src/Server/TextFiles/History"));
-        Category science = new Category("Science", Category.readDataFromFile("src/Server/TextFiles/Science"));
-        Category music = new Category("Music", Category.readDataFromFile("src/Server/TextFiles/Music"));
-        Category sports = new Category("Sports", Category.readDataFromFile("src/Server/TextFiles/Sports"));
-        Category geography = new Category("Geography", Category.readDataFromFile("src/Server/TextFiles/Geography"));
-
-        categories.add(math);
-        categories.add(history);
-        categories.add(science);
-        categories.add(music);
-        categories.add(sports);
-        categories.add(geography);
 
         try {
             p.load(new FileInputStream("src/Server/QuestionsRounds.properties"));
@@ -74,7 +58,7 @@ public class GameInstance extends Thread {
                         try {
                             player1.send(player1.isCurrentPlayer);
                             player2.send(player2.isCurrentPlayer);
-                            Category[] sendBack = shuffleCategories(categories);
+                            Category[] sendBack = shuffleCategories(dao.getCategories());
                             currentPlayer.send(sendBack);
                             currentPlayer.getOpponent().send(sendBack);
                         } catch (IOException ex) {
@@ -83,12 +67,11 @@ public class GameInstance extends Thread {
 
                     } else { //Sends questions to currentPlayer, sends the picked subject and qustions to the other player
                         System.out.println("Inte Start");
-                        Question[] q = getSubjectQuestion((String) inputLine, categories);
+                        Question[] q = getSubjectQuestion((String) inputLine, dao.getCategories());
                         currentPlayer.send(q);
                         currentPlayer.getOpponent().send((String) inputLine);
                         currentPlayer.getOpponent().send(q);
                     }
-
                 }
             }
         } catch (IOException | ClassNotFoundException e) {
