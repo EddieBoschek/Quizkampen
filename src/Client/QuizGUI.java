@@ -29,6 +29,8 @@ public class QuizGUI {
     int qcounter;
     int roundCounter;
 
+
+
     public QuizGUI() throws IOException, ClassNotFoundException, NullPointerException, InterruptedException {
 
 //        Thread.sleep(1000);
@@ -233,6 +235,7 @@ public class QuizGUI {
             roundResults[qcounter] = false;
         }
     }
+
 
 
     private void sendMessageToServer(Object message) {
