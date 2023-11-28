@@ -17,6 +17,7 @@ public class GameInstance extends Thread {
     Player player2;
     Player currentPlayer;
     Properties p = new Properties();
+    boolean orderCheck;
 
     public GameInstance(Player p1, Player p2) {
         this.player1 = p1;
@@ -80,6 +81,27 @@ public class GameInstance extends Thread {
                         } catch (IOException ex) {
                             throw new RuntimeException(ex);
                         }
+                    }else if (inputLine.equals("Ny Runda")) {
+                        System.out.println("Ny Runda");
+                        try {
+                            if (player1.isCurrentPlayer) {
+                                player1.setCurrentPlayer(false);
+                                player2.setCurrentPlayer(true);
+                                currentPlayer = player2;
+                            } else {
+                                player1.setCurrentPlayer(true);
+                                player2.setCurrentPlayer(false);
+                                currentPlayer = player1;
+                            }
+                            player1.send(player1.isCurrentPlayer);
+                            player2.send(player2.isCurrentPlayer);
+                            Category[] sendBack = shuffleCategories(categories);
+                            currentPlayer.send(sendBack);
+                            currentPlayer.getOpponent().send(sendBack);
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
+                        }
+
 
                     } else { //Sends questions to currentPlayer, sends the picked subject and qustions to the other player
                         System.out.println("Inte Start");

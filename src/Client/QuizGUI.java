@@ -17,8 +17,8 @@ public class QuizGUI {
     Object serverMessage;
     Category[] categories;
     Question[] questions = new Question[3];
-    public boolean[][] gameresults = new boolean[4][3];
-    public boolean[] roundResults = new boolean[3];
+    public boolean[][] gameresults = new boolean[4][3]; //4 och 3 ersätts med värden från properties-filen
+    public boolean[] roundResults = new boolean[3]; // samma här
     boolean myTurn;
     boolean startOfGame = true;
     JFrame frame;
@@ -26,8 +26,8 @@ public class QuizGUI {
     Object oMessage;
     JLabel result = new JLabel();
     int opponentDoClickValue = -1;
-    int qcounter;
-    int roundCounter;
+    int qCounter = 0;
+    int roundCounter = 0;
 
 
 
@@ -66,6 +66,10 @@ public class QuizGUI {
         JPanel categoryPanel = new JPanel();
         categoryPanel.setLayout(new GridLayout(4, 1));
 
+
+
+
+
         categories = (Category[]) receiveMessageFromServer();
 
         JLabel categoryLabel = new JLabel("Välj en kategori");
@@ -77,12 +81,14 @@ public class QuizGUI {
         categoryPanel.add(categoryButton1);
         categoryPanel.add(categoryButton2);
         //categoryPanel.add(categoryButton3);
+
+
         if (myTurn) {
             frame.getContentPane().add(categoryPanel);
         }
-        if (!myTurn){
-            while(true) {
-                if((oMessage = receiveMessageFromServer()) != null) {
+        if (!myTurn) {
+            while (true) {
+                if ((oMessage = receiveMessageFromServer()) != null) {
                     if (oMessage.equals(categories[0].getSubjectName())) {
                         opponentDoClickValue = 0;
                     } else if (((String) oMessage).equals(categories[1].getSubjectName())) {
@@ -122,9 +128,8 @@ public class QuizGUI {
                     serverMessage = receiveMessageFromServer();
                     System.out.println(serverMessage);
                 }
-                if (serverMessage instanceof Question[] quests) {
-                    questions = quests;
-                }
+                if (serverMessage instanceof Question[] quests) {questions = quests;
+                    }
                 playRound(questions);
             }
         });
@@ -147,6 +152,7 @@ public class QuizGUI {
             categoryButton2.doClick();
         }
     }
+
     private void displayQuestion(Question question) {
         JPanel questionPanel = new JPanel();
         questionPanel.setLayout(new GridLayout(6, 1));
@@ -182,13 +188,21 @@ public class QuizGUI {
             public void actionPerformed(ActionEvent e) {
                 handleAnswer(((JButton) e.getSource()).getText());
 
-                qcounter++;
-                if (qcounter < questions.length) {
-                    displayQuestion(questions[qcounter]);
+                qCounter++;
+                if (qCounter < questions.length) {
+                    displayQuestion(questions[qCounter]);
                 } else {
                     gameresults[roundCounter] = roundResults;
-                    // Här tänker jag att vi lägger logic för att loopa om GUIn för en till rond genom att
-                    // sendAndRecieve() för att byta myTurn osv.
+
+                    sendMessageToServer("Ny Runda");
+                    oMessage = receiveMessageFromServer();
+                    if (oMessage instanceof Boolean) {
+                        myTurn = (boolean) oMessage;
+                        System.out.println("It is my turn: " + myTurn);
+                        //qCounter = 0;
+                        roundCounter++;
+                    }
+                    //behöver skapa en loop eller göra om kategorivalet till en funktion
                 }
 
             }
@@ -214,25 +228,25 @@ public class QuizGUI {
     }
 
     public void playRound(Question[] questions) {
-        qcounter = 0;
-        displayQuestion(questions[qcounter]);
+            displayQuestion(questions[qCounter]);
+
 
     }
 
     private void handleAnswer(String answer) {
-        if (questions[qcounter].checkAnswer(answer)) {
+        if (questions[qCounter].checkAnswer(answer)) {
 
             result.setText("Du svarade rätt.");
             result.setVisible(true);
 
-            roundResults[qcounter] = true;
+            roundResults[qCounter] = true;
         } else {
 
             result.setText("Du svarade fel.");
             result.setVisible(true);
 
 
-            roundResults[qcounter] = false;
+            roundResults[qCounter] = false;
         }
     }
 
