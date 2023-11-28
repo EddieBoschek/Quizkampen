@@ -12,28 +12,24 @@ import java.util.Objects;
 
 public class QuizGUI {
 
-    Question askedQuest = null;
+    private Question askedQuest = null;
     private Client client;
-    Object serverMessage;
-    Category[] categories;
-    Question[] questions = new Question[3];
-    public boolean[][] gameresults = new boolean[4][3]; //4 och 3 ersätts med värden från properties-filen
-    public boolean[] roundResults = new boolean[3]; // samma här
-    boolean myTurn;
-    boolean startOfGame = true;
-    JFrame frame;
-    String message;
-    Object oMessage;
-    JLabel result = new JLabel();
-    int opponentDoClickValue = -1;
-    int qCounter = 0;
-    int roundCounter = 0;
-
-
+    private Object serverMessage;
+    private Category[] categories;
+    private Question[] questions = new Question[3];
+    private boolean[][] gameresults = new boolean[4][3]; //4 och 3 ersätts med värden från properties-filen
+    private boolean[] roundResults = new boolean[3]; // samma här
+    private boolean myTurn;
+    private boolean startOfGame = true;
+    private JFrame frame;
+    private String message;
+    private Object oMessage;
+    private JLabel result = new JLabel();
+    private int opponentDoClickValue = -1;
+    private int qCounter = 0;
+    private int roundCounter = 0;
 
     public QuizGUI() throws IOException, ClassNotFoundException, NullPointerException, InterruptedException {
-
-//        Thread.sleep(1000);
 
         client = new Client("127.0.0.1", 12345);
 
@@ -53,11 +49,6 @@ public class QuizGUI {
             }
         }
 
-//        while(true) {
-//            if (receiveMessageFromServer() == "GameStart")
-//                break;
-//        }
-
         frame = new JFrame("Quiz GUI");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(650, 250);
@@ -65,10 +56,6 @@ public class QuizGUI {
 
         JPanel categoryPanel = new JPanel();
         categoryPanel.setLayout(new GridLayout(4, 1));
-
-
-
-
 
         categories = (Category[]) receiveMessageFromServer();
 
@@ -81,7 +68,6 @@ public class QuizGUI {
         categoryPanel.add(categoryButton1);
         categoryPanel.add(categoryButton2);
         //categoryPanel.add(categoryButton3);
-
 
         if (myTurn) {
             frame.getContentPane().add(categoryPanel);
@@ -98,7 +84,6 @@ public class QuizGUI {
                 }
             }
         }
-
         categoryButton1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -145,7 +130,6 @@ public class QuizGUI {
         });*/
 
         frame.setVisible(true);
-        System.out.println(opponentDoClickValue);
         if (opponentDoClickValue == 0) {
             categoryButton1.doClick();
         } else if (opponentDoClickValue == 1) {
@@ -224,13 +208,10 @@ public class QuizGUI {
 
         frame.revalidate();
         frame.repaint();
-
     }
 
     public void playRound(Question[] questions) {
             displayQuestion(questions[qCounter]);
-
-
     }
 
     private void handleAnswer(String answer) {
@@ -245,12 +226,9 @@ public class QuizGUI {
             result.setText("Du svarade fel.");
             result.setVisible(true);
 
-
             roundResults[qCounter] = false;
         }
     }
-
-
 
     private void sendMessageToServer(Object message) {
         try {
@@ -258,13 +236,7 @@ public class QuizGUI {
             //client.sendMessage(message);
         } catch (IOException e) {
             e.printStackTrace();
-        } /*finally {
-            try {
-                client.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }*/
+        }
     }
     private Object receiveMessageFromServer() {
         Object receivedMessage = null;
@@ -273,39 +245,20 @@ public class QuizGUI {
             //receivedMessage = client.receiveMessage();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
-        } /*finally {
-            try {
-                client.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }*/
+        }
         return receivedMessage;
     }
     private Object sendAndReceive(String message) {
         Object receivedMessage = null;
         try {
             receivedMessage = client.connectSendAndReceive(message);
-            //receivedMessage = client.receiveMessage();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
-        } /*finally {
-            try {
-                client.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }*/
+        }
         return receivedMessage;
     }
 
-
     public static void main(String[] args) throws IOException, ClassNotFoundException {
-//        QuizGUI quizGUI = new QuizGUI();
-//        while(true) {
-//            if (quizGUI.receiveMessageFromServer() == "GameStart")
-//                break;
-//        }
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -319,7 +272,6 @@ public class QuizGUI {
                 } catch (ClassNotFoundException | InterruptedException e) {
                     throw new RuntimeException(e);
                 }
-                //QuizGUI.setVisible(true);
             }
         });
     }
