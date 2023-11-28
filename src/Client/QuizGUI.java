@@ -217,6 +217,7 @@ public class QuizGUI {
         }
     }
 
+
     private void sendMessageToServer(Object message) {
         try {
             client.connectAndSend(message);
