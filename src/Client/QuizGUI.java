@@ -31,6 +31,7 @@ public class QuizGUI {
 
 
 
+
     public QuizGUI() throws IOException, ClassNotFoundException, NullPointerException, InterruptedException {
 
 //        Thread.sleep(1000);
