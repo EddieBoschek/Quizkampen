@@ -82,7 +82,7 @@ public class GameInstance extends Thread {
                             }
                             player1.send(player1.isCurrentPlayer);
                             player2.send(player2.isCurrentPlayer);
-                            Category[] sendBack = shuffleCategories(categories);
+                            Category[] sendBack = shuffleCategories(dao.getCategories());
                             currentPlayer.send(sendBack);
                             currentPlayer.getOpponent().send(sendBack);
                         } catch (IOException ex) {
