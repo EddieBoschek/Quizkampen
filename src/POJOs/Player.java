@@ -23,6 +23,9 @@ public class Player {
         this.input = input;
     }
 
+    public void setCurrentPlayer(boolean currentPlayer) {
+        isCurrentPlayer = currentPlayer;
+    }
 
 
     public void setOpponent(Player opponent) {
