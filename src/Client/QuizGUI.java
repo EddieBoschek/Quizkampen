@@ -46,7 +46,6 @@ public class QuizGUI {
         while (!Objects.equals(message = (String) receiveMessageFromServer(), "START")) {
 //            System.out.println(message);
         }
-
         while (startOfGame) {
             sendMessageToServer("Start");
             oMessage = receiveMessageFromServer();
@@ -57,15 +56,15 @@ public class QuizGUI {
             }
         }
 
-        frame = new JFrame("Quiz GUI");
+        frame = new JFrame("Quizkampen");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(850, 450);
         frame.setLayout(new FlowLayout());
 
+        categories = (Category[]) receiveMessageFromServer();
+
         JPanel categoryPanel = new JPanel();
         categoryPanel.setLayout(new GridLayout(4, 1));
-
-        categories = (Category[]) receiveMessageFromServer();
 
         JLabel categoryLabel = new JLabel("Välj en kategori");
         JButton categoryButton1 = new JButton(categories[0].getSubjectName());

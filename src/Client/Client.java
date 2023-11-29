@@ -4,8 +4,8 @@ import java.io.*;
 import java.net.Socket;
 
 public class Client {
-    private String hostName = "127.0.0.1";
-    private int portNumber = 12345;
+    private String hostName;
+    private int portNumber;
     private Socket addressSocket;
     private ObjectOutputStream out;
     private ObjectInputStream in;

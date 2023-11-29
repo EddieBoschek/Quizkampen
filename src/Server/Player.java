@@ -29,29 +29,21 @@ public class Player {
     public boolean isCurrentPlayer() {
         return isCurrentPlayer;
     }
-
-
     public void setOpponent(Player opponent) {
         this.opponent = opponent;
     }
-
-
     public void send(Object o) throws IOException {
         output.writeObject(o);
     }
-
     public Object receive() throws IOException, ClassNotFoundException {
         return input.readObject();
     }
-
     public String getName() {
         return name;
     }
-
     public void setName(String name) {
         this.name = name;
     }
-
     public Player getOpponent() {
         return opponent;
     }
