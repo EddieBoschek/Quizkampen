@@ -4,10 +4,13 @@ import POJOs.Category;
 import POJOs.Question;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class QuizGUI {
@@ -80,6 +83,7 @@ public class QuizGUI {
 
         JPanel panel1 = new JPanel();
         JPanel panel2 = new JPanel();
+
         panel1.setLayout(new GridLayout(2,0));
 
         panel2.setLayout(new GridLayout(2,0));
@@ -306,9 +310,6 @@ public class QuizGUI {
             jb.setBackground(Color.green);
             jb.repaint();
             jb.revalidate();
-
-
-
             continueButton.setVisible(true);
 
             roundResults[qCounter] = true;
