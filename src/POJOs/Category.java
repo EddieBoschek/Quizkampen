@@ -20,7 +20,6 @@ public class Category implements Serializable {
         return subjectName;
     }
     public static Category[] shuffleCategories(ArrayList<Category> categories) {
-        //ArrayList<String> categories = new ArrayList<>(Arrays.asList("Math", "History", "Science", "Music", "Sports", "Geography"));
         Category[] returnList = new Category[categories.size()];
         Random random = new Random();
         int randomNumber;
@@ -41,7 +40,7 @@ public class Category implements Serializable {
         }
         return returnList;
     }
-    public static Question[] getSubjectQuestion(String chosenSubject, ArrayList<Category> categories) {
+    public static Question[] getCategoryQuestions(String chosenSubject, ArrayList<Category> categories) {
         Question[] questions = new Question[3];
         Random r = new Random();
         int numberOfSubjects = categories.size();

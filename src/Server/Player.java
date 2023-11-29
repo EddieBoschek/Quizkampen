@@ -1,15 +1,15 @@
-package POJOs;
+package Server;
 
 import java.io.*;
 import java.net.Socket;
 
 public class Player {
-    Socket socket;
-    String name;
-    Player opponent; //Can make array (Player[]) for several games w different players;
-    boolean isCurrentPlayer;
-    ObjectInputStream input;
-    ObjectOutputStream output;
+    private Socket socket;
+    private String name;
+    private Player opponent; //Can make array (Player[]) for several games w different players;
+    private boolean isCurrentPlayer;
+    private ObjectInputStream input;
+    private ObjectOutputStream output;
 
     public Player(Socket s, String n, boolean isCurrentPlayer) throws IOException {
 
@@ -23,6 +23,12 @@ public class Player {
         this.input = input;
     }
 
+    public void setCurrentPlayer(boolean currentPlayer) {
+        isCurrentPlayer = currentPlayer;
+    }
+    public boolean isCurrentPlayer() {
+        return isCurrentPlayer;
+    }
 
 
     public void setOpponent(Player opponent) {
