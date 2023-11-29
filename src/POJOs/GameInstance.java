@@ -11,8 +11,9 @@ import static POJOs.Category.getSubjectQuestion;
 import static POJOs.Category.shuffleCategories;
 
 public class GameInstance extends Thread {
-    boolean[][] gameScore = new boolean[5][3]; //5an ska sen ersättas med antal ronder
-    String[] gameCategories = new String[5]; //Samma här
+    boolean[][] player1GameScore = new boolean[6][3]; //6an ska sen ersättas med antal ronder
+    boolean[][] player2GameScore = new boolean[6][3]; //6an ska sen ersättas med antal ronder
+    String[] gameCategories = new String[6]; //Samma här
     Player player1;
     Player player2;
     Player currentPlayer;
@@ -55,18 +56,11 @@ public class GameInstance extends Thread {
         Object inputLine;
         System.out.println("GameStart");
         try {
-//                (
-//                ObjectOutputStream outp1 = new ObjectOutputStream(player1.socket.getOutputStream());
-////                ObjectInputStream inp1 = new ObjectInputStream(player1.socket.getInputStream());
-//                ObjectOutputStream outp2 = new ObjectOutputStream(player2.socket.getOutputStream());
-////                ObjectInputStream inp2 = new ObjectInputStream(player2.socket.getInputStream());
-//                ObjectOutputStream outCurr = new ObjectOutputStream(currentPlayer.socket.getOutputStream());
-//                ObjectInputStream inCurr = new ObjectInputStream(currentPlayer.socket.getInputStream());) {
 
             //Start of game
-//                while ((inputLine = inp1.readObject()) != null || (inputLine = inp2.readObject()) != null) {
+
             while (true) {
-//                            if ((inputLine = player1.receive()) != null || (inputLine = player2.receive()) != null);
+
                 if ((inputLine = currentPlayer.receive()) != null) {
 
                     if (inputLine.equals("Start")) {
@@ -81,7 +75,26 @@ public class GameInstance extends Thread {
                             throw new RuntimeException(ex);
                         }
 
-                    } else { //Sends questions to currentPlayer, sends the picked subject and qustions to the other player
+                    }
+                    else if (inputLine == "GameUpdateRequest") {
+                        currentPlayer.send(currentPlayer.name);
+                        currentPlayer.send(currentPlayer.getOpponent().name);
+                        if (currentPlayer == player1) {
+                            currentPlayer.send(player1GameScore);
+                            currentPlayer.send(player2GameScore);
+                        }
+                        else if (currentPlayer == player2) {
+                            currentPlayer.send(player2GameScore);
+                            currentPlayer.send(player1GameScore);
+                        }
+                        currentPlayer.send(gameCategories);
+                        currentPlayer.send("END");
+
+                        //Här borde currentPlayer byta spelare i serverdelen!!!
+                    }
+
+
+                    else { //Sends questions to currentPlayer, sends the picked subject and qustions to the other player
                         System.out.println("Inte Start");
                         Question[] q = getSubjectQuestion((String) inputLine, categories);
                         currentPlayer.send(q);

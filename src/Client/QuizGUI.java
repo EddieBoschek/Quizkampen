@@ -33,14 +33,11 @@ public class QuizGUI {
 
     public QuizGUI() throws IOException, ClassNotFoundException, NullPointerException, InterruptedException {
 
-//        Thread.sleep(1000);
-
         client = new Client("127.0.0.1", 12345);
 
         System.out.println("innan loopen");
 
         while (!Objects.equals(message = (String) receiveMessageFromServer(), "START")) {
-//            System.out.println(message);
         }
 
         while (startOfGame) {
@@ -53,10 +50,6 @@ public class QuizGUI {
             }
         }
 
-//        while(true) {
-//            if (receiveMessageFromServer() == "GameStart")
-//                break;
-//        }
 
         frame = new JFrame("Quiz GUI");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -241,7 +234,6 @@ public class QuizGUI {
     private void sendMessageToServer(Object message) {
         try {
             client.connectAndSend(message);
-            //client.sendMessage(message);
         } catch (IOException e) {
             e.printStackTrace();
         } /*finally {
@@ -272,7 +264,6 @@ public class QuizGUI {
         Object receivedMessage = null;
         try {
             receivedMessage = client.connectSendAndReceive(message);
-            //receivedMessage = client.receiveMessage();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         } /*finally {
@@ -287,24 +278,24 @@ public class QuizGUI {
 
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
-//        QuizGUI quizGUI = new QuizGUI();
-//        while(true) {
-//            if (quizGUI.receiveMessageFromServer() == "GameStart")
-//                break;
-//        }
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
                 try {
-                    System.out.println("Innan JFrame");
-                    QuizGUI quizGUI = new QuizGUI();
-                    System.out.println("JFrame borde starta");
+//                    System.out.println("Innan JFrame");
+//                    QuizGUI quizGUI = new QuizGUI();
+//                    System.out.println("JFrame borde starta");
+                    MainMenuGUI mainGUI = new MainMenuGUI();
 
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                } catch (ClassNotFoundException | InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
+                } catch(Exception e){};
+//                catch (IOException e) {
+//                    throw new RuntimeException(e);
+//                } catch (ClassNotFoundException | InterruptedException e) {
+//                    throw new RuntimeException(e);
+//                }
+
+
+
                 //QuizGUI.setVisible(true);
             }
         });
