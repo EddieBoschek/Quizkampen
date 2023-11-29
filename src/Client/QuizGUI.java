@@ -166,6 +166,8 @@ public class QuizGUI {
                         opponentDoClickValue = 0;
                     } else if (((String) oMessage).equals(categories[1].getSubjectName())) {
                         opponentDoClickValue = 1;
+                    } else if (((String) oMessage).equals(categories[2].getSubjectName())) {
+                        opponentDoClickValue = 2;
                     }
                     break;
                 }
@@ -227,6 +229,8 @@ public class QuizGUI {
             categoryButton1.doClick();
         } else if (opponentDoClickValue == 1) {
             categoryButton2.doClick();
+        } else if (opponentDoClickValue == 2) {
+            categoryButton3.doClick();
         }
     }
 
