@@ -264,7 +264,6 @@ public class QuizGUI {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (qCounter < questions.length) {
-
                     displayQuestion(questions[qCounter]);
                 } else {
                     gameresults[roundCounter] = roundResults;
@@ -274,10 +273,9 @@ public class QuizGUI {
                     if (oMessage instanceof Boolean) {
                         myTurn = (boolean) oMessage;
                         System.out.println("It is my turn: " + myTurn);
-                        //qCounter = 0;
                         roundCounter++;
+                        updateScorePanel();
                     }
-                    //behöver skapa en loop eller göra om kategorivalet till en funktion
                 }
             }
         };
@@ -301,7 +299,8 @@ public class QuizGUI {
     }
 
     public void playRound(Question[] questions) {
-            displayQuestion(questions[qCounter]);
+        displayQuestion(questions[qCounter]);
+        updateScorePanel();
     }
 
     private void handleAnswer(JButton jb) {
@@ -406,6 +405,15 @@ public class QuizGUI {
             e.printStackTrace();
         }
         return receivedMessage;
+    }
+    private void updateScorePanel() {
+        p1q1.setBackground(gameresults[roundCounter][0] ? Color.green : Color.red);
+        p1q2.setBackground(gameresults[roundCounter][1] ? Color.green : Color.red);
+        p1q3.setBackground(gameresults[roundCounter][2] ? Color.green : Color.red);
+
+        p2q1.setBackground(opponentRoundResults[0] ? Color.green : Color.red);
+        p2q2.setBackground(opponentRoundResults[1] ? Color.green : Color.red);
+        p2q3.setBackground(opponentRoundResults[2] ? Color.green : Color.red);
     }
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {

@@ -30,6 +30,21 @@ public class GameInstance extends Thread {
         this.player1.setOpponent(p2);
         this.player2.setOpponent(p1);
     }
+    public void updateScores(String winner) {
+        if (winner.equals(player1.getName())) {
+            player1.setScore(player1.getScore() + 1);
+        } else if (winner.equals(player2.getName())) {
+            player2.setScore(player2.getScore() + 1);
+        }
+    }
+
+    public int getPlayer1Score() {
+        return player1.getScore();
+    }
+
+    public int getPlayer2Score() {
+        return player2.getScore();
+    }
 
     public void run() {
         try {
