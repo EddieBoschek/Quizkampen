@@ -4,13 +4,10 @@ import POJOs.Category;
 import POJOs.Question;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 public class QuizGUI {
@@ -19,7 +16,7 @@ public class QuizGUI {
     private Client client;
     private Object serverMessage;
     private Category[] categories;
-    private Question[] questions = new Question[3];
+    private Question[] questions = new Question[10];
     private boolean[][] gameresults = new boolean[6][3];
     private boolean[] roundResults = new boolean[3];
     boolean[] opponentRoundResults;
@@ -67,8 +64,8 @@ public class QuizGUI {
         categoryPanel.setLayout(new GridLayout(4, 1));
 
         JLabel categoryLabel = new JLabel("Välj en kategori");
-        JButton categoryButton1 = new JButton(categories[0].getSubjectName());
-        JButton categoryButton2 = new JButton(categories[1].getSubjectName());
+        JButton categoryButton1 = new JButton(categories[0].getCategoryName());
+        JButton categoryButton2 = new JButton(categories[1].getCategoryName());
         //JButton categoryButton3 = new JButton(categories[2].getSubjectName());
 
         categoryPanel.add(categoryLabel);
@@ -134,9 +131,9 @@ public class QuizGUI {
         if (!myTurn) {
             while (true) {
                 if ((oMessage = receiveMessageFromServer()) != null) {
-                    if (oMessage.equals(categories[0].getSubjectName())) {
+                    if (oMessage.equals(categories[0].getCategoryName())) {
                         opponentDoClickValue = 0;
-                    } else if (((String) oMessage).equals(categories[1].getSubjectName())) {
+                    } else if (((String) oMessage).equals(categories[1].getCategoryName())) {
                         opponentDoClickValue = 1;
                     }
                     break;

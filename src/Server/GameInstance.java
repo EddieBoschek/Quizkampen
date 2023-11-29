@@ -7,7 +7,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-import static POJOs.Category.getCategoryQuestions;
+import static POJOs.Category.getShuffledCategoryQuestions;
 import static POJOs.Category.shuffleCategories;
 
 public class GameInstance extends Thread {
@@ -94,7 +94,7 @@ public class GameInstance extends Thread {
                         currentPlayer.send("END");
                     } else { //Sends questions to currentPlayer, sends the picked subject and qustions to the other player
                         System.out.println("Inte Start");
-                        Question[] q = getCategoryQuestions((String) inputLine, dao.getCategories());
+                        Question[] q = getShuffledCategoryQuestions((String) inputLine, dao.getCategories());
                         currentPlayer.send(q);
                         currentPlayer.getOpponent().send((String) inputLine);
                         currentPlayer.getOpponent().send(q);
