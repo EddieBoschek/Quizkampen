@@ -17,6 +17,7 @@ public class GameInstance extends Thread {
     Player player1;
     Player player2;
     Player currentPlayer;
+    int currenRound;
     Properties p = new Properties();
 
     public GameInstance(Player p1, Player p2) {
@@ -88,6 +89,7 @@ public class GameInstance extends Thread {
                             currentPlayer.send(player1GameScore);
                         }
                         currentPlayer.send(gameCategories);
+                        currentPlayer.send(currenRound);
                         currentPlayer.send("END");
 
                         //Här borde currentPlayer byta spelare i serverdelen!!!

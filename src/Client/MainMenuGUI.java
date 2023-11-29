@@ -27,6 +27,7 @@ public class MainMenuGUI {
     ArrayList<JLabel> playerScoreArray = new ArrayList<>();
     ArrayList<JLabel> opponentScoreArray = new ArrayList<>();
     ArrayList<JLabel> subjectArray = new ArrayList<>();
+    int currentRound;
 
     public MainMenuGUI() throws IOException {
         client = new Client("127.0.0.1", 12345);
@@ -143,18 +144,18 @@ public class MainMenuGUI {
         send("GameUpdateRequest");
         Object input = null;
         int i = 0;
-        boolean[][] playerBoolLArray = new boolean[6][3];
+        boolean[][] playerBoolArray = new boolean[6][3];
         boolean[][] opponentBoolArray = new boolean[6][3];
 
-        while(true) {
+        while (true) {
             input = receive();
             if (input == "END")
                 break;
 
-            switch(i){
-                case 0 -> playerName.setText((String)input);
-                case 1 -> opponentName.setText((String)input);
-                case 2 -> playerBoolLArray = (boolean[][]) input;
+            switch (i) {
+                case 0 -> playerName.setText((String) input);
+                case 1 -> opponentName.setText((String) input);
+                case 2 -> playerBoolArray = (boolean[][]) input;
                 case 3 -> opponentBoolArray = (boolean[][]) input;
                 case 4 -> {
                     for (int j = 0; j < numbOfRounds; j++) {
@@ -163,12 +164,35 @@ public class MainMenuGUI {
                             subjectArray.get(j).setText(s);
                     }
                 }
+                case 5 -> currentRound = (int) input;
             }
             i++;
         }
 
-//        playerBoolLArray
-//  playerscorearray, opponentscorearray, currentscore ska tilldelas
+
+        int playerScoreCounter = 0;
+        int opponentScoreCounter = 0;
+        int loopCounter = 0;
+        for (int j = 0; j < currentRound - 1; j++) {
+            for (int k = 0; k < numbOfQuest; k++) {
+                if (playerBoolArray[j][k]) {
+                    playerScoreArray.get(loopCounter).setForeground(Color.GREEN);
+                    playerScoreCounter++;
+                }
+                else
+                    playerScoreArray.get(loopCounter).setForeground(Color.RED);
+
+                if (opponentBoolArray[j][k]) {
+                    opponentScoreArray.get(loopCounter).setForeground(Color.GREEN);
+                    opponentScoreCounter++;
+                }
+                else
+                    opponentScoreArray.get(loopCounter).setForeground(Color.RED);
+
+                loopCounter++;
+            }
+        }
+        currentScore.setText(playerScoreCounter + " - " + opponentScoreCounter);
     }
 
 
