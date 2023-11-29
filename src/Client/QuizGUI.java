@@ -36,6 +36,8 @@ public class QuizGUI {
     JButton continueButton, questionButton1, questionButton2, questionButton3, questionButton4;
     boolean contin;
     JButton p1q1, p1q2, p1q3, p2q1, p2q2, p2q3;
+    Font f = new Font("serif", Font.PLAIN, 24);
+    Font f2 = new Font("dialog", Font.PLAIN, 24);
 
     public QuizGUI() throws IOException, ClassNotFoundException, NullPointerException, InterruptedException {
 
@@ -59,23 +61,43 @@ public class QuizGUI {
         frame = new JFrame("Quizkampen");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(850, 450);
-        frame.setLayout(new FlowLayout());
+        frame.setLayout(new BorderLayout());
 
         categories = (Category[]) receiveMessageFromServer();
 
         JPanel categoryPanel = new JPanel();
         categoryPanel.setLayout(new GridLayout(4, 1));
+        JPanel emptyPanelWest = new JPanel();
+        JPanel emptyPanelEast = new JPanel();
+        JPanel emptyPanelNorth = new JPanel();
+        JPanel emptyPanelSouth = new JPanel();
+        emptyPanelWest.setPreferredSize(new Dimension(250, 0));
+        emptyPanelEast.setPreferredSize(new Dimension(250, 0));
+        emptyPanelNorth.setPreferredSize(new Dimension(0, 50));
+        emptyPanelSouth.setPreferredSize(new Dimension(0, 75));
 
         JLabel categoryLabel = new JLabel("Välj en kategori");
+        categoryLabel.setHorizontalAlignment(SwingConstants.CENTER);
         JButton categoryButton1 = new JButton(categories[0].getSubjectName());
         JButton categoryButton2 = new JButton(categories[1].getSubjectName());
-        //JButton categoryButton3 = new JButton(categories[2].getSubjectName());
+        JButton categoryButton3 = new JButton(categories[2].getSubjectName());
+
+        Dimension labelSize = new Dimension(200, 50);
+        categoryLabel.setPreferredSize(labelSize);
+        categoryLabel.setFont(f);
+
+        Dimension buttonSize = new Dimension(150, 40);
+        categoryButton1.setPreferredSize(buttonSize);
+        categoryButton2.setPreferredSize(buttonSize);
+        categoryButton3.setPreferredSize(buttonSize);
+        categoryButton1.setFont(f2);
+        categoryButton2.setFont(f2);
+        categoryButton3.setFont(f2);
 
         categoryPanel.add(categoryLabel);
         categoryPanel.add(categoryButton1);
         categoryPanel.add(categoryButton2);
-        //categoryPanel.add(categoryButton3);
-
+        categoryPanel.add(categoryButton3);
 
         scorePanel = new JPanel();
         scorePanel.setLayout(new FlowLayout());
@@ -129,7 +151,13 @@ public class QuizGUI {
 
 
         if (myTurn) {
-            frame.getContentPane().add(categoryPanel);
+            frame.getContentPane().add(emptyPanelNorth, BorderLayout.NORTH);
+            frame.getContentPane().add(categoryPanel, BorderLayout.CENTER);
+            frame.getContentPane().add(emptyPanelWest, BorderLayout.WEST);
+            frame.getContentPane().add(emptyPanelEast, BorderLayout.EAST);
+            frame.getContentPane().add(emptyPanelSouth, BorderLayout.SOUTH);
+            frame.revalidate();
+            frame.repaint();
         }
         if (!myTurn) {
             while (true) {
@@ -178,15 +206,21 @@ public class QuizGUI {
             }
         });
 
-        /*categoryButton3.addActionListener(new ActionListener() {
+        categoryButton3.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.getContentPane().removeAll();
-                frame.getContentPane().add(questionPanel);
-                frame.revalidate();
-                frame.repaint();
+                if (myTurn)
+                    serverMessage = sendAndReceive(categoryButton2.getText());
+                else {
+                    serverMessage = receiveMessageFromServer();
+                    System.out.println(serverMessage);
+                }
+                if (serverMessage instanceof Question[] quests) {questions = quests;
+                }
+                playRound(questions);
             }
-        });*/
+        });
 
         frame.setVisible(true);
         if (opponentDoClickValue == 0) {
@@ -197,8 +231,6 @@ public class QuizGUI {
     }
 
     private void displayQuestion(Question question) {
-        Font f = new Font("serif", Font.PLAIN, 24);
-        Font f2 = new Font("dialog", Font.PLAIN, 24);
 
         questionPanel = new JPanel();
         questionLabel = new JLabel("(Fråga)");
