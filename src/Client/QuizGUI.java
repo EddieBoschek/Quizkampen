@@ -414,15 +414,15 @@ public class QuizGUI {
             public void run() {
                 try {
                     System.out.println("Innan JFrame");
-                    MainMenuGUI mainGUI = new MainMenuGUI();
+                    QuizGUI quizGUI = new QuizGUI();
                     System.out.println("JFrame borde starta");
 
                 } catch (IOException e) {
                     throw new RuntimeException(e);
+
+                } catch (ClassNotFoundException | InterruptedException e) {
+                    throw new RuntimeException(e);
                 }
-//                } catch (ClassNotFoundException | InterruptedException e) {
-//                    throw new RuntimeException(e);
-//                }
             }
         });
     }
