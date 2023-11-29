@@ -8,6 +8,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Objects;
 
 public class QuizGUI {
@@ -17,9 +18,9 @@ public class QuizGUI {
     private Object serverMessage;
     private Category[] categories;
     private Question[] questions = new Question[3];
-    private boolean[][] gameresults = new boolean[6][3];
+    private boolean[][] gameResults = new boolean[6][3];
     private boolean[] roundResults = new boolean[3];
-    boolean[] opponentRoundResults;
+    boolean[] opponentRoundResults = new boolean[3];
     private boolean myTurn;
     private boolean startOfGame = true;
     private JFrame frame;
@@ -31,7 +32,7 @@ public class QuizGUI {
     private int roundCounter = 0;
     JPanel scorePanel, questionPanel, answerPanel, continuePanel;
     JButton continueButton, questionButton1, questionButton2, questionButton3, questionButton4;
-    boolean contin;
+    boolean waiting = true;
     JButton p1q1, p1q2, p1q3, p2q1, p2q2, p2q3;
 
     public QuizGUI() throws IOException, ClassNotFoundException, NullPointerException, InterruptedException {
@@ -81,40 +82,33 @@ public class QuizGUI {
         JPanel panel1 = new JPanel();
         JPanel panel2 = new JPanel();
         panel1.setLayout(new GridLayout(2,0));
-
         panel2.setLayout(new GridLayout(2,0));
 
 
         JPanel p1Score = new JPanel();
         JLabel p1Name = new JLabel("Jag");
-        p1q1 = new JButton();
-        p1q2 = new JButton();
-        p1q3 = new JButton();
-        p1q1.setPreferredSize(new Dimension(25,25));
-        p1q2.setPreferredSize(new Dimension(25,25));
-        p1q3.setPreferredSize(new Dimension(25,25));
-        p1q1.setBorder(BorderFactory.createLineBorder(Color.black));
-        p1q2.setBorder(BorderFactory.createLineBorder(Color.black));
-        p1q3.setBorder(BorderFactory.createLineBorder(Color.black));
-        p1Score.add(p1q1);
-        p1Score.add(p1q2);
-        p1Score.add(p1q3);
+        p1Score.add(p1q1 = new JButton());
+        p1Score.add(p1q2 = new JButton());
+        p1Score.add(p1q3 = new JButton());
+        for (Component c:p1Score.getComponents()) {
+            if (c instanceof JButton) {
+                ((JButton) c).setPreferredSize(new Dimension(25,25));
+                ((JButton) c).setBorder(BorderFactory.createLineBorder(Color.BLACK));
+            }
+        }
 
 
         JPanel p2Score = new JPanel();
         JLabel p2Name = new JLabel("Motståndare");
-        p2q1 = new JButton();
-        p2q2 = new JButton();
-        p2q3 = new JButton();
-        p2q1.setPreferredSize(new Dimension(25,25));
-        p2q2.setPreferredSize(new Dimension(25,25));
-        p2q3.setPreferredSize(new Dimension(25,25));
-        p2q1.setBorder(BorderFactory.createLineBorder(Color.black));
-        p2q2.setBorder(BorderFactory.createLineBorder(Color.black));
-        p2q3.setBorder(BorderFactory.createLineBorder(Color.black));
-        p2Score.add(p2q1);
-        p2Score.add(p2q2);
-        p2Score.add(p2q3);
+        p2Score.add(p2q1 = new JButton());
+        p2Score.add(p2q2 = new JButton());
+        p2Score.add(p2q3 = new JButton());
+        for (Component c:p2Score.getComponents()) {
+            if (c instanceof JButton) {
+                ((JButton) c).setPreferredSize(new Dimension(25,25));
+                ((JButton) c).setBorder(BorderFactory.createLineBorder(Color.BLACK));
+            }
+        }
 
         panel1.add(p1Name);
         panel1.add(p1Score);
@@ -127,17 +121,45 @@ public class QuizGUI {
 
         if (myTurn) {
             frame.getContentPane().add(categoryPanel);
-        }
-        if (!myTurn) {
-            while (true) {
-                if ((oMessage = receiveMessageFromServer()) != null) {
-                    if (oMessage.equals(categories[0].getSubjectName())) {
-                        opponentDoClickValue = 0;
-                    } else if (((String) oMessage).equals(categories[1].getSubjectName())) {
-                        opponentDoClickValue = 1;
+        } else {
+            boolean waitingForWakeUp = true;
+            while (waitingForWakeUp) {
+                System.out.println("round the loop");
+
+                if (((String) receiveMessageFromServer()).startsWith("WakeUp")) {
+                    String s = ((String) receiveMessageFromServer()).substring(7);
+                    System.out.println(s);
+                    for (int i = 0; i < 3; i++) {
+                        if (s.charAt(i) == 't') {
+                            opponentRoundResults[i] = true;
+                        } else {
+                            opponentRoundResults[i] = false;
+                        }
+                        System.out.println("hej");
                     }
-                    break;
+                } else if (receiveMessageFromServer() instanceof Category) {
+                    oMessage = receiveMessageFromServer();
+                    System.out.println("category recieved");
+
+                    waitingForWakeUp = false;
+                } else if (receiveMessageFromServer() instanceof Question[]) {
+                    questions = (Question[]) receiveMessageFromServer();
+
                 }
+            }
+
+
+
+
+            while (true) {
+
+                if (oMessage.equals(categories[0].getSubjectName())) {
+                    opponentDoClickValue = 0;
+                } else if (((String) oMessage).equals(categories[1].getSubjectName())) {
+                    opponentDoClickValue = 1;
+                }
+                break;
+
             }
         }
         categoryButton1.addActionListener(new ActionListener() {
@@ -205,20 +227,11 @@ public class QuizGUI {
         answerPanel = new JPanel();
         answerPanel.setPreferredSize(new Dimension(850, 100));
         answerPanel.setLayout(new GridLayout(2, 2));
-        questionButton1 = new JButton("Svar 1");
-        questionButton2 = new JButton("Svar 2");
-        questionButton3 = new JButton("Svar 3");
-        questionButton4 = new JButton("Svar 4");
 
-        answerPanel.add(questionButton1);
-        answerPanel.add(questionButton2);
-        answerPanel.add(questionButton3);
-        answerPanel.add(questionButton4);
-
-        questionButton1.setFont(f2);
-        questionButton2.setFont(f2);
-        questionButton3.setFont(f2);
-        questionButton4.setFont(f2);
+        answerPanel.add(questionButton1 = new JButton("Svar 1"));
+        answerPanel.add(questionButton2 = new JButton("Svar 2"));
+        answerPanel.add(questionButton3 = new JButton("Svar 3"));
+        answerPanel.add(questionButton4 = new JButton("Svar 4"));
 
         continuePanel = new JPanel();
         continueButton = new JButton("Fortsätt");
@@ -229,10 +242,8 @@ public class QuizGUI {
 
         askedQuest = question;
         questionLabel.setText(askedQuest.getQuestion());
-        questionButton1.setText(askedQuest.getAnswerOption(0));
-        questionButton2.setText(askedQuest.getAnswerOption(1));
-        questionButton3.setText(askedQuest.getAnswerOption(2));
-        questionButton4.setText(askedQuest.getAnswerOption(3));
+
+
 
 
         ActionListener commonActionListener = new ActionListener() {
@@ -264,9 +275,25 @@ public class QuizGUI {
 
                     displayQuestion(questions[qCounter]);
                 } else {
-                    gameresults[roundCounter] = roundResults;
-
-                    sendMessageToServer("Ny Runda");
+                    gameResults[roundCounter] = roundResults;
+                    if (myTurn) {
+                        char[] s = new char[3];
+                        for (int i = 0; i < 3; i++) {
+                            if (roundResults[i]) {
+                                s[i] = 't';
+                            } else {
+                                s[i] = 'f';
+                            }
+                        }
+                        System.out.println(s);
+                        String c = Arrays.toString(s);
+                        System.out.println(c);
+                        sendMessageToServer("RoundResult" + s);
+//                        sendMessageToServer(gameResults);
+                    } else {
+//                        sendMessageToServer(gameResults);
+                    }
+                    sendMessageToServer("NewRound");
                     oMessage = receiveMessageFromServer();
                     if (oMessage instanceof Boolean) {
                         myTurn = (boolean) oMessage;
@@ -274,15 +301,22 @@ public class QuizGUI {
                         //qCounter = 0;
                         roundCounter++;
                     }
+
                     //behöver skapa en loop eller göra om kategorivalet till en funktion
                 }
             }
         };
 
-        questionButton1.addActionListener(commonActionListener);
-        questionButton2.addActionListener(commonActionListener);
-        questionButton3.addActionListener(commonActionListener);
-        questionButton4.addActionListener(commonActionListener);
+        int i = 0;
+        for (Component c:answerPanel.getComponents()) {
+            if (c instanceof JButton) {
+                c.setFont(f2);
+                ((JButton) c).setText(askedQuest.getAnswerOption(i));
+                ((JButton) c).addActionListener(commonActionListener);
+                i++;
+            }
+
+        }
         continueButton.addActionListener(continueActionListener);
 
         frame.getContentPane().removeAll();
@@ -318,9 +352,7 @@ public class QuizGUI {
                     if (askedQuest.checkAnswer(((JButton) c).getText())) {
                         c.setBackground(Color.green);
                     }
-
                 }
-
             }
 
             jb.setBackground(Color.red);
