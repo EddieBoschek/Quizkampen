@@ -1,17 +1,16 @@
-package POJOs;
+package Server;
 
 import java.io.*;
 import java.net.Socket;
 
 public class Player {
-    Socket socket;
-    String name;
-    Player opponent;
-    boolean isCurrentPlayer;
-    ObjectInputStream input;
-    ObjectOutputStream output;
-    int score;
-    int roundsWon;
+    private Socket socket;
+    protected String name;
+    private Player opponent; //Can make array (Player[]) for several games w different players;
+    private boolean isCurrentPlayer;
+    private ObjectInputStream input;
+    private ObjectOutputStream output;
+    private int score;
 
     public Player(Socket s, String n, boolean isCurrentPlayer) throws IOException {
 
@@ -24,55 +23,37 @@ public class Player {
         this.output = output;
         this.input = input;
         this.score = 0;
-        this.roundsWon = 0;
-    }
-    public void close() {
-        try {
-            if (output != null) output.close();
-            if (input != null) input.close();
-            if (socket != null) socket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    public void incrementScore() {
-        this.score++;
     }
 
-    public void incrementRoundsWon() {
-        this.roundsWon++;
+    public void setCurrentPlayer(boolean currentPlayer) {
+        isCurrentPlayer = currentPlayer;
+    }
+    public boolean isCurrentPlayer() {
+        return isCurrentPlayer;
+    }
+    public void setOpponent(Player opponent) {
+        this.opponent = opponent;
+    }
+    public void send(Object o) throws IOException {
+        output.writeObject(o);
+    }
+    public Object receive() throws IOException, ClassNotFoundException {
+        return input.readObject();
+    }
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+    public Player getOpponent() {
+        return opponent;
+    }
+    public void setScore(int score) {
+        this.score = score;
     }
 
     public int getScore() {
         return score;
-    }
-
-    public int getRoundsWon() {
-        return roundsWon;
-    }
-
-    public void setOpponent(Player opponent) {
-        this.opponent = opponent;
-    }
-
-
-    public void send(Object o) throws IOException {
-        output.writeObject(o);
-    }
-
-    public Object receive() throws IOException, ClassNotFoundException {
-        return input.readObject();
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Player getOpponent() {
-        return opponent;
     }
 }

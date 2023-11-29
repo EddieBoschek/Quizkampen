@@ -4,36 +4,40 @@ import POJOs.Category;
 import POJOs.Question;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class QuizGUI {
 
-    Question askedQuest = null;
+    private Question askedQuest = null;
     private Client client;
-    Object serverMessage;
-    Category[] categories;
-    Question[] questions = new Question[3];
-    public boolean[][] gameresults = new boolean[4][3];
-    public boolean[] roundResults = new boolean[3];
-    boolean myTurn;
-    boolean startOfGame = true;
-    JFrame frame;
-    String message;
-    Object oMessage;
-    JLabel result = new JLabel();
-    int opponentDoClickValue = -1;
-    int qcounter;
-    int roundCounter;
-
-
+    private Object serverMessage;
+    private Category[] categories;
+    private Question[] questions = new Question[3];
+    private boolean[][] gameresults = new boolean[6][3];
+    private boolean[] roundResults = new boolean[3];
+    boolean[] opponentRoundResults;
+    private boolean myTurn;
+    private boolean startOfGame = true;
+    private JFrame frame;
+    private String message;
+    private Object oMessage;
+    private JLabel questionLabel;
+    private int opponentDoClickValue = -1;
+    private int qCounter = 0;
+    private int roundCounter = 0;
+    JPanel scorePanel, questionPanel, answerPanel, continuePanel;
+    JButton continueButton, questionButton1, questionButton2, questionButton3, questionButton4;
+    boolean contin;
+    JButton p1q1, p1q2, p1q3, p2q1, p2q2, p2q3;
 
     public QuizGUI() throws IOException, ClassNotFoundException, NullPointerException, InterruptedException {
-
-//        Thread.sleep(1000);
 
         client = new Client("127.0.0.1", 12345);
 
@@ -42,7 +46,6 @@ public class QuizGUI {
         while (!Objects.equals(message = (String) receiveMessageFromServer(), "START")) {
 //            System.out.println(message);
         }
-
         while (startOfGame) {
             sendMessageToServer("Start");
             oMessage = receiveMessageFromServer();
@@ -53,27 +56,15 @@ public class QuizGUI {
             }
         }
 
-        Object receivedMessage = receiveMessageFromServer();
-
-        if (receivedMessage instanceof String) {
-            String messageType = (String) receivedMessage;
-
-            if (messageType.equals("SCORE_UPDATE")) {
-                int score = (int) receiveMessageFromServer();
-                int roundsWon = (int) receiveMessageFromServer();
-                updateScore(score, roundsWon);
-            }
-        }
-
-        frame = new JFrame("Quiz GUI");
+        frame = new JFrame("Quizkampen");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(650, 250);
+        frame.setSize(850, 450);
         frame.setLayout(new FlowLayout());
+
+        categories = (Category[]) receiveMessageFromServer();
 
         JPanel categoryPanel = new JPanel();
         categoryPanel.setLayout(new GridLayout(4, 1));
-
-        categories = (Category[]) receiveMessageFromServer();
 
         JLabel categoryLabel = new JLabel("Välj en kategori");
         JButton categoryButton1 = new JButton(categories[0].getSubjectName());
@@ -84,12 +75,65 @@ public class QuizGUI {
         categoryPanel.add(categoryButton1);
         categoryPanel.add(categoryButton2);
         //categoryPanel.add(categoryButton3);
+
+
+        scorePanel = new JPanel();
+        scorePanel.setLayout(new FlowLayout());
+
+        JPanel panel1 = new JPanel();
+        JPanel panel2 = new JPanel();
+
+        panel1.setLayout(new GridLayout(2,0));
+
+        panel2.setLayout(new GridLayout(2,0));
+
+
+        JPanel p1Score = new JPanel();
+        JLabel p1Name = new JLabel("Jag");
+        p1q1 = new JButton();
+        p1q2 = new JButton();
+        p1q3 = new JButton();
+        p1q1.setPreferredSize(new Dimension(25,25));
+        p1q2.setPreferredSize(new Dimension(25,25));
+        p1q3.setPreferredSize(new Dimension(25,25));
+        p1q1.setBorder(BorderFactory.createLineBorder(Color.black));
+        p1q2.setBorder(BorderFactory.createLineBorder(Color.black));
+        p1q3.setBorder(BorderFactory.createLineBorder(Color.black));
+        p1Score.add(p1q1);
+        p1Score.add(p1q2);
+        p1Score.add(p1q3);
+
+
+        JPanel p2Score = new JPanel();
+        JLabel p2Name = new JLabel("Motståndare");
+        p2q1 = new JButton();
+        p2q2 = new JButton();
+        p2q3 = new JButton();
+        p2q1.setPreferredSize(new Dimension(25,25));
+        p2q2.setPreferredSize(new Dimension(25,25));
+        p2q3.setPreferredSize(new Dimension(25,25));
+        p2q1.setBorder(BorderFactory.createLineBorder(Color.black));
+        p2q2.setBorder(BorderFactory.createLineBorder(Color.black));
+        p2q3.setBorder(BorderFactory.createLineBorder(Color.black));
+        p2Score.add(p2q1);
+        p2Score.add(p2q2);
+        p2Score.add(p2q3);
+
+        panel1.add(p1Name);
+        panel1.add(p1Score);
+        panel2.add(p2Name);
+        panel2.add(p2Score);
+
+        scorePanel.add(panel1);
+        scorePanel.add(panel2);
+
+
         if (myTurn) {
             frame.getContentPane().add(categoryPanel);
         }
-        if (!myTurn){
-            while(true) {
-                if((oMessage = receiveMessageFromServer()) != null) {
+        if (!myTurn) {
+            while (true) {
+                if ((oMessage = receiveMessageFromServer()) != null) {
                     if (oMessage.equals(categories[0].getSubjectName())) {
                         opponentDoClickValue = 0;
                     } else if (((String) oMessage).equals(categories[1].getSubjectName())) {
@@ -99,7 +143,6 @@ public class QuizGUI {
                 }
             }
         }
-
         categoryButton1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -129,8 +172,7 @@ public class QuizGUI {
                     serverMessage = receiveMessageFromServer();
                     System.out.println(serverMessage);
                 }
-                if (serverMessage instanceof Question[] quests) {
-                    questions = quests;
+                if (serverMessage instanceof Question[] quests) {questions = quests;
                 }
                 playRound(questions);
             }
@@ -147,22 +189,46 @@ public class QuizGUI {
         });*/
 
         frame.setVisible(true);
-        System.out.println(opponentDoClickValue);
         if (opponentDoClickValue == 0) {
             categoryButton1.doClick();
         } else if (opponentDoClickValue == 1) {
             categoryButton2.doClick();
         }
     }
-    private void displayQuestion(Question question) {
-        JPanel questionPanel = new JPanel();
-        questionPanel.setLayout(new GridLayout(6, 1));
 
-        JLabel questionLabel = new JLabel("(Fråga)");
-        JButton questionButton1 = new JButton("Svar 1");
-        JButton questionButton2 = new JButton("Svar 2");
-        JButton questionButton3 = new JButton("Svar 3");
-        JButton questionButton4 = new JButton("Svar 4");
+    private void displayQuestion(Question question) {
+        Font f = new Font("serif", Font.PLAIN, 24);
+        Font f2 = new Font("dialog", Font.PLAIN, 24);
+
+        questionPanel = new JPanel();
+        questionLabel = new JLabel("(Fråga)");
+        questionLabel.setFont(f);
+        questionPanel.add(questionLabel);
+
+        answerPanel = new JPanel();
+        answerPanel.setPreferredSize(new Dimension(850, 100));
+        answerPanel.setLayout(new GridLayout(2, 2));
+        questionButton1 = new JButton("Svar 1");
+        questionButton2 = new JButton("Svar 2");
+        questionButton3 = new JButton("Svar 3");
+        questionButton4 = new JButton("Svar 4");
+
+        answerPanel.add(questionButton1);
+        answerPanel.add(questionButton2);
+        answerPanel.add(questionButton3);
+        answerPanel.add(questionButton4);
+
+        questionButton1.setFont(f2);
+        questionButton2.setFont(f2);
+        questionButton3.setFont(f2);
+        questionButton4.setFont(f2);
+
+        continuePanel = new JPanel();
+        continueButton = new JButton("Fortsätt");
+        continueButton.setPreferredSize(new Dimension(500, 50));
+        continueButton.setFont(f2);
+        continuePanel.add(continueButton);
+
 
         askedQuest = question;
         questionLabel.setText(askedQuest.getQuestion());
@@ -171,33 +237,49 @@ public class QuizGUI {
         questionButton3.setText(askedQuest.getAnswerOption(2));
         questionButton4.setText(askedQuest.getAnswerOption(3));
 
-        for (ActionListener al : questionButton1.getActionListeners()) {
-            questionButton1.removeActionListener(al);
-        }
-        for (ActionListener al : questionButton2.getActionListeners()) {
-            questionButton2.removeActionListener(al);
-        }
-        for (ActionListener al : questionButton3.getActionListeners()) {
-            questionButton3.removeActionListener(al);
-        }
-        for (ActionListener al : questionButton4.getActionListeners()) {
-            questionButton4.removeActionListener(al);
-        }
 
         ActionListener commonActionListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                handleAnswer(((JButton) e.getSource()).getText());
+                for (ActionListener al : questionButton1.getActionListeners()) {
+                    questionButton1.removeActionListener(al);
+                }
+                for (ActionListener al : questionButton2.getActionListeners()) {
+                    questionButton2.removeActionListener(al);
+                }
+                for (ActionListener al : questionButton3.getActionListeners()) {
+                    questionButton3.removeActionListener(al);
+                }
+                for (ActionListener al : questionButton4.getActionListeners()) {
+                    questionButton4.removeActionListener(al);
+                }
+                handleAnswer((JButton) e.getSource());
 
-                qcounter++;
-                if (qcounter < questions.length) {
-                    displayQuestion(questions[qcounter]);
+                qCounter++;
+
+
+            }
+        };
+        ActionListener continueActionListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (qCounter < questions.length) {
+
+                    displayQuestion(questions[qCounter]);
                 } else {
                     gameresults[roundCounter] = roundResults;
-                    // Här tänker jag att vi lägger logic för att loopa om GUIn för en till rond genom att
-                    // sendAndRecieve() för att byta myTurn osv.
-                }
 
+                    sendMessageToServer("Ny Runda");
+                    oMessage = receiveMessageFromServer();
+                    if (oMessage instanceof Boolean) {
+                        myTurn = (boolean) oMessage;
+                        System.out.println("It is my turn: " + myTurn);
+                        //qCounter = 0;
+                        roundCounter++;
+                        updateScorePanel();
+                    }
+                    //behöver skapa en loop eller göra om kategorivalet till en funktion
+                }
             }
         };
 
@@ -205,102 +287,139 @@ public class QuizGUI {
         questionButton2.addActionListener(commonActionListener);
         questionButton3.addActionListener(commonActionListener);
         questionButton4.addActionListener(commonActionListener);
+        continueButton.addActionListener(continueActionListener);
 
         frame.getContentPane().removeAll();
-        frame.getContentPane().setLayout(new GridLayout(6, 1));
-        frame.getContentPane().add(questionLabel);
-        frame.getContentPane().add(questionButton1);
-        frame.getContentPane().add(questionButton2);
-        frame.getContentPane().add(questionButton3);
-        frame.getContentPane().add(questionButton4);
-        frame.getContentPane().add(result);
+        frame.getContentPane().setLayout(new GridLayout(4, 1));
+        frame.getContentPane().add(scorePanel);
+        frame.getContentPane().add(questionPanel);
+        frame.getContentPane().add(answerPanel);
+        frame.getContentPane().add(continuePanel);
+        continueButton.setVisible(false);
 
         frame.revalidate();
         frame.repaint();
-
     }
 
     public void playRound(Question[] questions) {
-        qcounter = 0;
-        displayQuestion(questions[qcounter]);
-
+        displayQuestion(questions[qCounter]);
+        updateScorePanel();
     }
 
-    private void handleAnswer(String answer) {
-        if (questions[qcounter].checkAnswer(answer)) {
+    private void handleAnswer(JButton jb) {
+        if (questions[qCounter].checkAnswer(jb.getText())) {
+            jb.setBackground(Color.green);
+            jb.repaint();
+            jb.revalidate();
+            continueButton.setVisible(true);
 
-            result.setText("Du svarade rätt.");
-            result.setVisible(true);
-
-            roundResults[qcounter] = true;
+            roundResults[qCounter] = true;
         } else {
+            for (Component c:answerPanel.getComponents()) {
+                if (c instanceof JButton) {
+                    if (askedQuest.checkAnswer(((JButton) c).getText())) {
+                        c.setBackground(Color.green);
+                    }
 
-            result.setText("Du svarade fel.");
-            result.setVisible(true);
+                }
 
+            }
 
-            roundResults[qcounter] = false;
+            jb.setBackground(Color.red);
+            jb.repaint();
+            jb.revalidate();
+
+            continueButton.setVisible(true);
+
+            roundResults[qCounter] = false;
+        }
+        switch (qCounter) {
+            case 0 -> {
+                p1q1.setBackground(jb.getBackground());
+                p1q1.revalidate();
+                p1q1.repaint();
+            }
+            case 1 -> {
+                p1q2.setBackground(jb.getBackground());
+                frame.repaint();
+                frame.revalidate();
+            }
+            case 2 -> {
+                p1q3.setBackground(jb.getBackground());
+                frame.repaint();
+                frame.revalidate();
+            }
+
+        }
+        if (!myTurn) {
+            switch (qCounter) {
+                case 0 -> {
+                    if (opponentRoundResults[0]) {
+                        p2q1.setBackground(Color.green);
+                    } else {
+                        p2q1.setBackground(Color.red);
+                    }
+
+                }
+                case 1 -> {
+                    if (opponentRoundResults[1]) {
+                        p2q1.setBackground(Color.green);
+                    } else {
+                        p2q1.setBackground(Color.red);
+                    }
+
+                }
+                case 2 -> {
+                    if (opponentRoundResults[2]) {
+                        p2q1.setBackground(Color.green);
+                    } else {
+                        p2q1.setBackground(Color.red);
+                    }
+
+                }
+
+            }
         }
     }
-
-
 
     private void sendMessageToServer(Object message) {
         try {
             client.connectAndSend(message);
-            //client.sendMessage(message);
+
         } catch (IOException e) {
             e.printStackTrace();
-        } /*finally {
-            try {
-                client.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }*/
+        }
     }
     private Object receiveMessageFromServer() {
         Object receivedMessage = null;
         try {
             receivedMessage = client.connectAndReceive();
-            //receivedMessage = client.receiveMessage();
+
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
-        } /*finally {
-            try {
-                client.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }*/
+        }
         return receivedMessage;
     }
     private Object sendAndReceive(String message) {
         Object receivedMessage = null;
         try {
             receivedMessage = client.connectSendAndReceive(message);
-            //receivedMessage = client.receiveMessage();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
-        } /*finally {
-            try {
-                client.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }*/
+        }
         return receivedMessage;
     }
-    private void updateScore(int score, int roundsWon) {
-        result.setText("Score: " + score + " | Rounds Won: " + roundsWon);
+    private void updateScorePanel() {
+        p1q1.setBackground(gameresults[roundCounter][0] ? Color.green : Color.red);
+        p1q2.setBackground(gameresults[roundCounter][1] ? Color.green : Color.red);
+        p1q3.setBackground(gameresults[roundCounter][2] ? Color.green : Color.red);
+
+        p2q1.setBackground(opponentRoundResults[0] ? Color.green : Color.red);
+        p2q2.setBackground(opponentRoundResults[1] ? Color.green : Color.red);
+        p2q3.setBackground(opponentRoundResults[2] ? Color.green : Color.red);
     }
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
-//        QuizGUI quizGUI = new QuizGUI();
-//        while(true) {
-//            if (quizGUI.receiveMessageFromServer() == "GameStart")
-//                break;
-//        }
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -311,10 +430,10 @@ public class QuizGUI {
 
                 } catch (IOException e) {
                     throw new RuntimeException(e);
+
                 } catch (ClassNotFoundException | InterruptedException e) {
                     throw new RuntimeException(e);
                 }
-                //QuizGUI.setVisible(true);
             }
         });
     }

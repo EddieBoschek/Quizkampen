@@ -13,6 +13,7 @@ public class Category implements Serializable {
         this.subjectName = subjectName;
         this.qList = qList;
     }
+
     public Question getFromQList(int i) {
         return qList.get(i);
     }
@@ -20,7 +21,6 @@ public class Category implements Serializable {
         return subjectName;
     }
     public static Category[] shuffleCategories(ArrayList<Category> categories) {
-        //ArrayList<String> categories = new ArrayList<>(Arrays.asList("Math", "History", "Science", "Music", "Sports", "Geography"));
         Category[] returnList = new Category[categories.size()];
         Random random = new Random();
         int randomNumber;
@@ -41,12 +41,12 @@ public class Category implements Serializable {
         }
         return returnList;
     }
-    public static Question[] getSubjectQuestion(String chosenSubject, ArrayList<Category> categories) {
+    public static Question[] getCategoryQuestions(String chosenCategory, ArrayList<Category> categories) {
         Question[] questions = new Question[3];
         Random r = new Random();
         int numberOfSubjects = categories.size();
         for (Category subject : categories) {
-            if (subject.getSubjectName().equalsIgnoreCase(chosenSubject)) {
+            if (subject.getSubjectName().equalsIgnoreCase(chosenCategory)) {
                 for (int i = 0; i < 3; i++) {
                     int randNumber = r.nextInt(1000);
                     int index = randNumber % numberOfSubjects;
