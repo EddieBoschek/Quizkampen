@@ -37,14 +37,17 @@ public class QuizGUI {
     boolean contin;
     JButton p1q1, p1q2, p1q3, p2q1, p2q2, p2q3;
 
-    public QuizGUI() throws IOException, ClassNotFoundException, NullPointerException, InterruptedException {
+    public QuizGUI(Client client) throws IOException, ClassNotFoundException, NullPointerException, InterruptedException {
 
-        client = new Client("127.0.0.1", 12345);
+        this.client = client;
+//        client = new Client("127.0.0.1", 12345);
 
         System.out.println("innan loopen");
 
         while (!Objects.equals(message = (String) receiveMessageFromServer(), "START")) {
         }
+        //Should only pass here if both players are connected
+        System.out.println("Both players should be connected right now");
 
         while (startOfGame) {
             sendMessageToServer("Start");
@@ -420,9 +423,9 @@ public class QuizGUI {
 //                    QuizGUI quizGUI = new QuizGUI();
 //                    System.out.println("JFrame borde starta");
                     MainMenuGUI mainGUI = new MainMenuGUI();
-
                 } catch(Exception e){};
-//                catch (IOException e) {
+
+//                }catch (IOException e) {
 //                    throw new RuntimeException(e);
 //                } catch (ClassNotFoundException | InterruptedException e) {
 //                    throw new RuntimeException(e);

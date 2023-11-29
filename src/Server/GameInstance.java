@@ -11,13 +11,15 @@ import static POJOs.Category.getCategoryQuestions;
 import static POJOs.Category.shuffleCategories;
 
 public class GameInstance extends Thread {
-    private boolean[][] gameScore = new boolean[5][3]; //5an ska sen ersättas med antal ronder
-    private String[] gameCategories = new String[5]; //Samma här
+    private boolean[][] player1GameScore = new boolean[6][3]; //5an ska sen ersättas med antal ronder
+    private boolean[][] player2GameScore = new boolean[6][3]; //6an ska sen ersättas med antal ronder
+    private String[] gameCategories = new String[6]; //Samma här
     private Player player1;
     private Player player2;
     private Player currentPlayer;
     private Properties p = new Properties();
     private boolean orderCheck;
+    private int currentRound;
 
     private DAO dao = new DAO();
 
@@ -57,7 +59,25 @@ public class GameInstance extends Thread {
                         } catch (IOException ex) {
                             throw new RuntimeException(ex);
                         }
-                    } else if (inputLine.equals("Ny Runda")) {
+                    }
+                    else if (inputLine == "GameUpdateRequest") {
+                        currentPlayer.send(currentPlayer.getName());
+                        currentPlayer.send(currentPlayer.getOpponent().getName());
+                        if (currentPlayer == player1) {
+                            currentPlayer.send(player1GameScore);
+                            currentPlayer.send(player2GameScore);
+                        }
+                        else if (currentPlayer == player2) {
+                            currentPlayer.send(player2GameScore);
+                            currentPlayer.send(player1GameScore);
+                        }
+                        currentPlayer.send(gameCategories);
+                        currentPlayer.send(currentRound);
+                        currentPlayer.send("END");
+
+                        //Här borde currentPlayer byta spelare i serverdelen!!!
+                    }
+                    else if (inputLine.equals("Ny Runda")) {
                         System.out.println("Ny Runda");
                         try {
                             if (player1.isCurrentPlayer()) {

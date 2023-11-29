@@ -11,6 +11,7 @@ import java.util.Arrays;
 public class MainMenuGUI {
     JButton startGameButton = new JButton("Starta nytt spel");
     JButton settingsButton = new JButton("Inställningar");
+    JButton play = new JButton("Spela");
     JLabel gameName = new JLabel("Quizkampen", SwingConstants.CENTER);
     JPanel menuPanel = new JPanel();
     JPanel activeGamesPanel = new JPanel();
@@ -56,7 +57,7 @@ public class MainMenuGUI {
         gameName.setPreferredSize(d);
         gameName.setFont(new Font("Serif", Font.PLAIN, 30));
 
-//        gameName.set
+
 
 
         ActionListener buttonListener = new ActionListener() {
@@ -75,12 +76,19 @@ public class MainMenuGUI {
 
                 } else if (e.getSource() == settingsButton) {
                     System.out.println("Öppnar upp en ny JPanel med \"settingsknappar\" som går att justera. Det ska också finnas en apply-knapp");
+                } else if (e.getSource() == play) {
+                    try {
+                        playRound();
+                    } catch (IOException | ClassNotFoundException | InterruptedException ex) {
+                        throw new RuntimeException(ex);
+                    }
                 }
             }
         };
 
         startGameButton.addActionListener(buttonListener);
         settingsButton.addActionListener(buttonListener);
+        play.addActionListener(buttonListener);
 
 
         frame.setVisible(true);
@@ -107,7 +115,8 @@ public class MainMenuGUI {
             }
         }
 
-        JButton play = new JButton("Spela");
+//        play = new JButton("Spela");
+//        play.addActionListener(MainMenuGUI.buttonListener);
 
         JPanel northPanel = new JPanel();
         JPanel centerPanel = new JPanel();
@@ -122,6 +131,7 @@ public class MainMenuGUI {
             if (i % 3 == 0)
                 subjectPanel.add(subjectArray.get(i / 3));
         }
+
 
         gameMenu.add(northPanel, BorderLayout.NORTH);
         gameMenu.add(centerPanel, BorderLayout.CENTER);
@@ -178,15 +188,13 @@ public class MainMenuGUI {
                 if (playerBoolArray[j][k]) {
                     playerScoreArray.get(loopCounter).setForeground(Color.GREEN);
                     playerScoreCounter++;
-                }
-                else
+                } else
                     playerScoreArray.get(loopCounter).setForeground(Color.RED);
 
                 if (opponentBoolArray[j][k]) {
                     opponentScoreArray.get(loopCounter).setForeground(Color.GREEN);
                     opponentScoreCounter++;
-                }
-                else
+                } else
                     opponentScoreArray.get(loopCounter).setForeground(Color.RED);
 
                 loopCounter++;
@@ -195,6 +203,9 @@ public class MainMenuGUI {
         currentScore.setText(playerScoreCounter + " - " + opponentScoreCounter);
     }
 
+public void playRound() throws IOException, ClassNotFoundException, InterruptedException {
+        QuizGUI quizGUI = new QuizGUI(client);
+}
 
     public void send(Object message) {
         if (message != null) {
