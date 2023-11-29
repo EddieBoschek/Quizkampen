@@ -5,7 +5,7 @@ import java.net.Socket;
 
 public class Player {
     private Socket socket;
-    private String name;
+    protected String name;
     private Player opponent; //Can make array (Player[]) for several games w different players;
     private boolean isCurrentPlayer;
     private ObjectInputStream input;

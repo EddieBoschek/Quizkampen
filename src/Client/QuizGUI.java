@@ -20,8 +20,8 @@ public class QuizGUI {
     private Object serverMessage;
     private Category[] categories;
     private Question[] questions = new Question[3];
-    private boolean[][] gameresults = new boolean[4][3]; //4 och 3 ersätts med värden från properties-filen
-    private boolean[] roundResults = new boolean[3]; // samma här
+    private boolean[][] gameresults = new boolean[6][3];
+    private boolean[] roundResults = new boolean[3];
     boolean[] opponentRoundResults;
     private boolean myTurn;
     private boolean startOfGame = true;
@@ -83,11 +83,11 @@ public class QuizGUI {
 
         JPanel panel1 = new JPanel();
         JPanel panel2 = new JPanel();
-        panel2.setLayout(new GridLayout(2,1));
-        JPanel panel3 = new JPanel();
-        panel3.setLayout(new GridLayout(2,1));
-        JPanel panel4 = new JPanel();
-        JPanel panel5 = new JPanel();
+
+        panel1.setLayout(new GridLayout(2,0));
+
+        panel2.setLayout(new GridLayout(2,0));
+
 
         JPanel p1Score = new JPanel();
         JLabel p1Name = new JLabel("Jag");
@@ -310,9 +310,6 @@ public class QuizGUI {
             jb.setBackground(Color.green);
             jb.repaint();
             jb.revalidate();
-
-
-
             continueButton.setVisible(true);
 
             roundResults[qCounter] = true;
@@ -387,7 +384,7 @@ public class QuizGUI {
     private void sendMessageToServer(Object message) {
         try {
             client.connectAndSend(message);
-            //client.sendMessage(message);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -396,7 +393,7 @@ public class QuizGUI {
         Object receivedMessage = null;
         try {
             receivedMessage = client.connectAndReceive();
-            //receivedMessage = client.receiveMessage();
+
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -423,6 +420,7 @@ public class QuizGUI {
 
                 } catch (IOException e) {
                     throw new RuntimeException(e);
+
                 } catch (ClassNotFoundException | InterruptedException e) {
                     throw new RuntimeException(e);
                 }

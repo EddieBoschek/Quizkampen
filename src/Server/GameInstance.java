@@ -11,11 +11,13 @@ import static POJOs.Category.getCategoryQuestions;
 import static POJOs.Category.shuffleCategories;
 
 public class GameInstance extends Thread {
-    private boolean[][] gameScore = new boolean[5][3]; //5an ska sen ersättas med antal ronder
-    private String[] gameCategories = new String[5]; //Samma här
+    boolean[][] player1GameScore = new boolean[6][3]; //6an ska sen ersättas med antal ronder
+    boolean[][] player2GameScore = new boolean[6][3];
+    private String[] gameCategories = new String[6]; //Samma här
     private Player player1;
     private Player player2;
     private Player currentPlayer;
+    int currenRound;
     private Properties p = new Properties();
     private boolean orderCheck;
 
@@ -77,6 +79,20 @@ public class GameInstance extends Thread {
                         } catch (IOException ex) {
                             throw new RuntimeException(ex);
                         }
+                    } else if (inputLine == "GameUpdateRequest") {
+                        currentPlayer.send(currentPlayer.name);
+                        currentPlayer.send(currentPlayer.getOpponent().name);
+                        if (currentPlayer == player1) {
+                            currentPlayer.send(player1GameScore);
+                            currentPlayer.send(player2GameScore);
+                        }
+                        else if (currentPlayer == player2) {
+                            currentPlayer.send(player2GameScore);
+                            currentPlayer.send(player1GameScore);
+                        }
+                        currentPlayer.send(gameCategories);
+                        currentPlayer.send(currenRound);
+                        currentPlayer.send("END");
                     } else { //Sends questions to currentPlayer, sends the picked subject and qustions to the other player
                         System.out.println("Inte Start");
                         Question[] q = getCategoryQuestions((String) inputLine, dao.getCategories());
