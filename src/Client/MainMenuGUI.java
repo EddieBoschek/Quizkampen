@@ -67,7 +67,7 @@ public class MainMenuGUI {
 
                     frame.getContentPane().removeAll();
                     getGameMenu();
-                    updateScore(); //Ska hämta all info, spelarnamn, boolean-poäng-array(s),
+//                    updateScore(); //Ska hämta all info, spelarnamn, boolean-poäng-array(s),
 
 //                    frame.repaint();
 //                    frame.revalidate();
