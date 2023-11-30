@@ -16,7 +16,7 @@ public class QuizGUI {
     private Client client;
     private Object serverMessage;
     private Category[] categories;
-    private Question[] questions = new Question[10];
+    private Question[] questions = new Question[3];
     private boolean[][] gameresults = new boolean[6][3];
 
     public boolean[] getRoundResults() {
@@ -163,11 +163,16 @@ public class QuizGUI {
                     oMessage = receiveMessageFromServer();
                     System.out.println(oMessage);
                     if (oMessage instanceof Question[] quests) {
-                        questions = quests;
+                        int i = 0;
+                        while(i < 3) {
+                            questions[i] = quests[i];
+                            i++;
+                        }
                     }
                     break;
                 }
             }
+            System.out.println(questions.length);
             playRound(questions);
         }
 
@@ -180,7 +185,11 @@ public class QuizGUI {
                 serverMessage = sendAndReceive("P1" + categoryButton1.getText());
 
                 if (serverMessage instanceof Question[] quests) {
-                    questions = quests;
+                    int i = 0;
+                    while(i < 3) {
+                        questions[i] = quests[i];
+                        i++;
+                    }
                 }
                 playRound(questions);
             }
@@ -194,7 +203,11 @@ public class QuizGUI {
                     serverMessage = sendAndReceive("P1" + categoryButton2.getText());
 
                 if (serverMessage instanceof Question[] quests) {
-                    questions = quests;
+                    int i = 0;
+                    while(i < 3) {
+                        questions[i] = quests[i];
+                        i++;
+                    }
                 }
                 playRound(questions);
             }
@@ -209,20 +222,16 @@ public class QuizGUI {
                     serverMessage = receiveMessageFromServer();
                     System.out.println(serverMessage);
                 }
-                if (serverMessage instanceof Question[] quests) {questions = quests;
+                if (serverMessage instanceof Question[] quests) {
+                    int i = 0;
+                    while(i < 3) {
+                        questions[i] = quests[i];
+                        i++;
+                    }
                 }
                 playRound(questions);
             }
         });
-
-        frame.setVisible(true);
-        if (opponentDoClickValue == 0) {
-            categoryButton1.doClick();
-        } else if (opponentDoClickValue == 1) {
-            categoryButton2.doClick();
-        } else if (opponentDoClickValue == 2) {
-            categoryButton3.doClick();
-        }
     }
 
     private void displayQuestion(Question question) {
@@ -438,6 +447,7 @@ public class QuizGUI {
                 try {
                     MainMenuGUI mainMenuGUI = new MainMenuGUI();
                 } catch (Exception e) {
+                }
             }
         });
     }
