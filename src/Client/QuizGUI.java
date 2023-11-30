@@ -218,10 +218,7 @@ public class QuizGUI {
                 frame.getContentPane().removeAll();
                 if (myTurn)
                     serverMessage = sendAndReceive("P1" + categoryButton3.getText());
-                else {
-                    serverMessage = receiveMessageFromServer();
-                    System.out.println(serverMessage);
-                }
+
                 if (serverMessage instanceof Question[] quests) {
                     int i = 0;
                     while(i < 3) {
