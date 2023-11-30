@@ -16,7 +16,7 @@ public class QuizGUI {
     private Client client;
     private Object serverMessage;
     private Category[] categories;
-    private Question[] questions = new Question[3];
+    private Question[] questions = new Question[10];
     private boolean[][] gameresults = new boolean[6][3];
 
     public boolean[] getRoundResults() {
@@ -38,13 +38,14 @@ public class QuizGUI {
     JButton continueButton, questionButton1, questionButton2, questionButton3, questionButton4;
     String s;
     JButton p1q1, p1q2, p1q3, p2q1, p2q2, p2q3;
+    Font f = new Font("serif", Font.PLAIN, 24);
+    Font f2 = new Font("dialog", Font.PLAIN, 24);
 
     public QuizGUI(Client client, int roundCounter) throws IOException, ClassNotFoundException, NullPointerException, InterruptedException {
         this.client = client;
         this.roundCounter = roundCounter;
         System.out.println("innan loopen");
         while (!Objects.equals(message = (String) receiveMessageFromServer(), "START")) {
-//            System.out.println(message);
         }
         if (roundCounter == 0) {
             while (startOfGame) {
@@ -64,21 +65,48 @@ public class QuizGUI {
                 System.out.println("It is my turn: " + myTurn);
             }
         }
+
         frame = new JFrame("Quizkampen");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(850, 450);
-        frame.setLayout(new FlowLayout());
+        frame.setLayout(new BorderLayout());
+
         categories = (Category[]) receiveMessageFromServer();
+
         JPanel categoryPanel = new JPanel();
         categoryPanel.setLayout(new GridLayout(4, 1));
+        JPanel emptyPanelWest = new JPanel();
+        JPanel emptyPanelEast = new JPanel();
+        JPanel emptyPanelNorth = new JPanel();
+        JPanel emptyPanelSouth = new JPanel();
+        emptyPanelWest.setPreferredSize(new Dimension(250, 0));
+        emptyPanelEast.setPreferredSize(new Dimension(250, 0));
+        emptyPanelNorth.setPreferredSize(new Dimension(0, 50));
+        emptyPanelSouth.setPreferredSize(new Dimension(0, 75));
+
         JLabel categoryLabel = new JLabel("Välj en kategori");
-        JButton categoryButton1 = new JButton(categories[0].getSubjectName());
-        JButton categoryButton2 = new JButton(categories[1].getSubjectName());
-        //JButton categoryButton3 = new JButton(categories[2].getSubjectName());
+        categoryLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        JButton categoryButton1 = new JButton(categories[0].getCategoryName());
+        JButton categoryButton2 = new JButton(categories[1].getCategoryName());
+        JButton categoryButton3 = new JButton(categories[2].getCategoryName());
+
+        Dimension labelSize = new Dimension(200, 50);
+        categoryLabel.setPreferredSize(labelSize);
+        categoryLabel.setFont(f);
+
+        Dimension buttonSize = new Dimension(150, 40);
+        categoryButton1.setPreferredSize(buttonSize);
+        categoryButton2.setPreferredSize(buttonSize);
+        categoryButton3.setPreferredSize(buttonSize);
+        categoryButton1.setFont(f2);
+        categoryButton2.setFont(f2);
+        categoryButton3.setFont(f2);
+
         categoryPanel.add(categoryLabel);
         categoryPanel.add(categoryButton1);
         categoryPanel.add(categoryButton2);
-        //categoryPanel.add(categoryButton3);
+        categoryPanel.add(categoryButton3);
+
         scorePanel = new JPanel();
         scorePanel.setLayout(new FlowLayout());
         JPanel panel1 = new JPanel();
@@ -114,7 +142,13 @@ public class QuizGUI {
         scorePanel.add(panel1);
         scorePanel.add(panel2);
         if (myTurn) {
-            frame.getContentPane().add(categoryPanel);
+            frame.getContentPane().add(emptyPanelNorth, BorderLayout.NORTH);
+            frame.getContentPane().add(categoryPanel, BorderLayout.CENTER);
+            frame.getContentPane().add(emptyPanelWest, BorderLayout.WEST);
+            frame.getContentPane().add(emptyPanelEast, BorderLayout.EAST);
+            frame.getContentPane().add(emptyPanelSouth, BorderLayout.SOUTH);
+            frame.revalidate();
+            frame.repaint();
         }
 
         if (!myTurn) {
@@ -165,24 +199,34 @@ public class QuizGUI {
                 playRound(questions);
             }
         });
-        /*categoryButton3.addActionListener(new ActionListener() {
+        categoryButton3.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.getContentPane().removeAll();
-                frame.getContentPane().add(questionPanel);
-                frame.revalidate();
-                frame.repaint();
+                if (myTurn)
+                    serverMessage = sendAndReceive(categoryButton2.getText());
+                else {
+                    serverMessage = receiveMessageFromServer();
+                    System.out.println(serverMessage);
+                }
+                if (serverMessage instanceof Question[] quests) {questions = quests;
+                }
+                playRound(questions);
             }
-        });*/
+        });
+
         frame.setVisible(true);
         if (opponentDoClickValue == 0) {
             categoryButton1.doClick();
         } else if (opponentDoClickValue == 1) {
             categoryButton2.doClick();
+        } else if (opponentDoClickValue == 2) {
+            categoryButton3.doClick();
         }
     }
 
     private void displayQuestion(Question question) {
+      
         Font f = new Font("serif", Font.PLAIN, 24);
         Font f2 = new Font("dialog", Font.PLAIN, 24);
         questionPanel = new JPanel();
@@ -376,6 +420,15 @@ public class QuizGUI {
         }
         return receivedMessage;
     }
+    private void updateScorePanel() {
+        p1q1.setBackground(gameresults[roundCounter][0] ? Color.green : Color.red);
+        p1q2.setBackground(gameresults[roundCounter][1] ? Color.green : Color.red);
+        p1q3.setBackground(gameresults[roundCounter][2] ? Color.green : Color.red);
+
+        p2q1.setBackground(opponentRoundResults[0] ? Color.green : Color.red);
+        p2q2.setBackground(opponentRoundResults[1] ? Color.green : Color.red);
+        p2q3.setBackground(opponentRoundResults[2] ? Color.green : Color.red);
+    }
 
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
@@ -385,7 +438,6 @@ public class QuizGUI {
                 try {
                     MainMenuGUI mainMenuGUI = new MainMenuGUI();
                 } catch (Exception e) {
-                }
             }
         });
     }

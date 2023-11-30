@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 import static POJOs.Category.getCategoryQuestions;
+import static POJOs.Category.getShuffledCategoryQuestions;
 import static POJOs.Category.shuffleCategories;
 public class GameInstance extends Thread {
     boolean[][] player1GameScore = new boolean[6][3]; //6an ska sen ersättas med antal ronder
@@ -106,7 +107,7 @@ public class GameInstance extends Thread {
                         currentPlayer.getOpponent().send(inputLine);
                         currentPlayer.getOpponent().send(q);
 
-                    } else if (((String) inputLine).startsWith("P1")){ //Sends questions to currentPlayer, sends the picked subject and qustions to the other player
+                    } else if (((String) inputLine).startsWith("P1")){ 
                         cat = ((String) inputLine).substring(2);
                         System.out.println("P1");
                         System.out.println(cat);

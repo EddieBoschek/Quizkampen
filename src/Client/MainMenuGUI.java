@@ -207,7 +207,6 @@ public class MainMenuGUI {
             QuizGUI quizGUI = new QuizGUI(client, currentRound);
             currentRound++;
         }
-
     }
 
     public void send(Object message) {
