@@ -57,9 +57,6 @@ public class MainMenuGUI {
         gameName.setPreferredSize(d);
         gameName.setFont(new Font("Serif", Font.PLAIN, 30));
 
-
-
-
         ActionListener buttonListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -151,6 +148,7 @@ public class MainMenuGUI {
 
     public void updateScore() {
         send("GameUpdateRequest");
+        System.out.println("GUR");
         Object input = null;
         int i = 0;
         boolean[][] playerBoolArray = new boolean[6][3];
@@ -204,9 +202,12 @@ public class MainMenuGUI {
         currentScore.setText(playerScoreCounter + " - " + opponentScoreCounter);
     }
 
-public void playRound() throws IOException, ClassNotFoundException, InterruptedException {
-        QuizGUI quizGUI = new QuizGUI(client);
-}
+    public void playRound() throws IOException, ClassNotFoundException, InterruptedException {
+        if (currentRound < 6) {
+            QuizGUI quizGUI = new QuizGUI(client, currentRound);
+            currentRound++;
+        }
+    }
 
     public void send(Object message) {
         if (message != null) {

@@ -1,5 +1,4 @@
-package POJOs;
-
+package Server;
 import java.io.*;
 import java.net.Socket;
 
@@ -11,12 +10,9 @@ public class Player {
     private boolean isCurrentPlayer;
     private ObjectInputStream input;
     private ObjectOutputStream output;
-
     public Player(Socket s, String n, boolean isCurrentPlayer) throws IOException {
-
         ObjectOutputStream output = new ObjectOutputStream(s.getOutputStream());
         ObjectInputStream input = new ObjectInputStream(s.getInputStream());
-
         this.name = n;
         this.socket = s;
         this.isCurrentPlayer = isCurrentPlayer;

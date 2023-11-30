@@ -1,15 +1,12 @@
 package Server;
-
 import POJOs.Category;
 import POJOs.Question;
-
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
-
+import static POJOs.Category.getCategoryQuestions;
 import static POJOs.Category.getShuffledCategoryQuestions;
 import static POJOs.Category.shuffleCategories;
-
 public class GameInstance extends Thread {
     boolean[][] player1GameScore = new boolean[6][3]; //6an ska sen ersättas med antal ronder
     boolean[][] player2GameScore = new boolean[6][3];
@@ -20,9 +17,10 @@ public class GameInstance extends Thread {
     int currenRound;
     private Properties p = new Properties();
     private boolean orderCheck;
-
     private DAO dao = new DAO();
-
+    Category[] categoryOptions;
+    Question[] q;
+    String cat;
     public GameInstance(Player p1, Player p2) {
         this.player1 = p1;
         this.player2 = p2;
@@ -54,10 +52,8 @@ public class GameInstance extends Thread {
         }
         int questionsQuantity = Integer.parseInt(p.getProperty("questions", "2"));
         int roundsQuantity = Integer.parseInt(p.getProperty("rounds", "2"));
-
         Object inputLine;
         System.out.println("GameStart");
-
         // Skickar förfrågan till currentPlayer och tar emot data som sparas i GameInstance
         try {
             while (true) {
@@ -67,14 +63,14 @@ public class GameInstance extends Thread {
                         try {
                             player1.send(player1.isCurrentPlayer());
                             player2.send(player2.isCurrentPlayer());
-                            Category[] categoryOptions = shuffleCategories(dao.getCategories());
+                            categoryOptions = shuffleCategories(dao.getCategories());
                             currentPlayer.send(categoryOptions);
                             currentPlayer.getOpponent().send(categoryOptions);
                         } catch (IOException ex) {
                             throw new RuntimeException(ex);
                         }
-                    } else if (inputLine.equals("Ny Runda")) {
-                        System.out.println("Ny Runda");
+                    } else if (inputLine.equals("NewRound")) {
+                        System.out.println("NewRound");
                         try {
                             if (player1.isCurrentPlayer()) {
                                 player1.setCurrentPlayer(false);
@@ -87,32 +83,36 @@ public class GameInstance extends Thread {
                             }
                             player1.send(player1.isCurrentPlayer());
                             player2.send(player2.isCurrentPlayer());
-                            Category[] categoryOptions = shuffleCategories(dao.getCategories());
+                            categoryOptions = shuffleCategories(dao.getCategories());
                             currentPlayer.send(categoryOptions);
                             currentPlayer.getOpponent().send(categoryOptions);
                         } catch (IOException ex) {
                             throw new RuntimeException(ex);
                         }
-                    } else if (inputLine == "GameUpdateRequest") {
+                    } else if (inputLine.equals("GameUpdateRequest")) {
                         currentPlayer.send(currentPlayer.name);
                         currentPlayer.send(currentPlayer.getOpponent().name);
                         if (currentPlayer == player1) {
                             currentPlayer.send(player1GameScore);
                             currentPlayer.send(player2GameScore);
-                        }
-                        else if (currentPlayer == player2) {
+                        } else if (currentPlayer == player2) {
                             currentPlayer.send(player2GameScore);
                             currentPlayer.send(player1GameScore);
                         }
                         currentPlayer.send(gameCategories);
                         currentPlayer.send(currenRound);
                         currentPlayer.send("END");
-                    } else { //Sends questions to currentPlayer, sends the picked subject and qustions to the other player
-                        System.out.println("Inte Start");
-                        Question[] q = getShuffledCategoryQuestions((String) inputLine, dao.getCategories());
-                        currentPlayer.send(q);
-                        currentPlayer.getOpponent().send((String) inputLine);
+
+                    } else if (((String) inputLine).startsWith("GO")) {
+                        currentPlayer.getOpponent().send(inputLine);
                         currentPlayer.getOpponent().send(q);
+
+                    } else if (((String) inputLine).startsWith("P1")){ 
+                        cat = ((String) inputLine).substring(2);
+                        System.out.println("P1");
+                        System.out.println(cat);
+                        q = getCategoryQuestions(cat, dao.getCategories());
+                        currentPlayer.send(q);
                     }
                 }
             }
