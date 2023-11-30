@@ -45,8 +45,8 @@ public class QuizGUI {
         this.client = client;
         this.roundCounter = roundCounter;
         System.out.println("innan loopen");
-        while (!Objects.equals(message = (String) receiveMessageFromServer(), "START")) {
-        }
+//        while (!Objects.equals(message = (String) receiveMessageFromServer(), "START")) {
+//        }
         if (roundCounter == 0) {
             while (startOfGame) {
                 sendMessageToServer("Start");

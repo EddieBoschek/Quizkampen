@@ -28,7 +28,7 @@ public class MainMenuGUI {
     ArrayList<JLabel> playerScoreArray = new ArrayList<>();
     ArrayList<JLabel> opponentScoreArray = new ArrayList<>();
     ArrayList<JLabel> subjectArray = new ArrayList<>();
-    int currentRound;
+    int currentRound = 0;
 
     public MainMenuGUI() throws IOException {
         client = new Client("127.0.0.1", 12345);
@@ -171,7 +171,7 @@ public class MainMenuGUI {
                             subjectArray.get(j).setText(s);
                     }
                 }
-                case 5 -> currentRound = (int) input;
+
             }
             i++;
         }
