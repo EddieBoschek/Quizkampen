@@ -11,6 +11,7 @@ import java.util.Arrays;
 public class MainMenuGUI {
     JButton startGameButton = new JButton("Starta nytt spel");
     JButton settingsButton = new JButton("Inställningar");
+    JButton play = new JButton("Spela");
     JLabel gameName = new JLabel("Quizkampen", SwingConstants.CENTER);
     JPanel menuPanel = new JPanel();
     JPanel activeGamesPanel = new JPanel();
@@ -31,6 +32,7 @@ public class MainMenuGUI {
 
     public MainMenuGUI() throws IOException {
         client = new Client("127.0.0.1", 12345);
+
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(300, 600);
@@ -56,7 +58,7 @@ public class MainMenuGUI {
         gameName.setPreferredSize(d);
         gameName.setFont(new Font("Serif", Font.PLAIN, 30));
 
-//        gameName.set
+
 
 
         ActionListener buttonListener = new ActionListener() {
@@ -75,12 +77,19 @@ public class MainMenuGUI {
 
                 } else if (e.getSource() == settingsButton) {
                     System.out.println("Öppnar upp en ny JPanel med \"settingsknappar\" som går att justera. Det ska också finnas en apply-knapp");
+                } else if (e.getSource() == play) {
+                    try {
+                        playRound();
+                    } catch (IOException | ClassNotFoundException | InterruptedException ex) {
+                        throw new RuntimeException(ex);
+                    }
                 }
             }
         };
 
         startGameButton.addActionListener(buttonListener);
         settingsButton.addActionListener(buttonListener);
+        play.addActionListener(buttonListener);
 
 
         frame.setVisible(true);
@@ -107,7 +116,8 @@ public class MainMenuGUI {
             }
         }
 
-        JButton play = new JButton("Spela");
+//        play = new JButton("Spela");
+//        play.addActionListener(MainMenuGUI.buttonListener);
 
         JPanel northPanel = new JPanel();
         JPanel centerPanel = new JPanel();
@@ -142,6 +152,7 @@ public class MainMenuGUI {
 
     public void updateScore() {
         send("GameUpdateRequest");
+        System.out.println("GUR");
         Object input = null;
         int i = 0;
         boolean[][] playerBoolArray = new boolean[6][3];
@@ -195,6 +206,13 @@ public class MainMenuGUI {
         currentScore.setText(playerScoreCounter + " - " + opponentScoreCounter);
     }
 
+    public void playRound() throws IOException, ClassNotFoundException, InterruptedException {
+        if (currentRound < 6) {
+            QuizGUI quizGUI = new QuizGUI(client, currentRound);
+            currentRound++;
+        }
+
+    }
 
     public void send(Object message) {
         if (message != null) {

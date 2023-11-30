@@ -68,8 +68,8 @@ public class GameInstance extends Thread {
                         } catch (IOException ex) {
                             throw new RuntimeException(ex);
                         }
-                    } else if (inputLine.equals("Ny Runda")) {
-                        System.out.println("Ny Runda");
+                    } else if (inputLine.equals("NewRound")) {
+                        System.out.println("NewRound");
                         try {
                             if (player1.isCurrentPlayer()) {
                                 player1.setCurrentPlayer(false);
@@ -80,7 +80,8 @@ public class GameInstance extends Thread {
                                 player2.setCurrentPlayer(false);
                                 currentPlayer = player1;
                             }
-                            currentPlayer.getOpponent().send(currentPlayer.isCurrentPlayer());
+                            player1.send(player1.isCurrentPlayer());
+                            player2.send(player2.isCurrentPlayer());
                             categoryOptions = shuffleCategories(dao.getCategories());
                             currentPlayer.send(categoryOptions);
                             currentPlayer.getOpponent().send(categoryOptions);
