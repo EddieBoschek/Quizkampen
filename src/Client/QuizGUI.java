@@ -19,7 +19,7 @@ public class QuizGUI {
     private Client client;
     private Object serverMessage;
     private Category[] categories;
-    private Question[] questions = new Question[3];
+    private Question[] questions = new Question[10];
     private boolean[][] gameresults = new boolean[6][3];
     private boolean[] roundResults = new boolean[3];
     boolean[] opponentRoundResults;
@@ -162,9 +162,9 @@ public class QuizGUI {
         if (!myTurn) {
             while (true) {
                 if ((oMessage = receiveMessageFromServer()) != null) {
-                    if (oMessage.equals(categories[0].getSubjectName())) {
+                    if (oMessage.equals(categories[0].getCategoryName())) {
                         opponentDoClickValue = 0;
-                    } else if (((String) oMessage).equals(categories[1].getSubjectName())) {
+                    } else if (((String) oMessage).equals(categories[1].getCategoryName())) {
                         opponentDoClickValue = 1;
                     } else if (((String) oMessage).equals(categories[2].getSubjectName())) {
                         opponentDoClickValue = 2;
