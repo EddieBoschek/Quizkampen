@@ -217,11 +217,8 @@ public class QuizGUI {
             public void actionPerformed(ActionEvent e) {
                 frame.getContentPane().removeAll();
                 if (myTurn)
-                    serverMessage = sendAndReceive(categoryButton2.getText());
-                else {
-                    serverMessage = receiveMessageFromServer();
-                    System.out.println(serverMessage);
-                }
+                    serverMessage = sendAndReceive("P1" + categoryButton3.getText());
+
                 if (serverMessage instanceof Question[] quests) {
                     int i = 0;
                     while(i < 3) {
@@ -232,6 +229,8 @@ public class QuizGUI {
                 playRound(questions);
             }
         });
+
+        frame.setVisible(true);
     }
 
     private void displayQuestion(Question question) {
@@ -256,7 +255,6 @@ public class QuizGUI {
         continuePanel.add(continueButton);
 
         askedQuest = question;
-
         questionLabel.setText(askedQuest.getQuestion());
 
         ActionListener commonActionListener = new ActionListener() {
