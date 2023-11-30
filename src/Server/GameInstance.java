@@ -1,11 +1,15 @@
 package Server;
+
 import POJOs.Category;
 import POJOs.Question;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
+
 import static POJOs.Category.getShuffledCategoryQuestions;
 import static POJOs.Category.shuffleCategories;
+
 public class GameInstance extends Thread {
     boolean[][] player1GameScore = new boolean[6][3]; //6an ska sen ersättas med antal ronder
     boolean[][] player2GameScore = new boolean[6][3];
@@ -20,6 +24,7 @@ public class GameInstance extends Thread {
     Category[] categoryOptions;
     Question[] q;
     String cat;
+    boolean playerShiftHasBeenMade;
     public GameInstance(Player p1, Player p2) {
         this.player1 = p1;
         this.player2 = p2;
@@ -51,14 +56,16 @@ public class GameInstance extends Thread {
         }
         int questionsQuantity = Integer.parseInt(p.getProperty("questions", "2"));
         int roundsQuantity = Integer.parseInt(p.getProperty("rounds", "2"));
+
         Object inputLine;
         System.out.println("GameStart");
+
         // Skickar förfrågan till currentPlayer och tar emot data som sparas i GameInstance
         try {
             while (true) {
                 if ((inputLine = currentPlayer.receive()) != null) {
-                    if (((String) inputLine).startsWith("Start")) {
-                        System.out.println("Start");
+                    if (((String) inputLine).startsWith("Start") && !playerShiftHasBeenMade) {
+                        System.out.println((String) inputLine);
                         try {
                             int nmbr = Integer.parseInt(((String) inputLine).substring(5));
                             if (nmbr % 2 == 0) {
@@ -75,6 +82,7 @@ public class GameInstance extends Thread {
                             categoryOptions = shuffleCategories(dao.getCategories());
                             currentPlayer.send(categoryOptions);
                             currentPlayer.getOpponent().send(categoryOptions);
+                            playerShiftHasBeenMade = true;
                         } catch (IOException ex) {
                             throw new RuntimeException(ex);
                         }
@@ -84,7 +92,8 @@ public class GameInstance extends Thread {
                         if (currentPlayer == player1) {
                             currentPlayer.send(player1GameScore);
                             currentPlayer.send(player2GameScore);
-                        } else if (currentPlayer == player2) {
+                        }
+                        else if (currentPlayer == player2) {
                             currentPlayer.send(player2GameScore);
                             currentPlayer.send(player1GameScore);
                         }
@@ -95,8 +104,10 @@ public class GameInstance extends Thread {
                     } else if (((String) inputLine).startsWith("GO")) {
                         currentPlayer.getOpponent().send(inputLine);
                         currentPlayer.getOpponent().send(q);
+                        playerShiftHasBeenMade = false;
 
-                    } else if (((String) inputLine).startsWith("P1")){ 
+
+                    } else if (((String) inputLine).startsWith("P1")){
                         cat = ((String) inputLine).substring(2);
                         System.out.println("P1");
                         System.out.println(cat);
