@@ -20,9 +20,10 @@ public class GameInstance extends Thread {
     int currenRound;
     private Properties p = new Properties();
     private boolean orderCheck;
-
     private DAO dao = new DAO();
-
+    Category[] categoryOptions;
+    Question[] q;
+    String cat;
     public GameInstance(Player p1, Player p2) {
         this.player1 = p1;
         this.player2 = p2;
@@ -67,14 +68,14 @@ public class GameInstance extends Thread {
                         try {
                             player1.send(player1.isCurrentPlayer());
                             player2.send(player2.isCurrentPlayer());
-                            Category[] categoryOptions = shuffleCategories(dao.getCategories());
+                            categoryOptions = shuffleCategories(dao.getCategories());
                             currentPlayer.send(categoryOptions);
                             currentPlayer.getOpponent().send(categoryOptions);
                         } catch (IOException ex) {
                             throw new RuntimeException(ex);
                         }
-                    } else if (inputLine.equals("Ny Runda")) {
-                        System.out.println("Ny Runda");
+                    } else if (inputLine.equals("NewRound")) {
+                        System.out.println("NewRound");
                         try {
                             if (player1.isCurrentPlayer()) {
                                 player1.setCurrentPlayer(false);
@@ -87,15 +88,15 @@ public class GameInstance extends Thread {
                             }
                             player1.send(player1.isCurrentPlayer());
                             player2.send(player2.isCurrentPlayer());
-                            Category[] categoryOptions = shuffleCategories(dao.getCategories());
+                            categoryOptions = shuffleCategories(dao.getCategories());
                             currentPlayer.send(categoryOptions);
                             currentPlayer.getOpponent().send(categoryOptions);
                         } catch (IOException ex) {
                             throw new RuntimeException(ex);
                         }
-                    } else if (inputLine == "GameUpdateRequest") {
-                        currentPlayer.send(currentPlayer.getName());
-                        currentPlayer.send(currentPlayer.getOpponent().getName());
+                    } else if (inputLine.equals("GameUpdateRequest")) {
+                        currentPlayer.send(currentPlayer.name);
+                        currentPlayer.send(currentPlayer.getOpponent().name);
                         if (currentPlayer == player1) {
                             currentPlayer.send(player1GameScore);
                             currentPlayer.send(player2GameScore);
@@ -107,12 +108,17 @@ public class GameInstance extends Thread {
                         currentPlayer.send(gameCategories);
                         currentPlayer.send(currenRound);
                         currentPlayer.send("END");
-                    } else { //Sends questions to currentPlayer, sends the picked subject and qustions to the other player
-                        System.out.println("Inte Start");
-                        Question[] q = getShuffledCategoryQuestions((String) inputLine, dao.getCategories());
-                        currentPlayer.send(q);
-                        currentPlayer.getOpponent().send((String) inputLine);
+
+                    } else if (((String) inputLine).startsWith("GO")) {
+                        currentPlayer.getOpponent().send(inputLine);
                         currentPlayer.getOpponent().send(q);
+
+                    } else if (((String) inputLine).startsWith("P1")){
+                        cat = ((String) inputLine).substring(2);
+                        System.out.println("P1");
+                        System.out.println(cat);
+                        q = getShuffledCategoryQuestions(cat, dao.getCategories());
+                        currentPlayer.send(q);
                     }
                 }
             }
