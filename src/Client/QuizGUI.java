@@ -217,7 +217,7 @@ public class QuizGUI {
             public void actionPerformed(ActionEvent e) {
                 frame.getContentPane().removeAll();
                 if (myTurn)
-                    serverMessage = sendAndReceive(categoryButton2.getText());
+                    serverMessage = sendAndReceive("P1" + categoryButton3.getText());
                 else {
                     serverMessage = receiveMessageFromServer();
                     System.out.println(serverMessage);
@@ -232,6 +232,7 @@ public class QuizGUI {
                 playRound(questions);
             }
         });
+        frame.setVisible(true);
     }
 
     private void displayQuestion(Question question) {
