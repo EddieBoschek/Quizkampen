@@ -57,9 +57,19 @@ public class GameInstance extends Thread {
         try {
             while (true) {
                 if ((inputLine = currentPlayer.receive()) != null) {
-                    if (inputLine.equals("Start")) {
+                    if (((String) inputLine).startsWith("Start")) {
                         System.out.println("Start");
                         try {
+                            int nmbr = Integer.parseInt(((String) inputLine).substring(5));
+                            if (nmbr % 2 == 0) {
+                                currentPlayer = player1;
+                                player1.setCurrentPlayer(true);
+                                player2.setCurrentPlayer(false);
+                            } else {
+                                player1.setCurrentPlayer(false);
+                                player2.setCurrentPlayer(true);
+                                currentPlayer = player2;
+                            }
                             player1.send(player1.isCurrentPlayer());
                             player2.send(player2.isCurrentPlayer());
                             categoryOptions = shuffleCategories(dao.getCategories());
@@ -68,26 +78,6 @@ public class GameInstance extends Thread {
                         } catch (IOException ex) {
                             throw new RuntimeException(ex);
                         }
-                    } else if (inputLine.equals("MyTurn")) {
-                        System.out.println("MyTurn");
-                        try {
-                            if (player1.isCurrentPlayer()) {
-                                player1.setCurrentPlayer(false);
-                                player2.setCurrentPlayer(true);
-                                currentPlayer = player2;
-                            } else {
-                                player1.setCurrentPlayer(true);
-                                player2.setCurrentPlayer(false);
-                                currentPlayer = player1;
-                            }
-                            player1.send(player1.isCurrentPlayer());
-                            player2.send(player2.isCurrentPlayer());
-                        } catch (IOException ex) {
-                            throw new RuntimeException(ex);
-                        }
-                    } else if (inputLine.equals("NewRound")) {
-                        categoryOptions = shuffleCategories(dao.getCategories());
-                        currentPlayer.send(categoryOptions);
                     } else if (inputLine.equals("GameUpdateRequest")) {
                         currentPlayer.send(currentPlayer.name);
                         currentPlayer.send(currentPlayer.getOpponent().name);
