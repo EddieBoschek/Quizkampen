@@ -4,7 +4,6 @@ import POJOs.Question;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
-import static POJOs.Category.getCategoryQuestions;
 import static POJOs.Category.getShuffledCategoryQuestions;
 import static POJOs.Category.shuffleCategories;
 public class GameInstance extends Thread {
@@ -69,8 +68,8 @@ public class GameInstance extends Thread {
                         } catch (IOException ex) {
                             throw new RuntimeException(ex);
                         }
-                    } else if (inputLine.equals("NewRound")) {
-                        System.out.println("NewRound");
+                    } else if (inputLine.equals("MyTurn")) {
+                        System.out.println("MyTurn");
                         try {
                             if (player1.isCurrentPlayer()) {
                                 player1.setCurrentPlayer(false);
@@ -83,12 +82,12 @@ public class GameInstance extends Thread {
                             }
                             player1.send(player1.isCurrentPlayer());
                             player2.send(player2.isCurrentPlayer());
-                            categoryOptions = shuffleCategories(dao.getCategories());
-                            currentPlayer.send(categoryOptions);
-                            currentPlayer.getOpponent().send(categoryOptions);
                         } catch (IOException ex) {
                             throw new RuntimeException(ex);
                         }
+                    } else if (inputLine.equals("NewRound")) {
+                        categoryOptions = shuffleCategories(dao.getCategories());
+                        currentPlayer.send(categoryOptions);
                     } else if (inputLine.equals("GameUpdateRequest")) {
                         currentPlayer.send(currentPlayer.name);
                         currentPlayer.send(currentPlayer.getOpponent().name);
@@ -111,7 +110,7 @@ public class GameInstance extends Thread {
                         cat = ((String) inputLine).substring(2);
                         System.out.println("P1");
                         System.out.println(cat);
-                        q = getCategoryQuestions(cat, dao.getCategories());
+                        q = getShuffledCategoryQuestions(cat, dao.getCategories());
                         currentPlayer.send(q);
                     }
                 }

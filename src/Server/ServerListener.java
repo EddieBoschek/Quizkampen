@@ -12,8 +12,8 @@ public class ServerListener {
                 Player player2 = new Player(ss.accept(), "spelare2", false);
                 GameInstance game = new GameInstance(player1,player2);
                 game.start();
-                player1.send("START");
-                player2.send("START");
+//                player1.send("START");
+//                player2.send("START");
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
