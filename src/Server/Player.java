@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.Socket;
 
 public class Player {
+    private int score;
     private Socket socket;
     protected String name;
     private Player opponent; //Can make array (Player[]) for several games w different players;
@@ -21,6 +22,7 @@ public class Player {
         this.isCurrentPlayer = isCurrentPlayer;
         this.output = output;
         this.input = input;
+        this.score = 0;
     }
 
     public void setCurrentPlayer(boolean currentPlayer) {
@@ -46,5 +48,11 @@ public class Player {
     }
     public Player getOpponent() {
         return opponent;
+    }
+    public void setScore(int score) {
+        this.score = score;
+    }
+    public int getScore() {
+        return score;
     }
 }
