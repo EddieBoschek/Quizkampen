@@ -78,9 +78,9 @@ public class QuizGUI {
 
         JLabel categoryLabel = new JLabel("Välj en kategori");
         categoryLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        JButton categoryButton1 = new JButton(categories[0].getSubjectName());
-        JButton categoryButton2 = new JButton(categories[1].getSubjectName());
-        JButton categoryButton3 = new JButton(categories[2].getSubjectName());
+        JButton categoryButton1 = new JButton(categories[0].getCategoryName());
+        JButton categoryButton2 = new JButton(categories[1].getCategoryName());
+        JButton categoryButton3 = new JButton(categories[2].getCategoryName());
 
         Dimension labelSize = new Dimension(200, 50);
         categoryLabel.setPreferredSize(labelSize);
@@ -166,7 +166,7 @@ public class QuizGUI {
                         opponentDoClickValue = 0;
                     } else if (((String) oMessage).equals(categories[1].getCategoryName())) {
                         opponentDoClickValue = 1;
-                    } else if (((String) oMessage).equals(categories[2].getSubjectName())) {
+                    } else if (((String) oMessage).equals(categories[2].getCategoryName())) {
                         opponentDoClickValue = 2;
                     }
                     break;
