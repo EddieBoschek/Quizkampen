@@ -132,7 +132,6 @@ public class MainMenuGUI {
                 subjectPanel.add(subjectArray.get(i / 3));
         }
 
-
         gameMenu.add(northPanel, BorderLayout.NORTH);
         gameMenu.add(centerPanel, BorderLayout.CENTER);
         gameMenu.add(play, BorderLayout.SOUTH);
@@ -188,13 +187,15 @@ public class MainMenuGUI {
                 if (playerBoolArray[j][k]) {
                     playerScoreArray.get(loopCounter).setForeground(Color.GREEN);
                     playerScoreCounter++;
-                } else
+                }
+                else
                     playerScoreArray.get(loopCounter).setForeground(Color.RED);
 
                 if (opponentBoolArray[j][k]) {
                     opponentScoreArray.get(loopCounter).setForeground(Color.GREEN);
                     opponentScoreCounter++;
-                } else
+                }
+                else
                     opponentScoreArray.get(loopCounter).setForeground(Color.RED);
 
                 loopCounter++;
