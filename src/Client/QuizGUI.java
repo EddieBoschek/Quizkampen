@@ -255,7 +255,6 @@ public class QuizGUI {
         continuePanel.add(continueButton);
 
         askedQuest = question;
-
         questionLabel.setText(askedQuest.getQuestion());
 
         ActionListener commonActionListener = new ActionListener() {
