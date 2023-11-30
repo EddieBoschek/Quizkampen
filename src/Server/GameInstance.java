@@ -94,8 +94,8 @@ public class GameInstance extends Thread {
                             throw new RuntimeException(ex);
                         }
                     } else if (inputLine == "GameUpdateRequest") {
-                        currentPlayer.send(currentPlayer.name);
-                        currentPlayer.send(currentPlayer.getOpponent().name);
+                        currentPlayer.send(currentPlayer.getName());
+                        currentPlayer.send(currentPlayer.getOpponent().getName());
                         if (currentPlayer == player1) {
                             currentPlayer.send(player1GameScore);
                             currentPlayer.send(player2GameScore);
