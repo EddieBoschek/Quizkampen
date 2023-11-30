@@ -1,15 +1,11 @@
 package Server;
-
 import POJOs.Category;
 import POJOs.Question;
-
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
-
 import static POJOs.Category.getCategoryQuestions;
 import static POJOs.Category.shuffleCategories;
-
 public class GameInstance extends Thread {
     boolean[][] player1GameScore = new boolean[6][3]; //6an ska sen ersättas med antal ronder
     boolean[][] player2GameScore = new boolean[6][3];
@@ -20,18 +16,31 @@ public class GameInstance extends Thread {
     int currenRound;
     private Properties p = new Properties();
     private boolean orderCheck;
-
     private DAO dao = new DAO();
-    String roundResult;
-    boolean firstPlayerDone;
-
-
+    Category[] categoryOptions;
+    Question[] q;
+    String cat;
     public GameInstance(Player p1, Player p2) {
         this.player1 = p1;
         this.player2 = p2;
         currentPlayer = p1;
         this.player1.setOpponent(p2);
         this.player2.setOpponent(p1);
+    }
+    public void updateScores(String winner) {
+        if (winner.equals(player1.getName())) {
+            player1.setScore(player1.getScore() + 1);
+        } else if (winner.equals(player2.getName())) {
+            player2.setScore(player2.getScore() + 1);
+        }
+    }
+
+    public int getPlayer1Score() {
+        return player1.getScore();
+    }
+
+    public int getPlayer2Score() {
+        return player2.getScore();
     }
 
     public void run() {
@@ -42,13 +51,10 @@ public class GameInstance extends Thread {
         }
         int questionsQuantity = Integer.parseInt(p.getProperty("questions", "2"));
         int roundsQuantity = Integer.parseInt(p.getProperty("rounds", "2"));
-
         Object inputLine;
         System.out.println("GameStart");
-
         // Skickar förfrågan till currentPlayer och tar emot data som sparas i GameInstance
         try {
-
             while (true) {
                 if ((inputLine = currentPlayer.receive()) != null) {
                     if (inputLine.equals("Start")) {
@@ -56,14 +62,14 @@ public class GameInstance extends Thread {
                         try {
                             player1.send(player1.isCurrentPlayer());
                             player2.send(player2.isCurrentPlayer());
-                            Category[] categoryOptions = shuffleCategories(dao.getCategories());
+                            categoryOptions = shuffleCategories(dao.getCategories());
                             currentPlayer.send(categoryOptions);
                             currentPlayer.getOpponent().send(categoryOptions);
                         } catch (IOException ex) {
                             throw new RuntimeException(ex);
                         }
-                    } else if (inputLine.equals("NewRound")) {
-                        System.out.println("NewRound");
+                    } else if (inputLine.equals("Ny Runda")) {
+                        System.out.println("Ny Runda");
                         try {
                             if (player1.isCurrentPlayer()) {
                                 player1.setCurrentPlayer(false);
@@ -74,9 +80,8 @@ public class GameInstance extends Thread {
                                 player2.setCurrentPlayer(false);
                                 currentPlayer = player1;
                             }
-                            player1.send(player1.isCurrentPlayer());
-                            player2.send(player2.isCurrentPlayer());
-                            Category[] categoryOptions = shuffleCategories(dao.getCategories());
+                            currentPlayer.getOpponent().send(currentPlayer.isCurrentPlayer());
+                            categoryOptions = shuffleCategories(dao.getCategories());
                             currentPlayer.send(categoryOptions);
                             currentPlayer.getOpponent().send(categoryOptions);
                         } catch (IOException ex) {
@@ -95,37 +100,28 @@ public class GameInstance extends Thread {
                         currentPlayer.send(gameCategories);
                         currentPlayer.send(currenRound);
                         currentPlayer.send("END");
-                    } else if (((String) inputLine).startsWith("RoundResult")) {
-                        System.out.println(inputLine);
-                        roundResult = "WakeUp" + inputLine.toString().substring(10);
-                        System.out.println("wakeup");
-                        currentPlayer.getOpponent().send(roundResult);
-                        System.out.println(roundResult);
-                        firstPlayerDone = true;
+
+                    } else if (((String) inputLine).startsWith("GO")) {
 
 
-//                   } else if (inputLine instanceof boolean[][]) {
-//
-//                        player1GameScore = ((boolean[][]) inputLine);
-//
-//
-                    } else {//Sends questions to currentPlayer, sends the picked subject and qustions to the other player
-                        System.out.println("Inte Start:");
-                        System.out.println(inputLine);
-                        Question[] q = getCategoryQuestions((String) inputLine, dao.getCategories());
-                        currentPlayer.send(q);
-                        currentPlayer.getOpponent().send((String) inputLine);
+                        currentPlayer.getOpponent().send(inputLine);
+
                         currentPlayer.getOpponent().send(q);
+
+
+
+
+                    } else if (((String) inputLine).startsWith("P1")){ //Sends questions to currentPlayer, sends the picked subject and qustions to the other player
+                        cat = ((String) inputLine).substring(2);
+                        System.out.println("P1");
+                        System.out.println(cat);
+                        q = getCategoryQuestions(cat, dao.getCategories());
+                        currentPlayer.send(q);
                     }
-
-
-
                 }
             }
-        }catch(IOException | ClassNotFoundException e){
-            e.printStackTrace();
+        } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
-
     }
 }
