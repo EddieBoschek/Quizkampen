@@ -4,7 +4,6 @@ import POJOs.Question;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
-import static POJOs.Category.getCategoryQuestions;
 import static POJOs.Category.getShuffledCategoryQuestions;
 import static POJOs.Category.shuffleCategories;
 public class GameInstance extends Thread {
@@ -111,7 +110,7 @@ public class GameInstance extends Thread {
                         cat = ((String) inputLine).substring(2);
                         System.out.println("P1");
                         System.out.println(cat);
-                        q = getCategoryQuestions(cat, dao.getCategories());
+                        q = getShuffledCategoryQuestions(cat, dao.getCategories());
                         currentPlayer.send(q);
                     }
                 }
