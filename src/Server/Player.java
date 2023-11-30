@@ -1,4 +1,4 @@
-package Server;
+package POJOs;
 
 import java.io.*;
 import java.net.Socket;

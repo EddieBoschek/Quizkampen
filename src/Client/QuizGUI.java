@@ -39,14 +39,12 @@ public class QuizGUI {
     Font f = new Font("serif", Font.PLAIN, 24);
     Font f2 = new Font("dialog", Font.PLAIN, 24);
 
-    public QuizGUI() throws IOException, ClassNotFoundException, NullPointerException, InterruptedException {
-
-        client = new Client("127.0.0.1", 12345);
+    public QuizGUI(Client client) throws IOException, ClassNotFoundException, NullPointerException, InterruptedException {
+        this.client = client;
 
         System.out.println("innan loopen");
 
         while (!Objects.equals(message = (String) receiveMessageFromServer(), "START")) {
-//            System.out.println(message);
         }
         while (startOfGame) {
             sendMessageToServer("Start");
@@ -313,6 +311,7 @@ public class QuizGUI {
                         updateScorePanel();
                     }
                 }
+
             }
         };
 
@@ -457,16 +456,21 @@ public class QuizGUI {
             @Override
             public void run() {
                 try {
-                    System.out.println("Innan JFrame");
-                    QuizGUI quizGUI = new QuizGUI();
-                    System.out.println("JFrame borde starta");
+//                    System.out.println("Innan JFrame");
+//                    QuizGUI quizGUI = new QuizGUI();
+//                    System.out.println("JFrame borde starta");
+                    MainMenuGUI mainGUI = new MainMenuGUI();
+                } catch(Exception e){};
 
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+//                }catch (IOException e) {
+//                    throw new RuntimeException(e);
+//                } catch (ClassNotFoundException | InterruptedException e) {
+//                    throw new RuntimeException(e);
+//                }
 
-                } catch (ClassNotFoundException | InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
+
+
+                //QuizGUI.setVisible(true);
             }
         });
     }
