@@ -27,6 +27,7 @@ public class QuizGUI {
     boolean[] opponentRoundResults = new boolean[3];
     private boolean myTurn;
     private boolean startOfGame = true;
+    private boolean startOfRound = true;
     private JFrame frame;
     private String message;
     private Object oMessage;
@@ -45,26 +46,19 @@ public class QuizGUI {
         this.client = client;
         this.roundCounter = roundCounter;
         System.out.println("innan loopen");
-        while (!Objects.equals(message = (String) receiveMessageFromServer(), "START")) {
-        }
-        if (roundCounter == 0) {
-            while (startOfGame) {
-                sendMessageToServer("Start");
-                oMessage = receiveMessageFromServer();
-                if (oMessage instanceof Boolean) {
-                    myTurn = (boolean) oMessage;
-                    System.out.println("It is my turn: " + myTurn);
-                    startOfGame = false;
-                }
-            }
-        } else {
-            sendMessageToServer("NewRound");
+//        while (!Objects.equals(message = (String) receiveMessageFromServer(), "START")) {
+//        }
+
+        while (startOfGame) {
+            sendMessageToServer("Start" + roundCounter);
             oMessage = receiveMessageFromServer();
             if (oMessage instanceof Boolean) {
                 myTurn = (boolean) oMessage;
                 System.out.println("It is my turn: " + myTurn);
+                startOfGame = false;
             }
         }
+
 
         frame = new JFrame("Quizkampen");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

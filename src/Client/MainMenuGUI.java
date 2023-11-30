@@ -204,6 +204,7 @@ public class MainMenuGUI {
 
     public void playRound() throws IOException, ClassNotFoundException, InterruptedException {
         if (currentRound < 6) {
+            System.out.println("current round: " + currentRound);
             QuizGUI quizGUI = new QuizGUI(client, currentRound);
             currentRound++;
         }
