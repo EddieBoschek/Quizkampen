@@ -103,14 +103,8 @@ public class GameInstance extends Thread {
                         currentPlayer.send("END");
 
                     } else if (((String) inputLine).startsWith("GO")) {
-
-
                         currentPlayer.getOpponent().send(inputLine);
-
                         currentPlayer.getOpponent().send(q);
-
-
-
 
                     } else if (((String) inputLine).startsWith("P1")){ //Sends questions to currentPlayer, sends the picked subject and qustions to the other player
                         cat = ((String) inputLine).substring(2);

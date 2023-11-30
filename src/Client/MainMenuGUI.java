@@ -33,7 +33,6 @@ public class MainMenuGUI {
     public MainMenuGUI() throws IOException {
         client = new Client("127.0.0.1", 12345);
 
-
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(300, 600);
         frame.getContentPane().add(menuPanel);
@@ -57,9 +56,6 @@ public class MainMenuGUI {
 
         gameName.setPreferredSize(d);
         gameName.setFont(new Font("Serif", Font.PLAIN, 30));
-
-
-
 
         ActionListener buttonListener = new ActionListener() {
             @Override

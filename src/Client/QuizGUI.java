@@ -240,8 +240,6 @@ public class QuizGUI {
                             } else {
                                 s.append('f');
                             }
-
-
                         }
                         sendMessageToServer("GO" + s);
                         System.out.println(s);
