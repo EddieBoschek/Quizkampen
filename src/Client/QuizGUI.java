@@ -47,24 +47,17 @@ public class QuizGUI {
         System.out.println("innan loopen");
 //        while (!Objects.equals(message = (String) receiveMessageFromServer(), "START")) {
 //        }
-        if (roundCounter == 0) {
-            while (startOfGame) {
-                sendMessageToServer("Start");
-                oMessage = receiveMessageFromServer();
-                if (oMessage instanceof Boolean) {
-                    myTurn = (boolean) oMessage;
-                    System.out.println("It is my turn: " + myTurn);
-                    startOfGame = false;
-                }
-            }
-        } else {
-            sendMessageToServer("NewRound");
+
+        while (startOfGame) {
+            sendMessageToServer("Start" + roundCounter);
             oMessage = receiveMessageFromServer();
             if (oMessage instanceof Boolean) {
                 myTurn = (boolean) oMessage;
                 System.out.println("It is my turn: " + myTurn);
+                startOfGame = false;
             }
         }
+
 
         frame = new JFrame("Quizkampen");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -229,6 +222,7 @@ public class QuizGUI {
                 playRound(questions);
             }
         });
+
         frame.setVisible(true);
     }
 
@@ -254,7 +248,6 @@ public class QuizGUI {
         continuePanel.add(continueButton);
 
         askedQuest = question;
-
         questionLabel.setText(askedQuest.getQuestion());
 
         ActionListener commonActionListener = new ActionListener() {
