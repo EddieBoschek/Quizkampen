@@ -1,6 +1,8 @@
 package Client;
+
 import POJOs.Category;
 import POJOs.Question;
+
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
@@ -11,6 +13,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
 public class QuizGUI {
     private Question askedQuest = null;
     private Client client;
@@ -51,6 +54,7 @@ public class QuizGUI {
         while (startOfGame) {
             sendMessageToServer("Start" + roundCounter);
             oMessage = receiveMessageFromServer();
+//            client.flushOutput();
             if (oMessage instanceof Boolean) {
                 myTurn = (boolean) oMessage;
                 System.out.println("It is my turn: " + myTurn);
@@ -65,6 +69,17 @@ public class QuizGUI {
         frame.setLayout(new BorderLayout());
 
         categories = (Category[]) receiveMessageFromServer();
+
+
+
+//if (roundCounter != 0) {
+//    Object trashcan;
+//    while ((trashcan = receiveMessageFromServer()) != null) {
+//        System.out.println(trashcan);
+//    }
+//}
+
+
 
         JPanel categoryPanel = new JPanel();
         categoryPanel.setLayout(new GridLayout(4, 1));
@@ -146,7 +161,13 @@ public class QuizGUI {
 
         if (!myTurn) {
             while (true) {
-                s = (String) receiveMessageFromServer();
+
+                    s = (String) receiveMessageFromServer();
+                    // s är false;
+
+
+
+
                 System.out.println(s);
 
                 if (s.startsWith("GO")) {
@@ -157,7 +178,7 @@ public class QuizGUI {
                     System.out.println(oMessage);
                     if (oMessage instanceof Question[] quests) {
                         int i = 0;
-                        while(i < 3) {
+                        while (i < 3) {
                             questions[i] = quests[i];
                             i++;
                         }
@@ -179,7 +200,7 @@ public class QuizGUI {
 
                 if (serverMessage instanceof Question[] quests) {
                     int i = 0;
-                    while(i < 3) {
+                    while (i < 3) {
                         questions[i] = quests[i];
                         i++;
                     }
@@ -197,7 +218,7 @@ public class QuizGUI {
 
                 if (serverMessage instanceof Question[] quests) {
                     int i = 0;
-                    while(i < 3) {
+                    while (i < 3) {
                         questions[i] = quests[i];
                         i++;
                     }
@@ -214,7 +235,7 @@ public class QuizGUI {
 
                 if (serverMessage instanceof Question[] quests) {
                     int i = 0;
-                    while(i < 3) {
+                    while (i < 3) {
                         questions[i] = quests[i];
                         i++;
                     }
@@ -227,7 +248,7 @@ public class QuizGUI {
     }
 
     private void displayQuestion(Question question) {
-      
+
         Font f = new Font("serif", Font.PLAIN, 24);
         Font f2 = new Font("dialog", Font.PLAIN, 24);
         questionPanel = new JPanel();
@@ -420,6 +441,7 @@ public class QuizGUI {
         }
         return receivedMessage;
     }
+
     private void updateScorePanel() {
         p1q1.setBackground(gameresults[roundCounter][0] ? Color.green : Color.red);
         p1q2.setBackground(gameresults[roundCounter][1] ? Color.green : Color.red);

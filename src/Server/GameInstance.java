@@ -24,6 +24,7 @@ public class GameInstance extends Thread {
     Category[] categoryOptions;
     Question[] q;
     String cat;
+    boolean playerShiftHasBeenMade;
     public GameInstance(Player p1, Player p2) {
         this.player1 = p1;
         this.player2 = p2;
@@ -63,8 +64,8 @@ public class GameInstance extends Thread {
         try {
             while (true) {
                 if ((inputLine = currentPlayer.receive()) != null) {
-                    if (((String) inputLine).startsWith("Start")) {
-                        System.out.println("Start");
+                    if (((String) inputLine).startsWith("Start") && !playerShiftHasBeenMade) {
+                        System.out.println((String) inputLine);
                         try {
                             int nmbr = Integer.parseInt(((String) inputLine).substring(5));
                             if (nmbr % 2 == 0) {
@@ -81,6 +82,7 @@ public class GameInstance extends Thread {
                             categoryOptions = shuffleCategories(dao.getCategories());
                             currentPlayer.send(categoryOptions);
                             currentPlayer.getOpponent().send(categoryOptions);
+                            playerShiftHasBeenMade = true;
                         } catch (IOException ex) {
                             throw new RuntimeException(ex);
                         }
@@ -102,6 +104,8 @@ public class GameInstance extends Thread {
                     } else if (((String) inputLine).startsWith("GO")) {
                         currentPlayer.getOpponent().send(inputLine);
                         currentPlayer.getOpponent().send(q);
+                        playerShiftHasBeenMade = false;
+
 
                     } else if (((String) inputLine).startsWith("P1")){
                         cat = ((String) inputLine).substring(2);

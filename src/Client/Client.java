@@ -34,6 +34,9 @@ public class Client {
     public String connectAndReceiveText() throws IOException {
         return input.readLine();
     }
+    public void flushOutput() throws IOException {
+        out.flush();;
+    }
 
     public void close() {
         try {
