@@ -17,8 +17,8 @@ public class MainMenuGUI {
     JPanel activeGamesPanel = new JPanel();
     JPanel buttonsPanel = new JPanel();
     JFrame frame = new JFrame();
-    int numbOfRounds = 6;
-    int numbOfQuest = 3;
+    int numbOfRounds;
+    int numbOfQuest;
     boolean[] playerRound = new boolean[]{true, true, false};    //Tillfällig
     boolean[] opponentRound = new boolean[]{true, false, true};  //Tillfällig
     Client client;
@@ -29,8 +29,24 @@ public class MainMenuGUI {
     ArrayList<JLabel> opponentScoreArray = new ArrayList<>();
     ArrayList<JLabel> subjectArray = new ArrayList<>();
     int currentRound = 0;
+    int[] properties;
+    boolean settingUp = true;
+    Object o;
 
     public MainMenuGUI() throws IOException {
+        client = new Client("127.0.0.1", 12345);
+        while (settingUp) {
+            o = sendAndReceive("PropertiesRequest");
+            System.out.println(o);
+            if (o instanceof int[]) {
+
+                properties = (int[]) o;
+                numbOfQuest = properties[0];
+                numbOfRounds = properties[1];
+                settingUp = false;
+            }
+        }
+
         client = new Client("127.0.0.1", 12345);
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -117,9 +133,9 @@ public class MainMenuGUI {
 
         JPanel northPanel = new JPanel();
         JPanel centerPanel = new JPanel();
-        JPanel playerScorePanel = new JPanel(new GridLayout(6, 3));
-        JPanel opponentScorePanel = new JPanel(new GridLayout(6, 3));
-        JPanel subjectPanel = new JPanel(new GridLayout(6, 1));
+        JPanel playerScorePanel = new JPanel(new GridLayout(numbOfRounds, numbOfRounds));
+        JPanel opponentScorePanel = new JPanel(new GridLayout(numbOfRounds, numbOfRounds));
+        JPanel subjectPanel = new JPanel(new GridLayout(numbOfRounds, 1));
 
         for (int i = 0; i < numbOfRounds * numbOfQuest; i++) {
             playerScorePanel.add(playerScoreArray.get(i));
@@ -151,8 +167,8 @@ public class MainMenuGUI {
         System.out.println("GUR");
         Object input = null;
         int i = 0;
-        boolean[][] playerBoolArray = new boolean[6][3];
-        boolean[][] opponentBoolArray = new boolean[6][3];
+        boolean[][] playerBoolArray = new boolean[numbOfRounds][numbOfQuest];
+        boolean[][] opponentBoolArray = new boolean[numbOfRounds][numbOfQuest];
 
         while (true) {
             input = receive();
@@ -205,7 +221,7 @@ public class MainMenuGUI {
     public void playRound() throws IOException, ClassNotFoundException, InterruptedException {
         if (currentRound < 6) {
             System.out.println("current round: " + currentRound);
-            QuizGUI quizGUI = new QuizGUI(client, currentRound);
+            QuizGUI quizGUI = new QuizGUI(client, currentRound, properties);
             currentRound++;
         }
     }
@@ -226,6 +242,15 @@ public class MainMenuGUI {
             receivedMessage = client.connectAndReceive();
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
+        }
+        return receivedMessage;
+    }
+    private Object sendAndReceive(String message) {
+        Object receivedMessage = null;
+        try {
+            receivedMessage = client.connectSendAndReceive(message);
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
         }
         return receivedMessage;
     }
