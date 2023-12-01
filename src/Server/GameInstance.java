@@ -54,8 +54,10 @@ public class GameInstance extends Thread {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        int questionsQuantity = Integer.parseInt(p.getProperty("questions", "2"));
-        int roundsQuantity = Integer.parseInt(p.getProperty("rounds", "2"));
+        int[] propArray = new int[2];
+        propArray[0] = Integer.parseInt(p.getProperty("questions", "2"));
+        propArray[1] = Integer.parseInt(p.getProperty("rounds", "2"));
+
 
         Object inputLine;
         System.out.println("GameStart");
@@ -64,7 +66,11 @@ public class GameInstance extends Thread {
         try {
             while (true) {
                 if ((inputLine = currentPlayer.receive()) != null) {
-                    if (((String) inputLine).startsWith("Start") && !playerShiftHasBeenMade) {
+                    if (inputLine.equals("PropertiesRequest")) {
+                        currentPlayer.send(propArray);
+                        currentPlayer.getOpponent().send(propArray);
+
+                    } else if (((String) inputLine).startsWith("Start") && !playerShiftHasBeenMade) {
                         System.out.println((String) inputLine);
                         try {
                             int nmbr = Integer.parseInt(((String) inputLine).substring(5));
