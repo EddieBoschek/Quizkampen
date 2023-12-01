@@ -13,11 +13,10 @@ import static POJOs.Category.shuffleCategories;
 public class GameInstance extends Thread {
     boolean[][] player1GameScore = new boolean[6][3]; //6an ska sen ersättas med antal ronder
     boolean[][] player2GameScore = new boolean[6][3];
-    private String[] gameCategories = new String[6]; //Samma här
+    private String[] gameCategories = {"1","2","3","4","5","6"}; //Samma här
     private Player player1;
     private Player player2;
     private Player currentPlayer;
-    int currenRound;
     private Properties p = new Properties();
     private boolean orderCheck;
     private DAO dao = new DAO();
@@ -89,17 +88,26 @@ public class GameInstance extends Thread {
                     } else if (inputLine.equals("GameUpdateRequest")) {
                         currentPlayer.send(currentPlayer.name);
                         currentPlayer.send(currentPlayer.getOpponent().name);
+                        currentPlayer.getOpponent().send(currentPlayer.getOpponent().name);
+                        currentPlayer.getOpponent().send(currentPlayer.name);
+
                         if (currentPlayer == player1) {
                             currentPlayer.send(player1GameScore);
                             currentPlayer.send(player2GameScore);
+                            currentPlayer.getOpponent().send(player2GameScore);
+                            currentPlayer.getOpponent().send(player1GameScore);
                         }
                         else if (currentPlayer == player2) {
                             currentPlayer.send(player2GameScore);
                             currentPlayer.send(player1GameScore);
+                            currentPlayer.getOpponent().send(player1GameScore);
+                            currentPlayer.getOpponent().send(player2GameScore);
                         }
                         currentPlayer.send(gameCategories);
-                        currentPlayer.send(currenRound);
+                        currentPlayer.getOpponent().send(gameCategories);
+
                         currentPlayer.send("END");
+                        currentPlayer.getOpponent().send("END");
 
                     } else if (((String) inputLine).startsWith("GO")) {
                         currentPlayer.getOpponent().send(inputLine);

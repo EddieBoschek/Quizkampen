@@ -29,6 +29,7 @@ public class MainMenuGUI {
     ArrayList<JLabel> opponentScoreArray = new ArrayList<>();
     ArrayList<JLabel> subjectArray = new ArrayList<>();
     int currentRound = 0;
+    boolean firstRound = true;
 
     public MainMenuGUI() throws IOException {
         client = new Client("127.0.0.1", 12345);
@@ -64,6 +65,7 @@ public class MainMenuGUI {
                     System.out.println("Startar sökning efter en motståndare -> Startar upp en GameInstance och öppnar upp spelmenyn");
 
                     frame.getContentPane().removeAll();
+                    updateScore();
                     getGameMenu();
 //                    updateScore(); //Ska hämta all info, spelarnamn, boolean-poäng-array(s),
 
@@ -76,6 +78,7 @@ public class MainMenuGUI {
                 } else if (e.getSource() == play) {
                     try {
                         playRound();
+//                        updateScore();
                     } catch (IOException | ClassNotFoundException | InterruptedException ex) {
                         throw new RuntimeException(ex);
                     }
@@ -156,7 +159,7 @@ public class MainMenuGUI {
 
         while (true) {
             input = receive();
-            if (input == "END")
+            if (input.equals("END"))
                 break;
 
             switch (i) {
@@ -165,22 +168,24 @@ public class MainMenuGUI {
                 case 2 -> playerBoolArray = (boolean[][]) input;
                 case 3 -> opponentBoolArray = (boolean[][]) input;
                 case 4 -> {
-                    for (int j = 0; j < numbOfRounds; j++) {
-                        String s = ((String[]) input)[j];
-                        if (s != null)
-                            subjectArray.get(j).setText(s);
+                    if(!firstRound) {
+                        for (int j = 0; j < numbOfRounds; j++) {
+                            String s = ((String[]) input)[j];
+                            if (s != null)
+                                subjectArray.get(j).setText(s);
+                        }
                     }
                 }
 
             }
             i++;
         }
-
+        firstRound = false;
 
         int playerScoreCounter = 0;
         int opponentScoreCounter = 0;
         int loopCounter = 0;
-        for (int j = 0; j < currentRound - 1; j++) {
+        for (int j = 0; j < currentRound; j++) {
             for (int k = 0; k < numbOfQuest; k++) {
                 if (playerBoolArray[j][k]) {
                     playerScoreArray.get(loopCounter).setForeground(Color.GREEN);
