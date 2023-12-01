@@ -57,8 +57,8 @@ public class GameInstance extends Thread {
         int[] propArray = new int[2];
         propArray[0] = Integer.parseInt(p.getProperty("questions", "2"));
         propArray[1] = Integer.parseInt(p.getProperty("rounds", "2"));
-        player1GameScore = new boolean[propArray[1]][propArray[0]];
-        player2GameScore = new boolean[propArray[1]][propArray[0]];
+//        player1GameScore = new boolean[propArray[1]][propArray[0]];
+//        player2GameScore = new boolean[propArray[1]][propArray[0]];
 
 
         Object inputLine;
