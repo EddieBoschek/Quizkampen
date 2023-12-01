@@ -19,7 +19,7 @@ public class QuizGUI {
     private Client client;
     private Object serverMessage;
     private Category[] categories;
-    private Question[] questions = new Question[3];
+    private Question[] questions;
     private boolean[][] gameresults;
     private boolean[] roundResults;
     boolean[] opponentRoundResults = new boolean[3];
@@ -45,6 +45,7 @@ public class QuizGUI {
         this.roundCounter = roundCounter;
         numbOfQuests = properties[0];
         numbOfRounds = properties[1];
+        questions = new Question[numbOfQuests];
         gameresults = new boolean[numbOfRounds][numbOfQuests];
         roundResults = new boolean[numbOfQuests];
 
@@ -204,6 +205,7 @@ public class QuizGUI {
                 if (serverMessage instanceof Question[] quests) {
                     int i = 0;
                     while (i < numbOfQuests) {
+
                         questions[i] = quests[i];
                         i++;
                     }
@@ -292,7 +294,7 @@ public class QuizGUI {
         ActionListener continueActionListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (qCounter < questions.length) {
+                if (qCounter < numbOfQuests) {
                     displayQuestion(questions[qCounter]);
                 } else {
                     gameresults[roundCounter] = roundResults;

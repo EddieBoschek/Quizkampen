@@ -51,6 +51,9 @@ public class MainMenuGUI {
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(300, 600);
+        if (numbOfQuest > 3) {
+            frame.setSize(400, 600);
+        }
         frame.getContentPane().add(menuPanel);
 
         menuPanel.setLayout(new BorderLayout());
@@ -136,6 +139,7 @@ public class MainMenuGUI {
         JPanel playerScorePanel = new JPanel(new GridLayout(numbOfRounds, numbOfRounds));
         JPanel opponentScorePanel = new JPanel(new GridLayout(numbOfRounds, numbOfRounds));
         JPanel subjectPanel = new JPanel(new GridLayout(numbOfRounds, 1));
+
 
         for (int i = 0; i < numbOfRounds * numbOfQuest; i++) {
             playerScorePanel.add(playerScoreArray.get(i));
@@ -223,6 +227,8 @@ public class MainMenuGUI {
             System.out.println("current round: " + currentRound);
             QuizGUI quizGUI = new QuizGUI(client, currentRound, properties);
             currentRound++;
+        } else {
+
         }
     }
 
