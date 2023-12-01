@@ -11,8 +11,8 @@ import static POJOs.Category.getShuffledCategoryQuestions;
 import static POJOs.Category.shuffleCategories;
 
 public class GameInstance extends Thread {
-    boolean[][] player1GameScore = new boolean[6][3]; //6an ska sen ersättas med antal ronder
-    boolean[][] player2GameScore = new boolean[6][3];
+    boolean[][] player1GameScore; //6an ska sen ersättas med antal ronder
+    boolean[][] player2GameScore;
     private String[] gameCategories = new String[6]; //Samma här
     private Player player1;
     private Player player2;
@@ -57,6 +57,8 @@ public class GameInstance extends Thread {
         int[] propArray = new int[2];
         propArray[0] = Integer.parseInt(p.getProperty("questions", "2"));
         propArray[1] = Integer.parseInt(p.getProperty("rounds", "2"));
+        player1GameScore = new boolean[propArray[1]][propArray[0]];
+        player2GameScore = new boolean[propArray[1]][propArray[0]];
 
 
         Object inputLine;
