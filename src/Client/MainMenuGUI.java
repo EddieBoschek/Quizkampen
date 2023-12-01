@@ -78,7 +78,7 @@ public class MainMenuGUI {
                 } else if (e.getSource() == play) {
                     try {
                         playRound();
-//                        updateScore();
+//                        updateScore(); //Breaks game when used
                     } catch (IOException | ClassNotFoundException | InterruptedException ex) {
                         throw new RuntimeException(ex);
                     }
@@ -185,7 +185,7 @@ public class MainMenuGUI {
         int playerScoreCounter = 0;
         int opponentScoreCounter = 0;
         int loopCounter = 0;
-        for (int j = 0; j < currentRound; j++) {
+        for (int j = 0; j < currentRound-1; j++) {
             for (int k = 0; k < numbOfQuest; k++) {
                 if (playerBoolArray[j][k]) {
                     playerScoreArray.get(loopCounter).setForeground(Color.GREEN);

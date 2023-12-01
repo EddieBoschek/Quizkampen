@@ -24,6 +24,7 @@ public class GameInstance extends Thread {
     Question[] q;
     String cat;
     boolean playerShiftHasBeenMade;
+    boolean startOfGame = true;
     public GameInstance(Player p1, Player p2) {
         this.player1 = p1;
         this.player2 = p2;
@@ -57,6 +58,7 @@ public class GameInstance extends Thread {
         int roundsQuantity = Integer.parseInt(p.getProperty("rounds", "2"));
 
         Object inputLine;
+        Object inputLine2;
         System.out.println("GameStart");
 
         // Skickar förfrågan till currentPlayer och tar emot data som sparas i GameInstance
@@ -81,6 +83,7 @@ public class GameInstance extends Thread {
                             categoryOptions = shuffleCategories(dao.getCategories());
                             currentPlayer.send(categoryOptions);
                             currentPlayer.getOpponent().send(categoryOptions);
+
                             playerShiftHasBeenMade = true;
                         } catch (IOException ex) {
                             throw new RuntimeException(ex);
@@ -88,26 +91,22 @@ public class GameInstance extends Thread {
                     } else if (inputLine.equals("GameUpdateRequest")) {
                         currentPlayer.send(currentPlayer.name);
                         currentPlayer.send(currentPlayer.getOpponent().name);
-                        currentPlayer.getOpponent().send(currentPlayer.getOpponent().name);
-                        currentPlayer.getOpponent().send(currentPlayer.name);
 
                         if (currentPlayer == player1) {
                             currentPlayer.send(player1GameScore);
                             currentPlayer.send(player2GameScore);
-                            currentPlayer.getOpponent().send(player2GameScore);
-                            currentPlayer.getOpponent().send(player1GameScore);
                         }
                         else if (currentPlayer == player2) {
                             currentPlayer.send(player2GameScore);
                             currentPlayer.send(player1GameScore);
-                            currentPlayer.getOpponent().send(player1GameScore);
-                            currentPlayer.getOpponent().send(player2GameScore);
                         }
                         currentPlayer.send(gameCategories);
-                        currentPlayer.getOpponent().send(gameCategories);
+
+                        if (startOfGame)
+                            updateNonCurrentPlayerBoard();
+                        startOfGame = false;
 
                         currentPlayer.send("END");
-                        currentPlayer.getOpponent().send("END");
 
                     } else if (((String) inputLine).startsWith("GO")) {
                         currentPlayer.getOpponent().send(inputLine);
@@ -123,9 +122,41 @@ public class GameInstance extends Thread {
                         currentPlayer.send(q);
                     }
                 }
+                else if ((inputLine2 = currentPlayer.getOpponent().receive()) != null && inputLine2.equals("GameUpdateRequest") && !startOfGame) {
+                    updateNonCurrentPlayerBoard();
+                }
+//                    if (inputLine2.equals("GameUpdateRequest")) {
+//                        currentPlayer.getOpponent().send(currentPlayer.getOpponent().name);
+//                        currentPlayer.getOpponent().send(currentPlayer.name);
+//                        if (currentPlayer == player1) {
+//                            currentPlayer.getOpponent().send(player2GameScore);
+//                            currentPlayer.getOpponent().send(player1GameScore);
+//                        }
+//                        else if (currentPlayer == player2) {
+//                            currentPlayer.getOpponent().send(player1GameScore);
+//                            currentPlayer.getOpponent().send(player2GameScore);
+//                        }
+//                        currentPlayer.getOpponent().send(gameCategories);
+//                        currentPlayer.getOpponent().send("END");
+//                    }
+//                }
             }
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
+    }
+    public void updateNonCurrentPlayerBoard() throws IOException {
+        currentPlayer.getOpponent().send(currentPlayer.getOpponent().name);
+        currentPlayer.getOpponent().send(currentPlayer.name);
+        if (currentPlayer == player1) {
+            currentPlayer.getOpponent().send(player2GameScore);
+            currentPlayer.getOpponent().send(player1GameScore);
+        }
+        else if (currentPlayer == player2) {
+            currentPlayer.getOpponent().send(player1GameScore);
+            currentPlayer.getOpponent().send(player2GameScore);
+        }
+        currentPlayer.getOpponent().send(gameCategories);
+        currentPlayer.getOpponent().send("END");
     }
 }
