@@ -13,8 +13,7 @@ public class MainMenuGUI {
     JButton play = new JButton("Spela");
     JLabel gameName = new JLabel("Quizkampen", SwingConstants.CENTER);
     JPanel menuPanelMaster = new JPanel();
-    JPanel menuPanel1 = new JPanel();
-    JPanel menuPanel2 = new JPanel();
+    JPanel menuSubPanel = new JPanel();
     JPanel activeGamesPanel = new JPanel();
     JPanel buttonsPanel = new JPanel();
     JFrame frame = new JFrame("Quizkampen");
@@ -50,30 +49,24 @@ public class MainMenuGUI {
             }
         }
 
-        client = new Client("127.0.0.1", 12345);
-
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(300, 400);
         frame.getContentPane().add(menuPanelMaster);
 
         menuPanelMaster.setLayout(new GridLayout(2,1));
         menuPanelMaster.add(gameName);
-        menuPanelMaster.add(menuPanel2);
+        menuPanelMaster.add(menuSubPanel);
 
-        JPanel emptyPanelWest = new JPanel();
-        JPanel emptyPanelEast = new JPanel();
-        JPanel emptyPanelSouth = new JPanel();
-        emptyPanelWest.setPreferredSize(new Dimension(60, 0));
-        emptyPanelEast.setPreferredSize(new Dimension(60, 0));
-        emptyPanelSouth.setPreferredSize(new Dimension(0, 50));
-        emptyPanelWest.setBackground(Color.BLUE);
-        emptyPanelEast.setBackground(Color.BLUE);
-        emptyPanelSouth.setBackground(Color.BLUE);
-        menuPanel2.setLayout(new BorderLayout());
-        menuPanel2.add(emptyPanelWest, BorderLayout.WEST);
-        menuPanel2.add(emptyPanelEast, BorderLayout.EAST);
-        menuPanel2.add(emptyPanelSouth, BorderLayout.SOUTH);
-        menuPanel2.add(buttonsPanel, BorderLayout.CENTER);
+        menuSubPanel.setLayout(new BorderLayout());
+
+        for (String position : new String[]{"West", "East", "South"}) {
+            JPanel panel = new JPanel();
+            panel.setBackground(Color.BLUE);
+            panel.setPreferredSize(new Dimension(60, 60));
+            menuSubPanel.add(panel, position);
+        }
+
+        menuSubPanel.add(buttonsPanel, BorderLayout.CENTER);
 
         buttonsPanel.setLayout(new GridLayout(3, 1));
         buttonsPanel.setSize(300, 200);
