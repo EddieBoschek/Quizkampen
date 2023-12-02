@@ -22,8 +22,8 @@ public class MainMenuGUI {
     boolean[] playerRound = new boolean[]{true, true, false};    //Tillfällig
     boolean[] opponentRound = new boolean[]{true, false, true};  //Tillfällig
     Client client;
-    JLabel playerName = new JLabel("Ditt namn");
-    JLabel opponentName = new JLabel("Motståndare");
+    JLabel playerName = new JLabel();
+    JLabel opponentName = new JLabel();
     JLabel enterName = new JLabel("Skriv in ditt namn: ");
     JTextField enterNameField = new JTextField();
     JLabel currentScore = new JLabel("0-0");
@@ -38,6 +38,7 @@ public class MainMenuGUI {
 
     public MainMenuGUI() throws IOException {
         client = new Client("127.0.0.1", 12345);
+
         while (settingUp) {
             o = sendAndReceive("PropertiesRequest");
             System.out.println(o);
@@ -102,7 +103,14 @@ public class MainMenuGUI {
                     if (!enterNameField.getText().isBlank())
                         playerName.setText(enterNameField.getText());
                     frame.getContentPane().removeAll();
-                    updateScore();
+
+
+                    try {
+                        updateScore();
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+
                     getGameMenu();
 //                    updateScore(); //Ska hämta all info, spelarnamn, boolean-poäng-array(s),
 
@@ -115,8 +123,16 @@ public class MainMenuGUI {
                 }*/ else if (e.getSource() == play) {
                     try {
                         playRound();
+
+
 //                        updateScore(); //Breaks game when used
                     } catch (IOException | ClassNotFoundException | InterruptedException ex) {
+                        throw new RuntimeException(ex);
+                    }
+
+                    try {
+                        updateScore();
+                    } catch (IOException ex) {
                         throw new RuntimeException(ex);
                     }
                 }
@@ -207,36 +223,49 @@ public class MainMenuGUI {
         frame.revalidate();
     }
 
-    public void updateScore() {
-        send("GameUpdateRequest");
+    public void getOpponentName() {
+        System.out.println("Mitt spelarnamn: " + playerName.getText());
+        send("GetNameRequest" + playerName);
+        do {
+            opponentName.setText((String)receive());
+        }while(opponentName.getText() == null);
+        System.out.println(opponentName.getText());
+    }
+    public void updateScore() throws IOException {
+        send("GameUpdateRequest" + currentRound);
         System.out.println("GUR");
         Object input = null;
         int i = 0;
         boolean[][] playerBoolArray = new boolean[numbOfRounds][numbOfQuest];
         boolean[][] opponentBoolArray = new boolean[numbOfRounds][numbOfQuest];
 
-        while (true) {
-            input = receive();
-            if (input.equals("END"))
-                break;
 
-            switch (i) {
-                case 0 -> playerName.setText((String) input);
-                case 1 -> opponentName.setText((String) input);
-                case 2 -> playerBoolArray = (boolean[][]) input;
-                case 3 -> opponentBoolArray = (boolean[][]) input;
-                case 4 -> {
-                    if(!firstRound) {
-                        for (int j = 0; j < numbOfRounds; j++) {
-                            String s = ((String[]) input)[j];
-                            if (s != null)
-                                categoryArray.get(j).setText(s);
+        if (input == null) {}
+
+        else {
+            while (true) {
+                input = receive();
+                if (input.equals("END"))
+                    break;
+
+                switch (i) {
+                    case 0 -> playerName.setText((String) input);
+                    case 1 -> opponentName.setText((String) input);
+                    case 2 -> playerBoolArray = (boolean[][]) input;
+                    case 3 -> opponentBoolArray = (boolean[][]) input;
+                    case 4 -> {
+                        if (!firstRound) {
+                            for (int j = 0; j < numbOfRounds; j++) {
+                                String s = ((String[]) input)[j];
+                                if (s != null)
+                                    categoryArray.get(j).setText(s);
+                            }
                         }
                     }
-                }
 
+                }
+                i++;
             }
-            i++;
         }
         firstRound = false;
 
@@ -263,6 +292,8 @@ public class MainMenuGUI {
             }
         }
         currentScore.setText(playerScoreCounter + " - " + opponentScoreCounter);
+
+        client.flushOutput();
     }
 
     public void playRound() throws IOException, ClassNotFoundException, InterruptedException {
