@@ -60,31 +60,29 @@ public class MainMenuGUI {
         menuPanelMaster.add(gameName);
         menuPanelMaster.add(menuPanel2);
 
-        //menuPanel1.setLayout(new BorderLayout());
-        //menuPanel1.add(gameName, BorderLayout.NORTH);
-
         JPanel emptyPanelWest = new JPanel();
         JPanel emptyPanelEast = new JPanel();
-        //JPanel emptyPanelNorth = new JPanel();
         JPanel emptyPanelSouth = new JPanel();
         emptyPanelWest.setPreferredSize(new Dimension(60, 0));
         emptyPanelEast.setPreferredSize(new Dimension(60, 0));
-        //emptyPanelNorth.setPreferredSize(new Dimension(0, 50));
         emptyPanelSouth.setPreferredSize(new Dimension(0, 50));
+        emptyPanelWest.setBackground(Color.BLUE);
+        emptyPanelEast.setBackground(Color.BLUE);
+        emptyPanelSouth.setBackground(Color.BLUE);
         menuPanel2.setLayout(new BorderLayout());
         menuPanel2.add(emptyPanelWest, BorderLayout.WEST);
         menuPanel2.add(emptyPanelEast, BorderLayout.EAST);
-        //menuPanel2.add(emptyPanelNorth, BorderLayout.NORTH);
         menuPanel2.add(emptyPanelSouth, BorderLayout.SOUTH);
         menuPanel2.add(buttonsPanel, BorderLayout.CENTER);
-        //menuPanel.add(activeGamesPanel, BorderLayout.CENTER);
 
         buttonsPanel.setLayout(new GridLayout(3, 1));
         buttonsPanel.setSize(300, 200);
         enterName.setHorizontalAlignment(SwingConstants.CENTER);
+        enterName.setFont(new Font("Serif", Font.PLAIN, 16));
         buttonsPanel.add(enterName);
         buttonsPanel.add(enterNameField);
         buttonsPanel.add(startGameButton);
+        buttonsPanel.setBackground(Color.ORANGE);
         //buttonsPanel.add(settingsButton);
 
         Dimension d = new Dimension(250, 80);
@@ -96,6 +94,9 @@ public class MainMenuGUI {
 
         gameName.setPreferredSize(d);
         gameName.setFont(new Font("Serif", Font.PLAIN, 30));
+        gameName.setBackground(Color.BLUE);
+        gameName.setForeground(Color.ORANGE);
+        gameName.setOpaque(true);
 
         ActionListener buttonListener = new ActionListener() {
             @Override
