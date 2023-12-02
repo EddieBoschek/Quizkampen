@@ -6,24 +6,26 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class MainMenuGUI {
     JButton startGameButton = new JButton("Starta nytt spel");
     JButton settingsButton = new JButton("Inställningar");
     JButton play = new JButton("Spela");
     JLabel gameName = new JLabel("Quizkampen", SwingConstants.CENTER);
-    JPanel menuPanel = new JPanel();
+    JPanel menuPanelMaster = new JPanel();
+    JPanel menuSubPanel = new JPanel();
     JPanel activeGamesPanel = new JPanel();
     JPanel buttonsPanel = new JPanel();
-    JFrame frame = new JFrame();
+    JFrame frame = new JFrame("Quizkampen");
     int numbOfRounds;
     int numbOfQuest;
     boolean[] playerRound = new boolean[]{true, true, false};    //Tillfällig
     boolean[] opponentRound = new boolean[]{true, false, true};  //Tillfällig
     Client client;
-    JLabel playerName = new JLabel("My name");
-    JLabel opponentName = new JLabel("Opponent name");
+    JLabel playerName = new JLabel("Ditt namn");
+    JLabel opponentName = new JLabel("Motståndare");
+    JLabel enterName = new JLabel("Skriv in ditt namn: ");
+    JTextField enterNameField = new JTextField();
     JLabel currentScore = new JLabel("0-0");
     ArrayList<JLabel> playerScoreArray = new ArrayList<>();
     ArrayList<JLabel> opponentScoreArray = new ArrayList<>();
@@ -50,35 +52,54 @@ public class MainMenuGUI {
         client = new Client("127.0.0.1", 12345);
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(300, 600);
-        frame.getContentPane().add(menuPanel);
+        frame.setSize(300, 400);
+        frame.getContentPane().add(menuPanelMaster);
 
-        menuPanel.setLayout(new BorderLayout());
-        menuPanel.add(gameName, BorderLayout.NORTH);
-        menuPanel.add(activeGamesPanel, BorderLayout.CENTER);
-        menuPanel.add(buttonsPanel, BorderLayout.SOUTH);
+        menuPanelMaster.setLayout(new GridLayout(2,1));
+        menuPanelMaster.add(gameName);
+        menuPanelMaster.add(menuSubPanel);
 
-        buttonsPanel.setLayout(new GridLayout(2, 1));
+        menuSubPanel.setLayout(new BorderLayout());
+
+        for (String position : new String[]{"West", "East", "South"}) {
+            JPanel panel = new JPanel();
+            panel.setBackground(Color.BLUE);
+            panel.setPreferredSize(new Dimension(60, 60));
+            menuSubPanel.add(panel, position);
+        }
+
+        menuSubPanel.add(buttonsPanel, BorderLayout.CENTER);
+
+        buttonsPanel.setLayout(new GridLayout(3, 1));
         buttonsPanel.setSize(300, 200);
+        enterName.setHorizontalAlignment(SwingConstants.CENTER);
+        enterName.setFont(new Font("Serif", Font.PLAIN, 16));
+        buttonsPanel.add(enterName);
+        buttonsPanel.add(enterNameField);
         buttonsPanel.add(startGameButton);
-        buttonsPanel.add(settingsButton);
+        buttonsPanel.setBackground(Color.ORANGE);
+        //buttonsPanel.add(settingsButton);
 
         Dimension d = new Dimension(250, 80);
 
         startGameButton.setPreferredSize(d);
         startGameButton.setFont(new Font("Serif", Font.PLAIN, 20));
-        settingsButton.setPreferredSize(d);
-        settingsButton.setFont(new Font("Serif", Font.PLAIN, 20));
+        //settingsButton.setPreferredSize(d);
+        //settingsButton.setFont(new Font("Serif", Font.PLAIN, 20));
 
         gameName.setPreferredSize(d);
         gameName.setFont(new Font("Serif", Font.PLAIN, 30));
+        gameName.setBackground(Color.BLUE);
+        gameName.setForeground(Color.ORANGE);
+        gameName.setOpaque(true);
 
         ActionListener buttonListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (e.getSource() == startGameButton) {
                     System.out.println("Startar sökning efter en motståndare -> Startar upp en GameInstance och öppnar upp spelmenyn");
-
+                    if (!enterNameField.getText().isBlank())
+                        playerName.setText(enterNameField.getText());
                     frame.getContentPane().removeAll();
                     getGameMenu();
 //                    updateScore(); //Ska hämta all info, spelarnamn, boolean-poäng-array(s),
@@ -87,9 +108,9 @@ public class MainMenuGUI {
 //                    frame.revalidate();
 
 
-                } else if (e.getSource() == settingsButton) {
+                } /*else if (e.getSource() == settingsButton) {
                     System.out.println("Öppnar upp en ny JPanel med \"settingsknappar\" som går att justera. Det ska också finnas en apply-knapp");
-                } else if (e.getSource() == play) {
+                }*/ else if (e.getSource() == play) {
                     try {
                         playRound();
                     } catch (IOException | ClassNotFoundException | InterruptedException ex) {
@@ -100,7 +121,7 @@ public class MainMenuGUI {
         };
 
         startGameButton.addActionListener(buttonListener);
-        settingsButton.addActionListener(buttonListener);
+        //settingsButton.addActionListener(buttonListener);
         play.addActionListener(buttonListener);
 
 
