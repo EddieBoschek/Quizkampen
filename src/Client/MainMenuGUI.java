@@ -29,7 +29,7 @@ public class MainMenuGUI {
     JLabel currentScore = new JLabel("0-0");
     ArrayList<JLabel> playerScoreArray = new ArrayList<>();
     ArrayList<JLabel> opponentScoreArray = new ArrayList<>();
-    ArrayList<JLabel> subjectArray = new ArrayList<>();
+    ArrayList<JLabel> categoryArray = new ArrayList<>();
     int currentRound = 0;
     int[] properties;
     boolean settingUp = true;
@@ -144,8 +144,9 @@ public class MainMenuGUI {
             if (i % 3 == 0) {
                 int j = i / 3;
                 s = String.valueOf(j + 1);
-                subjectArray.add(new JLabel(s));
-                subjectArray.get(j).setFont(f);
+                categoryArray.add(new JLabel(s));
+                categoryArray.get(j).setFont(f);
+                categoryArray.get(j).setForeground(Color.ORANGE);
             }
         }
 
@@ -153,29 +154,49 @@ public class MainMenuGUI {
 //        play.addActionListener(MainMenuGUI.buttonListener);
 
         JPanel northPanel = new JPanel();
+        northPanel.setBackground(Color.ORANGE);
         JPanel centerPanel = new JPanel();
+        centerPanel.setBackground(Color.BLUE);
         JPanel playerScorePanel = new JPanel(new GridLayout(numbOfRounds, numbOfRounds));
+        playerScorePanel.setBackground(Color.BLUE);
         JPanel opponentScorePanel = new JPanel(new GridLayout(numbOfRounds, numbOfRounds));
-        JPanel subjectPanel = new JPanel(new GridLayout(numbOfRounds, 1));
+        opponentScorePanel.setBackground(Color.BLUE);
+        JPanel categoryPanel = new JPanel(new GridLayout(numbOfRounds, 1));
+        categoryPanel.setBackground(Color.BLUE);
+        play.setBackground(Color.ORANGE);
+        play.setOpaque(true);
 
         for (int i = 0; i < numbOfRounds * numbOfQuest; i++) {
             playerScorePanel.add(playerScoreArray.get(i));
             opponentScorePanel.add(opponentScoreArray.get(i));
 
             if (i % 3 == 0)
-                subjectPanel.add(subjectArray.get(i / 3));
+                categoryPanel.add(categoryArray.get(i / 3));
         }
 
         gameMenu.add(northPanel, BorderLayout.NORTH);
         gameMenu.add(centerPanel, BorderLayout.CENTER);
         gameMenu.add(play, BorderLayout.SOUTH);
 
+        play.setPreferredSize(new Dimension(50, 50));
+
+        northPanel.setLayout(new GridLayout(1, 3));
+        northPanel.setPreferredSize(new Dimension(50, 50));
+        playerName.setForeground(Color.WHITE);
+        playerName.setBackground(Color.ORANGE);
+        playerName.setOpaque(true);
+        playerName.setHorizontalAlignment(SwingConstants.CENTER);
+        opponentName.setForeground(Color.WHITE);
+        opponentName.setBackground(Color.ORANGE);
+        opponentName.setOpaque(true);
+        opponentName.setHorizontalAlignment(SwingConstants.CENTER);
+        currentScore.setHorizontalAlignment(SwingConstants.CENTER);
         northPanel.add(playerName);
         northPanel.add(currentScore);
         northPanel.add(opponentName);
 
         centerPanel.add(playerScorePanel);
-        centerPanel.add(subjectPanel);
+        centerPanel.add(categoryPanel);
         centerPanel.add(opponentScorePanel);
 
 
@@ -205,7 +226,7 @@ public class MainMenuGUI {
                     for (int j = 0; j < numbOfRounds; j++) {
                         String s = ((String[]) input)[j];
                         if (s != null)
-                            subjectArray.get(j).setText(s);
+                            categoryArray.get(j).setText(s);
                     }
                 }
 
