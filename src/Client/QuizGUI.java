@@ -20,13 +20,8 @@ public class QuizGUI {
     private Object serverMessage;
     private Category[] categories;
     private Question[] questions = new Question[3];
-    private boolean[][] gameresults = new boolean[6][3];
-
-    public boolean[] getRoundResults() {
-        return roundResults;
-    }
-
-    private boolean[] roundResults = new boolean[3];
+    private boolean[][] gameresults;
+    private boolean[] roundResults;
     boolean[] opponentRoundResults = new boolean[3];
     private boolean myTurn;
     private boolean startOfGame = true;
@@ -37,16 +32,22 @@ public class QuizGUI {
     private int opponentDoClickValue = -1;
     private int qCounter = 0;
     private int roundCounter;
-    JPanel scorePanel, questionPanel, answerPanel, continuePanel;
-    JButton continueButton, questionButton1, questionButton2, questionButton3, questionButton4;
+    int numbOfRounds;
+    int numbOfQuests;
+    JPanel scorePanel, questionPanel, answerPanel, continuePanel, p1Score, p2Score;
+    JButton continueButton;
     String s;
-    JButton p1q1, p1q2, p1q3, p2q1, p2q2, p2q3;
     Font f = new Font("serif", Font.PLAIN, 24);
     Font f2 = new Font("dialog", Font.PLAIN, 24);
 
-    public QuizGUI(Client client, int roundCounter) throws IOException, ClassNotFoundException, NullPointerException, InterruptedException {
+    public QuizGUI(Client client, int roundCounter, int[] properties) throws IOException, ClassNotFoundException, NullPointerException, InterruptedException {
         this.client = client;
         this.roundCounter = roundCounter;
+        numbOfQuests = properties[0];
+        numbOfRounds = properties[1];
+        gameresults = new boolean[numbOfRounds][numbOfQuests];
+        roundResults = new boolean[numbOfQuests];
+
         System.out.println("innan loopen");
 //        while (!Objects.equals(message = (String) receiveMessageFromServer(), "START")) {
 //        }
@@ -121,22 +122,24 @@ public class QuizGUI {
         JPanel panel2 = new JPanel();
         panel1.setLayout(new GridLayout(2, 0));
         panel2.setLayout(new GridLayout(2, 0));
-        JPanel p1Score = new JPanel();
+        p1Score = new JPanel();
         JLabel p1Name = new JLabel("Jag");
-        p1Score.add(p1q1 = new JButton());
-        p1Score.add(p1q2 = new JButton());
-        p1Score.add(p1q3 = new JButton());
+        for (int i = 0; i < numbOfQuests; i++) {
+            p1Score.add(new JButton());
+
+        }
         for (Component c : p1Score.getComponents()) {
             if (c instanceof JButton) {
                 ((JButton) c).setPreferredSize(new Dimension(25, 25));
                 ((JButton) c).setBorder(BorderFactory.createLineBorder(Color.BLACK));
             }
         }
-        JPanel p2Score = new JPanel();
+        p2Score = new JPanel();
         JLabel p2Name = new JLabel("Motståndare");
-        p2Score.add(p2q1 = new JButton());
-        p2Score.add(p2q2 = new JButton());
-        p2Score.add(p2q3 = new JButton());
+        for (int i = 0; i < numbOfQuests; i++) {
+            p2Score.add(new JButton());
+
+        }
         for (Component c : p2Score.getComponents()) {
             if (c instanceof JButton) {
                 ((JButton) c).setPreferredSize(new Dimension(25, 25));
@@ -162,8 +165,8 @@ public class QuizGUI {
         if (!myTurn) {
             while (true) {
 
-                    s = (String) receiveMessageFromServer();
-                    // s är false;
+                s = (String) receiveMessageFromServer();
+                // s är false;
 
 
 
@@ -178,7 +181,7 @@ public class QuizGUI {
                     System.out.println(oMessage);
                     if (oMessage instanceof Question[] quests) {
                         int i = 0;
-                        while (i < 3) {
+                        while (i < numbOfQuests) {
                             questions[i] = quests[i];
                             i++;
                         }
@@ -200,7 +203,7 @@ public class QuizGUI {
 
                 if (serverMessage instanceof Question[] quests) {
                     int i = 0;
-                    while (i < 3) {
+                    while (i < numbOfQuests) {
                         questions[i] = quests[i];
                         i++;
                     }
@@ -218,7 +221,7 @@ public class QuizGUI {
 
                 if (serverMessage instanceof Question[] quests) {
                     int i = 0;
-                    while (i < 3) {
+                    while (i < numbOfQuests) {
                         questions[i] = quests[i];
                         i++;
                     }
@@ -235,7 +238,7 @@ public class QuizGUI {
 
                 if (serverMessage instanceof Question[] quests) {
                     int i = 0;
-                    while (i < 3) {
+                    while (i < numbOfQuests) {
                         questions[i] = quests[i];
                         i++;
                     }
@@ -258,10 +261,11 @@ public class QuizGUI {
         answerPanel = new JPanel();
         answerPanel.setPreferredSize(new Dimension(850, 100));
         answerPanel.setLayout(new GridLayout(2, 2));
-        answerPanel.add(questionButton1 = new JButton("Svar 1"));
-        answerPanel.add(questionButton2 = new JButton("Svar 2"));
-        answerPanel.add(questionButton3 = new JButton("Svar 3"));
-        answerPanel.add(questionButton4 = new JButton("Svar 4"));
+
+        for (int i = 0; i < 4; i++) {
+            answerPanel.add(new JButton());
+        }
+
         continuePanel = new JPanel();
         continueButton = new JButton("Fortsätt");
         continueButton.setPreferredSize(new Dimension(500, 50));
@@ -274,17 +278,12 @@ public class QuizGUI {
         ActionListener commonActionListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                for (ActionListener al : questionButton1.getActionListeners()) {
-                    questionButton1.removeActionListener(al);
-                }
-                for (ActionListener al : questionButton2.getActionListeners()) {
-                    questionButton2.removeActionListener(al);
-                }
-                for (ActionListener al : questionButton3.getActionListeners()) {
-                    questionButton3.removeActionListener(al);
-                }
-                for (ActionListener al : questionButton4.getActionListeners()) {
-                    questionButton4.removeActionListener(al);
+                for (Component c:answerPanel.getComponents()) {
+                    if (c instanceof JButton) {
+                        for (ActionListener al : ((JButton) c).getActionListeners()) {
+                            ((JButton) c).removeActionListener(al);
+                        }
+                    }
                 }
                 handleAnswer((JButton) e.getSource());
                 qCounter++;
@@ -296,8 +295,9 @@ public class QuizGUI {
                 if (qCounter < questions.length) {
                     displayQuestion(questions[qCounter]);
                 } else {
+                    gameresults[roundCounter] = roundResults;
                     if (myTurn) {
-                        gameresults[roundCounter] = roundResults;
+
                         StringBuilder s = new StringBuilder();
                         for (boolean b : roundResults) {
                             if (b) {
@@ -364,53 +364,21 @@ public class QuizGUI {
             continueButton.setVisible(true);
             roundResults[qCounter] = false;
         }
-        switch (qCounter) {
-            case 0 -> {
-                p1q1.setBackground(jb.getBackground());
-                p1q1.revalidate();
-                p1q1.repaint();
-            }
-            case 1 -> {
-                p1q2.setBackground(jb.getBackground());
-                frame.repaint();
-                frame.revalidate();
-            }
-            case 2 -> {
-                p1q3.setBackground(jb.getBackground());
-                frame.repaint();
-                frame.revalidate();
-            }
-        }
+        p1Score.getComponent(qCounter).setBackground(jb.getBackground());
+        frame.repaint();
+        frame.revalidate();
+
         if (!myTurn) {
-            switch (qCounter) {
-                case 0 -> {
-                    if (s.charAt(qCounter) == 't') {
-                        p2q1.setBackground(Color.green);
-                    } else {
-                        p2q1.setBackground(Color.red);
-                    }
-                    frame.repaint();
-                    frame.revalidate();
-                }
-                case 1 -> {
-                    if (s.charAt(qCounter) == 't') {
-                        p2q2.setBackground(Color.green);
-                    } else {
-                        p2q2.setBackground(Color.red);
-                    }
-                    frame.repaint();
-                    frame.revalidate();
-                }
-                case 2 -> {
-                    if (s.charAt(qCounter) == 't') {
-                        p2q3.setBackground(Color.green);
-                    } else {
-                        p2q3.setBackground(Color.red);
-                    }
-                    frame.repaint();
-                    frame.revalidate();
-                }
+
+
+            if (s.charAt(qCounter) == 't') {
+                p2Score.getComponent(qCounter).setBackground(Color.green);
+            } else {
+                p2Score.getComponent(qCounter).setBackground(Color.red);
             }
+            frame.repaint();
+            frame.revalidate();
+
         }
     }
 
@@ -442,15 +410,6 @@ public class QuizGUI {
         return receivedMessage;
     }
 
-    private void updateScorePanel() {
-        p1q1.setBackground(gameresults[roundCounter][0] ? Color.green : Color.red);
-        p1q2.setBackground(gameresults[roundCounter][1] ? Color.green : Color.red);
-        p1q3.setBackground(gameresults[roundCounter][2] ? Color.green : Color.red);
-
-        p2q1.setBackground(opponentRoundResults[0] ? Color.green : Color.red);
-        p2q2.setBackground(opponentRoundResults[1] ? Color.green : Color.red);
-        p2q3.setBackground(opponentRoundResults[2] ? Color.green : Color.red);
-    }
 
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {

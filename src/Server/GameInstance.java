@@ -11,9 +11,9 @@ import static POJOs.Category.getShuffledCategoryQuestions;
 import static POJOs.Category.shuffleCategories;
 
 public class GameInstance extends Thread {
-    boolean[][] player1GameScore = new boolean[6][3]; //6an ska sen ersättas med antal ronder
-    boolean[][] player2GameScore = new boolean[6][3];
-    private String[] gameCategories = {"1","2","3","4","5","6"}; //Samma här
+    boolean[][] player1GameScore; //6an ska sen ersättas med antal ronder
+    boolean[][] player2GameScore;
+    private String[] gameCategories = new String[6]; //Samma här
     private Player player1;
     private Player player2;
     private Player currentPlayer;
@@ -54,8 +54,12 @@ public class GameInstance extends Thread {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        int questionsQuantity = Integer.parseInt(p.getProperty("questions", "2"));
-        int roundsQuantity = Integer.parseInt(p.getProperty("rounds", "2"));
+        int[] propArray = new int[2];
+        propArray[0] = Integer.parseInt(p.getProperty("questions", "2"));
+        propArray[1] = Integer.parseInt(p.getProperty("rounds", "2"));
+        player1GameScore = new boolean[propArray[1]][propArray[0]];
+        player2GameScore = new boolean[propArray[1]][propArray[0]];
+
 
         Object inputLine;
         Object inputLine2;
@@ -65,7 +69,11 @@ public class GameInstance extends Thread {
         try {
             while (true) {
                 if ((inputLine = currentPlayer.receive()) != null) {
-                    if (((String) inputLine).startsWith("Start") && !playerShiftHasBeenMade) {
+                    if (inputLine.equals("PropertiesRequest")) {
+                        currentPlayer.send(propArray);
+                        currentPlayer.getOpponent().send(propArray);
+
+                    } else if (((String) inputLine).startsWith("Start") && !playerShiftHasBeenMade) {
                         System.out.println((String) inputLine);
                         try {
                             int nmbr = Integer.parseInt(((String) inputLine).substring(5));
@@ -83,7 +91,6 @@ public class GameInstance extends Thread {
                             categoryOptions = shuffleCategories(dao.getCategories());
                             currentPlayer.send(categoryOptions);
                             currentPlayer.getOpponent().send(categoryOptions);
-
                             playerShiftHasBeenMade = true;
                         } catch (IOException ex) {
                             throw new RuntimeException(ex);
@@ -91,7 +98,6 @@ public class GameInstance extends Thread {
                     } else if (inputLine.equals("GameUpdateRequest")) {
                         currentPlayer.send(currentPlayer.name);
                         currentPlayer.send(currentPlayer.getOpponent().name);
-
                         if (currentPlayer == player1) {
                             currentPlayer.send(player1GameScore);
                             currentPlayer.send(player2GameScore);
