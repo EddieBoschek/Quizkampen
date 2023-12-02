@@ -49,6 +49,8 @@ public class MainMenuGUI {
             }
         }
 
+        client = new Client("127.0.0.1", 12345);
+
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(300, 400);
         frame.getContentPane().add(menuPanelMaster);
