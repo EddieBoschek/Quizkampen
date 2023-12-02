@@ -23,9 +23,9 @@ public class MainMenuGUI {
     boolean[] playerRound = new boolean[]{true, true, false};    //Tillfällig
     boolean[] opponentRound = new boolean[]{true, false, true};  //Tillfällig
     Client client;
-    JLabel playerName = new JLabel("My name");
-    JLabel opponentName = new JLabel("Opponent name");
-    JLabel enterName = new JLabel("Enter name: ");
+    JLabel playerName = new JLabel("Ditt namn");
+    JLabel opponentName = new JLabel("Motståndare");
+    JLabel enterName = new JLabel("Skriv in ditt namn: ");
     JTextField enterNameField = new JTextField();
     JLabel currentScore = new JLabel("0-0");
     ArrayList<JLabel> playerScoreArray = new ArrayList<>();
