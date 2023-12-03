@@ -124,6 +124,11 @@ public class GameInstance extends Thread {
                         q = getShuffledCategoryQuestions(cat, dao.getCategories());
                         currentPlayer.send(q);
                     }
+                    else if ((inputLine.equals("BothPlayersHaveAnsweredQuestions" + currentRound)) && startOfGame ) { //|| currentRound == 1
+                        System.out.println(inputLine);
+                        currentPlayer.send(inputLine);
+                        currentPlayer.getOpponent().send(inputLine);
+                    }
                 }
                 else if ((inputLine2 = currentPlayer.getOpponent().receive()) != null) {
                     if (inputLine2.equals("GameUpdateRequest" + currentRound) && !startOfGame){
@@ -133,6 +138,11 @@ public class GameInstance extends Thread {
                     else if (((String) inputLine2).startsWith("GetNameRequest")) {
                         currentPlayer.getOpponent().setName(((String) inputLine2).substring(14));
                         currentPlayer.send(currentPlayer.getOpponent().getName());
+                    }
+                    else if (inputLine2.equals("BothPlayersHaveAnsweredQuestions" + currentRound)) {
+                        System.out.println(inputLine2);
+                        currentPlayer.send(inputLine2);
+                        currentPlayer.getOpponent().send(inputLine2);
                     }
                 }
             }

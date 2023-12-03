@@ -35,6 +35,7 @@ public class MainMenuGUI {
     boolean settingUp = true;
     Object o;
     boolean firstRound = true;
+    boolean playersReady;
 
     public MainMenuGUI() throws IOException {
         client = new Client("127.0.0.1", 12345);
@@ -51,7 +52,7 @@ public class MainMenuGUI {
             }
         }
 
-        client = new Client("127.0.0.1", 12345);
+//        client = new Client("127.0.0.1", 12345);
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(300, 400);
@@ -105,11 +106,11 @@ public class MainMenuGUI {
                     frame.getContentPane().removeAll();
 
 
-                    try {
-                        updateScore();
-                    } catch (IOException ex) {
-                        throw new RuntimeException(ex);
-                    }
+//                    try {
+//                        updateScore();
+//                    } catch (IOException ex) {
+//                        throw new RuntimeException(ex);
+//                    }
 
                     getGameMenu();
 //                    updateScore(); //Ska hämta all info, spelarnamn, boolean-poäng-array(s),
@@ -118,29 +119,40 @@ public class MainMenuGUI {
 //                    frame.revalidate();
 
 
-                } /*else if (e.getSource() == settingsButton) {
-                    System.out.println("Öppnar upp en ny JPanel med \"settingsknappar\" som går att justera. Det ska också finnas en apply-knapp");
-                }*/ else if (e.getSource() == play) {
-                    try {
-                        playRound();
+//                } else if (e.getSource() == settingsButton) {
 
 
-//                        updateScore(); //Breaks game when used
-                    } catch (IOException | ClassNotFoundException | InterruptedException ex) {
-                        throw new RuntimeException(ex);
-                    }
+                } else if (e.getSource() == play) { //wait and update or play next round
+                    if (playersReady) {
+                        try {
+                            playRound();
 
-                    try {
-                        updateScore();
-                    } catch (IOException ex) {
-                        throw new RuntimeException(ex);
+
+                        } catch (IOException | ClassNotFoundException | InterruptedException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                        playersReady = false;
+                        frame.repaint();
+                        frame.revalidate();
+
+                    }else{
+                        try {
+                            updateScoreAll();
+                        } catch (IOException | ClassNotFoundException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                        playersReady = true;
+                        frame.repaint();
+                        frame.revalidate();
+
+
                     }
                 }
             }
         };
 
         startGameButton.addActionListener(buttonListener);
-        //settingsButton.addActionListener(buttonListener);
+//        settingsButton.addActionListener(buttonListener);
         play.addActionListener(buttonListener);
 
 
@@ -240,7 +252,7 @@ public class MainMenuGUI {
         boolean[][] opponentBoolArray = new boolean[numbOfRounds][numbOfQuest];
 
 
-        if (input == null) {}
+        if (input == null) {} //Try to change later so that first player waits for second player to update home screen. something simillar to this.
 
         else {
             while (true) {
@@ -272,7 +284,7 @@ public class MainMenuGUI {
         int playerScoreCounter = 0;
         int opponentScoreCounter = 0;
         int loopCounter = 0;
-        for (int j = 0; j < currentRound-1; j++) {
+        for (int j = 0; j < currentRound; j++) {
             for (int k = 0; k < numbOfQuest; k++) {
                 if (playerBoolArray[j][k]) {
                     playerScoreArray.get(loopCounter).setForeground(Color.GREEN);
@@ -294,6 +306,22 @@ public class MainMenuGUI {
         currentScore.setText(playerScoreCounter + " - " + opponentScoreCounter);
 
         client.flushOutput();
+        frame.repaint();
+        frame.revalidate();
+
+    }
+
+    public void updateScoreAll() throws IOException, ClassNotFoundException { //Får in data från metod updateScore() och verkar inte skicka något själv
+        Object input = null;
+        send("BothPlayersHaveAnsweredQuestions" + currentRound);
+
+            input = receive();
+            System.out.println("updateScoreAll-input: " + input);
+
+            if (input.equals("BothPlayersHaveAnsweredQuestions" + currentRound)) {
+                updateScore();
+            }
+
     }
 
     public void playRound() throws IOException, ClassNotFoundException, InterruptedException {
