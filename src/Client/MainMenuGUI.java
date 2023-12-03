@@ -103,7 +103,8 @@ public class MainMenuGUI {
                     } catch (IOException ex) {
                         throw new RuntimeException(ex);
                     }
-                    System.out.println("Startar sökning efter en motståndare -> Startar upp en GameInstance och öppnar upp spelmenyn");
+                    System.out.println("Startar sökning efter en motståndare -> Startar upp " +
+                                        "en GameInstance och öppnar upp spelmenyn");
                     if (!enterNameField.getText().isBlank())
                         playerName.setText(enterNameField.getText());
                     frame.getContentPane().removeAll();
@@ -114,9 +115,9 @@ public class MainMenuGUI {
 //                    frame.revalidate();
 
 
-                } /*else if (e.getSource() == settingsButton) {
-                    System.out.println("Öppnar upp en ny JPanel med \"settingsknappar\" som går att justera. Det ska också finnas en apply-knapp");
-                }*/ else if (e.getSource() == play) {
+                /*} else if (e.getSource() == settingsButton) {
+                    System.out.println("Öppnar upp en ny JPanel med \"settingsknappar\" som går att justera. Det ska också finnas en apply-knapp");*/
+                } else if (e.getSource() == play) {
                     try {
                         playRound();
                         if (currentRound >= numbOfRounds) {
@@ -241,7 +242,6 @@ public class MainMenuGUI {
             i++;
         }
 
-
         int playerScoreCounter = 0;
         int opponentScoreCounter = 0;
         int loopCounter = 0;
@@ -274,8 +274,9 @@ public class MainMenuGUI {
             currentRound++;
         } else {
             frame.getContentPane().removeAll();
-            getStartMenu();
+            client.flushOutput();
             client.close();
+            client = null;
             play.setText("Spela");
             playerName.setText("Ditt namn");
             opponentName.setText("Motståndare");
@@ -285,6 +286,7 @@ public class MainMenuGUI {
             //categoryArray = new ArrayList<>();
             currentRound = 0;
             settingUp = true;
+            getStartMenu();
         }
     }
 
@@ -315,5 +317,18 @@ public class MainMenuGUI {
             e.printStackTrace();
         }
         return receivedMessage;
+
+    }
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    MainMenuGUI mainMenuGUI = new MainMenuGUI();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 }

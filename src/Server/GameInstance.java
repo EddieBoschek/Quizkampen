@@ -75,6 +75,7 @@ public class GameInstance extends Thread {
                         currentPlayer.getOpponent().send(propArray);
                         propSent = true;
                         System.out.println("Prop send");
+                        System.out.println("Shift: " + playerShiftHasBeenMade);
 
                     } else if (((String) inputLine).startsWith("Start") && !playerShiftHasBeenMade) {
                         System.out.println((String) inputLine);
@@ -120,7 +121,6 @@ public class GameInstance extends Thread {
                         currentPlayer.getOpponent().send(inputLine);
                         currentPlayer.getOpponent().send(q);
                         playerShiftHasBeenMade = false;
-
 
                     } else if (((String) inputLine).startsWith("P1")){
                         cat = ((String) inputLine).substring(2);

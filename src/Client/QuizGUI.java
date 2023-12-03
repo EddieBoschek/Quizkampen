@@ -35,7 +35,7 @@ public class QuizGUI {
     Font f = new Font("serif", Font.PLAIN, 24);
     Font f2 = new Font("dialog", Font.PLAIN, 24);
 
-    public QuizGUI(Client client, int roundCounter, int[] properties) throws IOException, ClassNotFoundException, NullPointerException, InterruptedException {
+    public QuizGUI(Client client, int roundCounter, int[] properties) throws NullPointerException {
         this.client = client;
         this.roundCounter = roundCounter;
         numbOfQuests = properties[0];
@@ -60,7 +60,6 @@ public class QuizGUI {
                 startOfGame = false;
             }
         }
-
 
         frame = new JFrame("Quizkampen");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -412,16 +411,5 @@ public class QuizGUI {
 
 
 
-    public static void main(String[] args) throws IOException, ClassNotFoundException {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    MainMenuGUI mainMenuGUI = new MainMenuGUI();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
+
 }
