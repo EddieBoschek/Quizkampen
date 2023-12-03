@@ -4,15 +4,10 @@ import POJOs.Category;
 import POJOs.Question;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 public class QuizGUI {
     private Question askedQuest = null;
@@ -47,6 +42,7 @@ public class QuizGUI {
         numbOfRounds = properties[1];
         gameresults = new boolean[numbOfRounds][numbOfQuests];
         roundResults = new boolean[numbOfQuests];
+        System.out.println("Start of game: " + startOfGame);
 
         System.out.println("innan loopen");
 //        while (!Objects.equals(message = (String) receiveMessageFromServer(), "START")) {
@@ -54,7 +50,9 @@ public class QuizGUI {
 
         while (startOfGame) {
             sendMessageToServer("Start" + roundCounter);
+            System.out.println("Message send");
             oMessage = receiveMessageFromServer();
+            System.out.println("Message received");
 //            client.flushOutput();
             if (oMessage instanceof Boolean) {
                 myTurn = (boolean) oMessage;
@@ -67,6 +65,7 @@ public class QuizGUI {
         frame = new JFrame("Quizkampen");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(850, 450);
+        frame.setLocation(300, 0);
         frame.setLayout(new BorderLayout());
 
         categories = (Category[]) receiveMessageFromServer();
@@ -79,8 +78,6 @@ public class QuizGUI {
 //        System.out.println(trashcan);
 //    }
 //}
-
-
 
         JPanel categoryPanel = new JPanel();
         categoryPanel.setLayout(new GridLayout(4, 1));
@@ -154,6 +151,7 @@ public class QuizGUI {
         panel2.add(p2Score);
         scorePanel.add(panel1);
         scorePanel.add(panel2);
+
         if (myTurn) {
             frame.getContentPane().add(emptyPanelNorth, BorderLayout.NORTH);
             frame.getContentPane().add(categoryPanel, BorderLayout.CENTER);
@@ -169,9 +167,6 @@ public class QuizGUI {
 
                 s = (String) receiveMessageFromServer();
                 // s är false;
-
-
-
 
                 System.out.println(s);
 
@@ -424,6 +419,7 @@ public class QuizGUI {
                 try {
                     MainMenuGUI mainMenuGUI = new MainMenuGUI();
                 } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
         });

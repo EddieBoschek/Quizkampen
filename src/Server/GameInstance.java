@@ -17,20 +17,22 @@ public class GameInstance extends Thread {
     private Player player1;
     private Player player2;
     private Player currentPlayer;
-    int currenRound;
+    int currentRound;
     private Properties p = new Properties();
     private boolean orderCheck;
     private DAO dao = new DAO();
     Category[] categoryOptions;
     Question[] q;
     String cat;
-    boolean playerShiftHasBeenMade;
+    boolean playerShiftHasBeenMade = false;
+    boolean propSent = false;
     public GameInstance(Player p1, Player p2) {
         this.player1 = p1;
         this.player2 = p2;
         currentPlayer = p1;
         this.player1.setOpponent(p2);
         this.player2.setOpponent(p1);
+        System.out.println("New gameInstance");
     }
     public void updateScores(String winner) {
         if (winner.equals(player1.getName())) {
@@ -62,15 +64,17 @@ public class GameInstance extends Thread {
 
 
         Object inputLine;
-        System.out.println("GameStart");
+
 
         // Skickar förfrågan till currentPlayer och tar emot data som sparas i GameInstance
         try {
             while (true) {
                 if ((inputLine = currentPlayer.receive()) != null) {
-                    if (inputLine.equals("PropertiesRequest")) {
+                    if (inputLine.equals("PropertiesRequest") && !propSent) {
                         currentPlayer.send(propArray);
                         currentPlayer.getOpponent().send(propArray);
+                        propSent = true;
+                        System.out.println("Prop send");
 
                     } else if (((String) inputLine).startsWith("Start") && !playerShiftHasBeenMade) {
                         System.out.println((String) inputLine);
@@ -80,11 +84,14 @@ public class GameInstance extends Thread {
                                 currentPlayer = player1;
                                 player1.setCurrentPlayer(true);
                                 player2.setCurrentPlayer(false);
+                                System.out.println("Current player: 1");
                             } else {
                                 player1.setCurrentPlayer(false);
                                 player2.setCurrentPlayer(true);
                                 currentPlayer = player2;
+                                System.out.println("Current player: 2");
                             }
+                            System.out.println("GameStart");
                             player1.send(player1.isCurrentPlayer());
                             player2.send(player2.isCurrentPlayer());
                             categoryOptions = shuffleCategories(dao.getCategories());
@@ -106,7 +113,7 @@ public class GameInstance extends Thread {
                             currentPlayer.send(player1GameScore);
                         }
                         currentPlayer.send(gameCategories);
-                        currentPlayer.send(currenRound);
+                        currentPlayer.send(currentRound);
                         currentPlayer.send("END");
 
                     } else if (((String) inputLine).startsWith("GO")) {
@@ -121,6 +128,7 @@ public class GameInstance extends Thread {
                         System.out.println(cat);
                         q = getShuffledCategoryQuestions(cat, dao.getCategories());
                         currentPlayer.send(q);
+                        System.out.println("q sent");
                     }
                 }
             }

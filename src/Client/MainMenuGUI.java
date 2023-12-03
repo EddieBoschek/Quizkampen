@@ -35,22 +35,12 @@ public class MainMenuGUI {
     boolean settingUp = true;
     Object o;
 
-    public MainMenuGUI() throws IOException {
-        client = new Client("127.0.0.1", 12345);
-        while (settingUp) {
-            o = sendAndReceive("PropertiesRequest");
-            System.out.println(o);
-            if (o instanceof int[]) {
+    public MainMenuGUI() {
 
-                properties = (int[]) o;
-                numbOfQuest = properties[0];
-                numbOfRounds = properties[1];
-                settingUp = false;
-            }
-        }
+        getStartMenu();
 
-        client = new Client("127.0.0.1", 12345);
-
+    }
+        public void getStartMenu() {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(300, 400);
         frame.getContentPane().add(menuPanelMaster);
@@ -97,6 +87,22 @@ public class MainMenuGUI {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (e.getSource() == startGameButton) {
+                    try {
+                        client = new Client("127.0.0.1", 12345);
+                        while (settingUp) {
+                            o = sendAndReceive("PropertiesRequest");
+                            if (o instanceof int[]) {
+                                properties = (int[]) o;
+                                numbOfQuest = properties[0];
+                                numbOfRounds = properties[1];
+                                System.out.println("Frågor: " + properties[0]);
+                                System.out.println("Rundor: " + properties[1]);
+                                settingUp = false;
+                            }
+                        }
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
                     System.out.println("Startar sökning efter en motståndare -> Startar upp en GameInstance och öppnar upp spelmenyn");
                     if (!enterNameField.getText().isBlank())
                         playerName.setText(enterNameField.getText());
@@ -113,6 +119,9 @@ public class MainMenuGUI {
                 }*/ else if (e.getSource() == play) {
                     try {
                         playRound();
+                        if (currentRound >= numbOfRounds) {
+                            play.setText("Avsluta spel");
+                        }
                     } catch (IOException | ClassNotFoundException | InterruptedException ex) {
                         throw new RuntimeException(ex);
                     }
@@ -164,6 +173,7 @@ public class MainMenuGUI {
         JPanel categoryPanel = new JPanel(new GridLayout(numbOfRounds, 1));
         categoryPanel.setBackground(Color.BLUE);
         play.setBackground(Color.ORANGE);
+        play.setPreferredSize(new Dimension(50, 50));
         play.setOpaque(true);
 
         for (int i = 0; i < numbOfRounds * numbOfQuest; i++) {
@@ -177,8 +187,6 @@ public class MainMenuGUI {
         gameMenu.add(northPanel, BorderLayout.NORTH);
         gameMenu.add(centerPanel, BorderLayout.CENTER);
         gameMenu.add(play, BorderLayout.SOUTH);
-
-        play.setPreferredSize(new Dimension(50, 50));
 
         northPanel.setLayout(new GridLayout(1, 3));
         northPanel.setPreferredSize(new Dimension(50, 50));
@@ -198,7 +206,6 @@ public class MainMenuGUI {
         centerPanel.add(playerScorePanel);
         centerPanel.add(categoryPanel);
         centerPanel.add(opponentScorePanel);
-
 
         frame.repaint();
         frame.revalidate();
@@ -265,6 +272,19 @@ public class MainMenuGUI {
             System.out.println("current round: " + currentRound);
             QuizGUI quizGUI = new QuizGUI(client, currentRound, properties);
             currentRound++;
+        } else {
+            frame.getContentPane().removeAll();
+            getStartMenu();
+            client.close();
+            play.setText("Spela");
+            playerName.setText("Ditt namn");
+            opponentName.setText("Motståndare");
+            currentScore.setText("0-0");
+            //playerScoreArray = new ArrayList<>();
+            //opponentScoreArray = new ArrayList<>();
+            //categoryArray = new ArrayList<>();
+            currentRound = 0;
+            settingUp = true;
         }
     }
 
@@ -296,5 +316,4 @@ public class MainMenuGUI {
         }
         return receivedMessage;
     }
-
 }
