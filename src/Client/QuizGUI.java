@@ -132,6 +132,7 @@ public class QuizGUI {
             if (c instanceof JButton) {
                 ((JButton) c).setPreferredSize(new Dimension(25, 25));
                 ((JButton) c).setBorder(BorderFactory.createLineBorder(Color.BLACK));
+                ((JButton) c).setOpaque(true);
             }
         }
         p2Score = new JPanel();
@@ -144,6 +145,7 @@ public class QuizGUI {
             if (c instanceof JButton) {
                 ((JButton) c).setPreferredSize(new Dimension(25, 25));
                 ((JButton) c).setBorder(BorderFactory.createLineBorder(Color.BLACK));
+                ((JButton) c).setOpaque(true);
             }
         }
         panel1.add(p1Name);
@@ -346,6 +348,7 @@ public class QuizGUI {
     private void handleAnswer(JButton jb) {
         if (questions[qCounter].checkAnswer(jb.getText())) {
             jb.setBackground(Color.green);
+            jb.setOpaque(true);
             jb.repaint();
             jb.revalidate();
             continueButton.setVisible(true);
@@ -355,10 +358,12 @@ public class QuizGUI {
                 if (c instanceof JButton) {
                     if (askedQuest.checkAnswer(((JButton) c).getText())) {
                         c.setBackground(Color.green);
+                        ((JButton) c).setOpaque(true);
                     }
                 }
             }
             jb.setBackground(Color.red);
+            jb.setOpaque(true);
             jb.repaint();
             jb.revalidate();
             continueButton.setVisible(true);
