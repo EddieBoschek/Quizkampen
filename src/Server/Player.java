@@ -97,8 +97,8 @@ public class Player implements Runnable {
 
         try {
             while (true) {
-                if (isCurrentPlayer) {
-                    if ((inputLine = receive()) != null) {
+                if ((inputLine = receive()) != null) {
+                    if (isCurrentPlayer) {
                         if (inputLine.equals("PropertiesRequest")) {
                             send(propArray);
                             opponent.send(propArray);
@@ -148,25 +148,26 @@ public class Player implements Runnable {
                             System.out.println(cat);
                             q = getShuffledCategoryQuestions(cat, dao.getCategories());
                             send(q);
-                        } else if ((inputLine.equals("BothPlayersHaveAnsweredQuestions" + currentRound)) && startOfGame) { //|| currentRound == 1
+                        }
+//                        else if ((inputLine.equals("BothPlayersHaveAnsweredQuestions" + currentRound)) && startOfGame) { //|| currentRound == 1
+//                            System.out.println(inputLine);
+//                            send(inputLine);
+//                            opponent.send(inputLine);
+//                        }
+                    } else {
+
+                        if (inputLine.equals("GameUpdateRequest" + currentRound) && !startOfGame) {
+                            updateNonCurrentPlayerBoard();
+                            updateCurrentPlayerBoard();
+                        } else if (((String) inputLine).startsWith("GetNameRequest")) {
+                            opponent.setName(((String) inputLine).substring(14));
+                            send(opponent.getName());
+                        } else if (inputLine.equals("BothPlayersHaveAnsweredQuestions" + currentRound)) {
                             System.out.println(inputLine);
                             send(inputLine);
                             opponent.send(inputLine);
                         }
                     }
-                } else {
-                    if (inputLine.equals("GameUpdateRequest" + currentRound) && !startOfGame) {
-                        updateNonCurrentPlayerBoard();
-                        updateCurrentPlayerBoard();
-                    } else if (((String) inputLine).startsWith("GetNameRequest")) {
-                        opponent.setName(((String) inputLine).substring(14));
-                        send(opponent.getName());
-                    } else if (inputLine.equals("BothPlayersHaveAnsweredQuestions" + currentRound)) {
-                        System.out.println(inputLine);
-                        send(inputLine);
-                        opponent.send(inputLine);
-                    }
-
                 }
             }
         } catch (IOException | ClassNotFoundException e) {
