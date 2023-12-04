@@ -34,6 +34,8 @@ public class MainMenuGUI {
     int[] properties;
     boolean settingUp = true;
     Object o;
+    boolean startButtonClicked = false;
+    boolean playButtonClicked = false;
 
     public MainMenuGUI() {
 
@@ -87,28 +89,33 @@ public class MainMenuGUI {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (e.getSource() == startGameButton) {
-                    try {
-                        client = new Client("127.0.0.1", 12345);
-                        while (settingUp) {
-                            o = sendAndReceive("PropertiesRequest");
-                            if (o instanceof int[]) {
-                                properties = (int[]) o;
-                                numbOfQuest = properties[0];
-                                numbOfRounds = properties[1];
-                                System.out.println("Frågor: " + properties[0]);
-                                System.out.println("Rundor: " + properties[1]);
-                                settingUp = false;
+                    if (!startButtonClicked) {
+                        try {
+                            {
+                                client = new Client("127.0.0.1", 12345);
                             }
+                            while (settingUp) {
+                                o = sendAndReceive("PropertiesRequest");
+                                if (o instanceof int[]) {
+                                    properties = (int[]) o;
+                                    numbOfQuest = properties[0];
+                                    numbOfRounds = properties[1];
+                                    System.out.println("Frågor: " + properties[0]);
+                                    System.out.println("Rundor: " + properties[1]);
+                                    settingUp = false;
+                                }
+                            }
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
                         }
-                    } catch (IOException ex) {
-                        throw new RuntimeException(ex);
+                        System.out.println("Startar sökning efter en motståndare -> Startar upp " +
+                                "en GameInstance och öppnar upp spelmenyn");
+                        if (!enterNameField.getText().isBlank())
+                            playerName.setText(enterNameField.getText());
+                        frame.getContentPane().removeAll();
+                        getGameMenu();
+                        startButtonClicked = true;
                     }
-                    System.out.println("Startar sökning efter en motståndare -> Startar upp " +
-                                        "en GameInstance och öppnar upp spelmenyn");
-                    if (!enterNameField.getText().isBlank())
-                        playerName.setText(enterNameField.getText());
-                    frame.getContentPane().removeAll();
-                    getGameMenu();
 //                    updateScore(); //Ska hämta all info, spelarnamn, boolean-poäng-array(s),
 
 //                    frame.repaint();
@@ -118,13 +125,18 @@ public class MainMenuGUI {
                 /*} else if (e.getSource() == settingsButton) {
                     System.out.println("Öppnar upp en ny JPanel med \"settingsknappar\" som går att justera. Det ska också finnas en apply-knapp");*/
                 } else if (e.getSource() == play) {
-                    try {
-                        playRound();
-                        if (currentRound >= numbOfRounds) {
-                            play.setText("Avsluta spel");
+                    if (!playButtonClicked) {
+                        playButtonClicked = true;
+                        System.out.println("PlayButton: " + playButtonClicked);
+                        try {
+                            playRound();
+                            if (currentRound >= numbOfRounds) {
+                                play.setText("Avsluta spel");
+                            }
+
+                        } catch (IOException | ClassNotFoundException | InterruptedException ex) {
+                            throw new RuntimeException(ex);
                         }
-                    } catch (IOException | ClassNotFoundException | InterruptedException ex) {
-                        throw new RuntimeException(ex);
                     }
                 }
             }
@@ -133,7 +145,6 @@ public class MainMenuGUI {
         startGameButton.addActionListener(buttonListener);
         //settingsButton.addActionListener(buttonListener);
         play.addActionListener(buttonListener);
-
 
         frame.setVisible(true);
     }
@@ -159,9 +170,6 @@ public class MainMenuGUI {
                 categoryArray.get(j).setForeground(Color.ORANGE);
             }
         }
-
-//        play = new JButton("Spela");
-//        play.addActionListener(MainMenuGUI.buttonListener);
 
         JPanel northPanel = new JPanel();
         northPanel.setBackground(Color.ORANGE);
@@ -272,18 +280,20 @@ public class MainMenuGUI {
             System.out.println("current round: " + currentRound);
             QuizGUI quizGUI = new QuizGUI(client, currentRound, properties);
             currentRound++;
+            playButtonClicked = false;
+            System.out.println("PlayButton: " + playButtonClicked);
         } else {
             frame.getContentPane().removeAll();
             client.flushOutput();
             client.close();
             client = null;
+            startButtonClicked = false;
+            playButtonClicked = false;
+            System.out.println("PlayButton: " + playButtonClicked);
             play.setText("Spela");
             playerName.setText("Ditt namn");
             opponentName.setText("Motståndare");
             currentScore.setText("0-0");
-            //playerScoreArray = new ArrayList<>();
-            //opponentScoreArray = new ArrayList<>();
-            //categoryArray = new ArrayList<>();
             currentRound = 0;
             settingUp = true;
             getStartMenu();

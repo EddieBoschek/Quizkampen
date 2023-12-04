@@ -69,7 +69,7 @@ public class QuizGUI {
 
         categories = (Category[]) receiveMessageFromServer();
 
-
+        System.out.println(categories[0].getCategoryName());
 
 //if (roundCounter != 0) {
 //    Object trashcan;
@@ -151,7 +151,10 @@ public class QuizGUI {
         scorePanel.add(panel1);
         scorePanel.add(panel2);
 
+        System.out.println("Innan kategorier ritas upp");
+
         if (myTurn) {
+            System.out.println("Inne i if-vilkor myTurn");
             frame.getContentPane().add(emptyPanelNorth, BorderLayout.NORTH);
             frame.getContentPane().add(categoryPanel, BorderLayout.CENTER);
             frame.getContentPane().add(emptyPanelWest, BorderLayout.WEST);
@@ -159,11 +162,12 @@ public class QuizGUI {
             frame.getContentPane().add(emptyPanelSouth, BorderLayout.SOUTH);
             frame.revalidate();
             frame.repaint();
+            System.out.println("Inne i if-vilkor myTurn SLUTET");
         }
 
         if (!myTurn) {
             while (true) {
-
+                System.out.println("Inne i loop !myTurn");
                 s = (String) receiveMessageFromServer();
                 // s är false;
 

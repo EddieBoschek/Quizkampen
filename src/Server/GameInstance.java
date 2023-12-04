@@ -99,6 +99,7 @@ public class GameInstance extends Thread {
                             currentPlayer.send(categoryOptions);
                             currentPlayer.getOpponent().send(categoryOptions);
                             playerShiftHasBeenMade = true;
+                            System.out.println("Categories sent");
                         } catch (IOException ex) {
                             throw new RuntimeException(ex);
                         }
