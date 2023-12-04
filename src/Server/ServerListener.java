@@ -1,7 +1,5 @@
 package Server;
 
-
-
 import java.io.IOException;
 import java.net.ServerSocket;
 
@@ -14,6 +12,7 @@ public class ServerListener {
                 Player player2 = new Player(ss.accept(), "spelare2", false);
                 GameInstance game = new GameInstance(player1,player2);
                 game.start();
+                System.out.println("Thread started");
 //                player1.send("START");
 //                player2.send("START");
             }
