@@ -4,15 +4,10 @@ import POJOs.Category;
 import POJOs.Question;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 public class QuizGUI {
     private Question askedQuest = null;
@@ -40,13 +35,14 @@ public class QuizGUI {
     Font f = new Font("serif", Font.PLAIN, 24);
     Font f2 = new Font("dialog", Font.PLAIN, 24);
 
-    public QuizGUI(Client client, int roundCounter, int[] properties) throws IOException, ClassNotFoundException, NullPointerException, InterruptedException {
+    public QuizGUI(Client client, int roundCounter, int[] properties) throws NullPointerException {
         this.client = client;
         this.roundCounter = roundCounter;
         numbOfQuests = properties[0];
         numbOfRounds = properties[1];
         gameresults = new boolean[numbOfRounds][numbOfQuests];
         roundResults = new boolean[numbOfQuests];
+        System.out.println("Start of game: " + startOfGame);
 
         System.out.println("innan loopen");
 //        while (!Objects.equals(message = (String) receiveMessageFromServer(), "START")) {
@@ -69,13 +65,10 @@ public class QuizGUI {
         }
 
 
-
-
-
-
         frame = new JFrame("Quizkampen");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(850, 450);
+        frame.setLocation(300, 0);
         frame.setLayout(new BorderLayout());
 
         categories = (Category[]) receiveMessageFromServer();
@@ -142,6 +135,7 @@ public class QuizGUI {
             if (c instanceof JButton) {
                 ((JButton) c).setPreferredSize(new Dimension(25, 25));
                 ((JButton) c).setBorder(BorderFactory.createLineBorder(Color.BLACK));
+                ((JButton) c).setOpaque(true);
             }
         }
         p2Score = new JPanel();
@@ -154,6 +148,7 @@ public class QuizGUI {
             if (c instanceof JButton) {
                 ((JButton) c).setPreferredSize(new Dimension(25, 25));
                 ((JButton) c).setBorder(BorderFactory.createLineBorder(Color.BLACK));
+                ((JButton) c).setOpaque(true);
             }
         }
         panel1.add(p1Name);
@@ -162,7 +157,11 @@ public class QuizGUI {
         panel2.add(p2Score);
         scorePanel.add(panel1);
         scorePanel.add(panel2);
+
+        System.out.println("Innan kategorier ritas upp");
+
         if (myTurn) {
+            System.out.println("Inne i if-vilkor myTurn");
             frame.getContentPane().add(emptyPanelNorth, BorderLayout.NORTH);
             frame.getContentPane().add(categoryPanel, BorderLayout.CENTER);
             frame.getContentPane().add(emptyPanelWest, BorderLayout.WEST);
@@ -170,11 +169,12 @@ public class QuizGUI {
             frame.getContentPane().add(emptyPanelSouth, BorderLayout.SOUTH);
             frame.revalidate();
             frame.repaint();
+            System.out.println("Inne i if-vilkor myTurn SLUTET");
         }
 
         if (!myTurn) {
             while (true) {
-
+                System.out.println("Inne i loop !myTurn");
                 s = (String) receiveMessageFromServer();
                 // s är false;
 
@@ -246,14 +246,6 @@ public class QuizGUI {
                 frame.getContentPane().removeAll();
                 if (myTurn)
                     serverMessage = sendAndReceive("P1" + categoryButton3.getText());
-                System.out.println(serverMessage);
-
-//                if (roundCounter == 1)
-//                    for (int i = 0; i < 7; i++) {
-//                        System.out.println(serverMessage);
-//                        serverMessage = "servermeddelande: " + receiveMessageFromServer();
-//                    }
-
 
                 if (serverMessage instanceof Question[] quests) {
                     int i = 0;
@@ -368,6 +360,7 @@ public class QuizGUI {
     private void handleAnswer(JButton jb) {
         if (questions[qCounter].checkAnswer(jb.getText())) {
             jb.setBackground(Color.green);
+            jb.setOpaque(true);
             jb.repaint();
             jb.revalidate();
             continueButton.setVisible(true);
@@ -377,10 +370,12 @@ public class QuizGUI {
                 if (c instanceof JButton) {
                     if (askedQuest.checkAnswer(((JButton) c).getText())) {
                         c.setBackground(Color.green);
+                        ((JButton) c).setOpaque(true);
                     }
                 }
             }
             jb.setBackground(Color.red);
+            jb.setOpaque(true);
             jb.repaint();
             jb.revalidate();
             continueButton.setVisible(true);
@@ -434,15 +429,5 @@ public class QuizGUI {
 
 
 
-    public static void main(String[] args) throws IOException, ClassNotFoundException {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    MainMenuGUI mainMenuGUI = new MainMenuGUI();
-                } catch (Exception e) {
-                }
-            }
-        });
-    }
+
 }
