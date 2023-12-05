@@ -128,12 +128,8 @@ public class MainMenuGUI {
                     if (playersReady) {
                         try {
                             playRound();
-                            if (currentRound >= numbOfRounds) {
-                                play.setText("Avsluta spel");
-                            }
-                            else {
-                                play.setText("Få poäng");
-                            }
+                            play.setText("Få poäng");
+
                         } catch (IOException | ClassNotFoundException | InterruptedException ex) {
                             throw new RuntimeException(ex);
                         }
@@ -317,7 +313,12 @@ public class MainMenuGUI {
         client.flushOutput();
         frame.repaint();
         frame.revalidate();
-        play.setText("Spela");
+        if (!opponentScoreArray.get((numbOfQuest * numbOfRounds) - 1).getText().equals("□")) {
+            play.setText("Avsluta spel");
+        } else {
+            play.setText("Spela");
+        }
+
         System.out.println("end of updatescore");
     }
 
