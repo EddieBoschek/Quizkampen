@@ -36,6 +36,8 @@ public class QuizGUI {
     String s;
     Font f = new Font("serif", Font.PLAIN, 24);
     Font f2 = new Font("dialog", Font.PLAIN, 24);
+    JLabel p1Name = new JLabel("Jag");
+    JLabel p2Name = new JLabel("Motståndare");
 
     public QuizGUI(Client client, int roundCounter, int[] properties) throws NullPointerException {
         this.client = client;
@@ -83,12 +85,6 @@ public class QuizGUI {
             emptyPanel.setBackground(Color.BLUE);
             emptyPanels[i] = emptyPanel;
         }
-
-        /*JPanel emptyPanelWest = new JPanel();
-        JPanel emptyPanelEast = new JPanel();
-        JPanel emptyPanelNorth = new JPanel();
-        JPanel emptyPanelSouth = new JPanel();*/
-
         emptyPanels[0].setPreferredSize(new Dimension(0, 50));
         emptyPanels[1].setPreferredSize(new Dimension(250, 0));
         emptyPanels[2].setPreferredSize(new Dimension(250, 0));
@@ -125,29 +121,24 @@ public class QuizGUI {
         }
         frame.getContentPane().add(categoryPanel, BorderLayout.CENTER);
 
-        /*JButton categoryButton1 = new JButton(categories[0].getCategoryName());
-        JButton categoryButton2 = new JButton(categories[1].getCategoryName());
-        JButton categoryButton3 = new JButton(categories[2].getCategoryName());
-
-        categoryButton1.setPreferredSize(buttonSize);
-        categoryButton2.setPreferredSize(buttonSize);
-        categoryButton3.setPreferredSize(buttonSize);
-        categoryButton1.setFont(f2);
-        categoryButton2.setFont(f2);
-        categoryButton3.setFont(f2);
-
-        categoryPanel.add(categoryButton1);
-        categoryPanel.add(categoryButton2);
-        categoryPanel.add(categoryButton3);*/
-
         scorePanel = new JPanel();
-        scorePanel.setLayout(new FlowLayout());
-        JPanel panel1 = new JPanel();
-        JPanel panel2 = new JPanel();
-        panel1.setLayout(new GridLayout(2, 0));
-        panel2.setLayout(new GridLayout(2, 0));
+        scorePanel.setLayout(new BorderLayout());
+        scorePanel.setBackground(Color.BLUE);
+        JPanel emptyPanel = new JPanel();
+        emptyPanel.setBackground(Color.BLUE);
+        JPanel player1Board = new JPanel();
+        player1Board.setPreferredSize(new Dimension(100, 100));
+        player1Board.setLayout(new GridLayout(2, 0));
+        player1Board.setBackground(Color.BLUE);
+        JPanel player2Board = new JPanel();
+        player2Board.setPreferredSize(new Dimension(100, 100));
+        player2Board.setLayout(new GridLayout(2, 0));
+        player2Board.setBackground(Color.BLUE);
         p1Score = new JPanel();
-        JLabel p1Name = new JLabel("Jag");
+        p1Score.setBackground(Color.BLUE);
+        p1Name.setHorizontalAlignment(SwingConstants.CENTER);
+        p1Name.setBackground(Color.BLUE);
+        p1Name.setForeground(Color.ORANGE);
         for (int i = 0; i < numbOfQuests; i++) {
             p1Score.add(new JButton());
 
@@ -160,7 +151,10 @@ public class QuizGUI {
             }
         }
         p2Score = new JPanel();
-        JLabel p2Name = new JLabel("Motståndare");
+        p2Score.setBackground(Color.BLUE);
+        p2Name.setHorizontalAlignment(SwingConstants.CENTER);
+        p2Name.setBackground(Color.BLUE);
+        p2Name.setForeground(Color.ORANGE);
         for (int i = 0; i < numbOfQuests; i++) {
             p2Score.add(new JButton());
 
@@ -172,24 +166,19 @@ public class QuizGUI {
                 ((JButton) c).setOpaque(true);
             }
         }
-        panel1.add(p1Name);
-        panel1.add(p1Score);
-        panel2.add(p2Name);
-        panel2.add(p2Score);
-        scorePanel.add(panel1);
-        scorePanel.add(panel2);
+        player1Board.add(p1Name);
+        player1Board.add(p1Score);
+        player2Board.add(p2Name);
+        player2Board.add(p2Score);
+        scorePanel.add(player1Board, BorderLayout.WEST);
+        scorePanel.add(emptyPanel, BorderLayout.CENTER);
+        scorePanel.add(player2Board, BorderLayout.EAST);
+        scorePanel.setBorder(BorderFactory.createEmptyBorder(0, 250, 0, 250));
 
         System.out.println("Innan kategorier ritas upp");
 
         if (myTurn) {
             System.out.println("Inne i if-vilkor myTurn");
-            /*frame.getContentPane().add(emptyPanelNorth, BorderLayout.NORTH);
-            frame.getContentPane().add(categoryPanel, BorderLayout.CENTER);
-            frame.getContentPane().add(emptyPanelWest, BorderLayout.WEST);
-            frame.getContentPane().add(emptyPanelEast, BorderLayout.EAST);
-            frame.getContentPane().add(emptyPanelSouth, BorderLayout.SOUTH);*/
-            //frame.revalidate();
-            //frame.repaint();
             frame.setVisible(true);
             System.out.println("Inne i if-vilkor myTurn SLUTET");
         }
@@ -285,18 +274,31 @@ public class QuizGUI {
         Font f = new Font("serif", Font.PLAIN, 24);
         Font f2 = new Font("dialog", Font.PLAIN, 24);
         questionPanel = new JPanel();
+        questionPanel.setLayout(new GridLayout(4, 1));
+        questionPanel.setBackground(Color.BLUE);
         questionLabel = new JLabel("(Fråga)");
+        questionLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        JLabel emptyLabel1 = new JLabel();
+        JLabel emptyLabel2 = new JLabel();
+        JLabel emptyLabel3 = new JLabel();
+        questionLabel.setBackground(Color.BLUE);
+        questionLabel.setForeground(Color.ORANGE);
         questionLabel.setFont(f);
+        questionPanel.add(emptyLabel1);
         questionPanel.add(questionLabel);
+        questionPanel.add(emptyLabel2);
+        questionPanel.add(emptyLabel3);
         answerPanel = new JPanel();
-        answerPanel.setPreferredSize(new Dimension(850, 100));
         answerPanel.setLayout(new GridLayout(2, 2));
+        answerPanel.setPreferredSize(new Dimension(850, 100));
+        answerPanel.setBackground(Color.ORANGE);
 
         for (int i = 0; i < 4; i++) {
             answerPanel.add(new JButton());
         }
 
         continuePanel = new JPanel();
+        continuePanel.setBackground(Color.BLUE);
         continueButton = new JButton("Fortsätt");
         continueButton.setPreferredSize(new Dimension(500, 50));
         continueButton.setFont(f2);
@@ -358,7 +360,6 @@ public class QuizGUI {
             }
 
         }
-
         continueButton.addActionListener(continueActionListener);
         frame.getContentPane().removeAll();
         frame.getContentPane().setLayout(new GridLayout(4, 1));
@@ -370,7 +371,6 @@ public class QuizGUI {
         frame.revalidate();
         frame.repaint();
     }
-
 
     public void playRound(Question[] questions) {
         displayQuestion(questions[qCounter]);
@@ -445,8 +445,4 @@ public class QuizGUI {
         }
         return receivedMessage;
     }
-
-
-
-
 }
