@@ -14,6 +14,7 @@ public class QuizGUI {
     private Client client;
     private Object serverMessage;
     private Category[] categories;
+    JButton[] categoryButtons = new JButton[3];
     private Question[] questions = new Question[3];
     private boolean[][] gameresults;
     private boolean[] roundResults;
@@ -31,6 +32,7 @@ public class QuizGUI {
     int numbOfQuests;
     JPanel scorePanel, questionPanel, answerPanel, continuePanel, p1Score, p2Score;
     JButton continueButton;
+    JPanel[] emptyPanels = new JPanel[4];
     String s;
     Font f = new Font("serif", Font.PLAIN, 24);
     Font f2 = new Font("dialog", Font.PLAIN, 24);
@@ -50,9 +52,6 @@ public class QuizGUI {
 
         sendMessageToServer("Start" + roundCounter);
 
-
-
-
         while((oMessage = receiveMessageFromServer()) != null){
 
             System.out.println("1 " + oMessage);
@@ -64,7 +63,6 @@ public class QuizGUI {
             }
         }
 
-
         frame = new JFrame("Quizkampen");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(850, 450);
@@ -74,39 +72,63 @@ public class QuizGUI {
         categories = (Category[]) receiveMessageFromServer();
         System.out.println("cat " + categories);
 
-
-
 //if (roundCounter != 0) {
 //    Object trashcan;
 //    while ((trashcan = receiveMessageFromServer()) != null) {
 //        System.out.println(trashcan);
 //    }
 //}
+        for (int i = 0; i < emptyPanels.length; i++) {
+            JPanel emptyPanel = new JPanel();
+            emptyPanel.setBackground(Color.BLUE);
+            emptyPanels[i] = emptyPanel;
+        }
 
+        /*JPanel emptyPanelWest = new JPanel();
+        JPanel emptyPanelEast = new JPanel();
+        JPanel emptyPanelNorth = new JPanel();
+        JPanel emptyPanelSouth = new JPanel();*/
 
+        emptyPanels[0].setPreferredSize(new Dimension(0, 50));
+        emptyPanels[1].setPreferredSize(new Dimension(250, 0));
+        emptyPanels[2].setPreferredSize(new Dimension(250, 0));
+        emptyPanels[3].setPreferredSize(new Dimension(0, 75));
+
+        frame.getContentPane().add(emptyPanels[0], BorderLayout.NORTH);
+        frame.getContentPane().add(emptyPanels[1], BorderLayout.WEST);
+        frame.getContentPane().add(emptyPanels[2], BorderLayout.EAST);
+        frame.getContentPane().add(emptyPanels[3], BorderLayout.SOUTH);
 
         JPanel categoryPanel = new JPanel();
         categoryPanel.setLayout(new GridLayout(4, 1));
-        JPanel emptyPanelWest = new JPanel();
-        JPanel emptyPanelEast = new JPanel();
-        JPanel emptyPanelNorth = new JPanel();
-        JPanel emptyPanelSouth = new JPanel();
-        emptyPanelWest.setPreferredSize(new Dimension(250, 0));
-        emptyPanelEast.setPreferredSize(new Dimension(250, 0));
-        emptyPanelNorth.setPreferredSize(new Dimension(0, 50));
-        emptyPanelSouth.setPreferredSize(new Dimension(0, 75));
 
         JLabel categoryLabel = new JLabel("Välj en kategori");
         categoryLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        JButton categoryButton1 = new JButton(categories[0].getCategoryName());
-        JButton categoryButton2 = new JButton(categories[1].getCategoryName());
-        JButton categoryButton3 = new JButton(categories[2].getCategoryName());
-
         Dimension labelSize = new Dimension(200, 50);
         categoryLabel.setPreferredSize(labelSize);
         categoryLabel.setFont(f);
+        categoryLabel.setBackground(Color.BLUE);
+        categoryLabel.setForeground(Color.ORANGE);
+        categoryLabel.setOpaque(true);
+        categoryPanel.add(categoryLabel);
 
         Dimension buttonSize = new Dimension(150, 40);
+
+        for (int i = 0; i < categoryButtons.length; i++) {
+            JButton categoryButton = new JButton(categories[i].getCategoryName());
+            categoryButton.setPreferredSize(buttonSize);
+            categoryButton.setFont(f2);
+            categoryButton.setBackground(Color.ORANGE);
+            categoryButton.setOpaque(true);
+            categoryButtons[i] = categoryButton;
+            categoryPanel.add(categoryButton);
+        }
+        frame.getContentPane().add(categoryPanel, BorderLayout.CENTER);
+
+        /*JButton categoryButton1 = new JButton(categories[0].getCategoryName());
+        JButton categoryButton2 = new JButton(categories[1].getCategoryName());
+        JButton categoryButton3 = new JButton(categories[2].getCategoryName());
+
         categoryButton1.setPreferredSize(buttonSize);
         categoryButton2.setPreferredSize(buttonSize);
         categoryButton3.setPreferredSize(buttonSize);
@@ -114,10 +136,9 @@ public class QuizGUI {
         categoryButton2.setFont(f2);
         categoryButton3.setFont(f2);
 
-        categoryPanel.add(categoryLabel);
         categoryPanel.add(categoryButton1);
         categoryPanel.add(categoryButton2);
-        categoryPanel.add(categoryButton3);
+        categoryPanel.add(categoryButton3);*/
 
         scorePanel = new JPanel();
         scorePanel.setLayout(new FlowLayout());
@@ -162,13 +183,14 @@ public class QuizGUI {
 
         if (myTurn) {
             System.out.println("Inne i if-vilkor myTurn");
-            frame.getContentPane().add(emptyPanelNorth, BorderLayout.NORTH);
+            /*frame.getContentPane().add(emptyPanelNorth, BorderLayout.NORTH);
             frame.getContentPane().add(categoryPanel, BorderLayout.CENTER);
             frame.getContentPane().add(emptyPanelWest, BorderLayout.WEST);
             frame.getContentPane().add(emptyPanelEast, BorderLayout.EAST);
-            frame.getContentPane().add(emptyPanelSouth, BorderLayout.SOUTH);
-            frame.revalidate();
-            frame.repaint();
+            frame.getContentPane().add(emptyPanelSouth, BorderLayout.SOUTH);*/
+            //frame.revalidate();
+            //frame.repaint();
+            frame.setVisible(true);
             System.out.println("Inne i if-vilkor myTurn SLUTET");
         }
 
@@ -177,9 +199,6 @@ public class QuizGUI {
                 System.out.println("Inne i loop !myTurn");
                 s = (String) receiveMessageFromServer();
                 // s är false;
-
-
-
 
                 System.out.println(s);
 
@@ -203,13 +222,13 @@ public class QuizGUI {
             playRound(questions);
         }
 
-        categoryButton1.addActionListener(new ActionListener() {
+        categoryButtons[0].addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("Button 1");
                 frame.getContentPane().removeAll();
 
-                serverMessage = sendAndReceive("P1" + categoryButton1.getText());
+                serverMessage = sendAndReceive("P1" + categoryButtons[0].getText());
                 System.out.println(serverMessage);
                 if (serverMessage instanceof Question[] quests) {
                     int i = 0;
@@ -221,13 +240,13 @@ public class QuizGUI {
                 playRound(questions);
             }
         });
-        categoryButton2.addActionListener(new ActionListener() {
+        categoryButtons[1].addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("Button 2");
                 frame.getContentPane().removeAll();
                 if (myTurn)
-                    serverMessage = sendAndReceive("P1" + categoryButton2.getText());
+                    serverMessage = sendAndReceive("P1" + categoryButtons[1].getText());
                 System.out.println(serverMessage);
                 if (serverMessage instanceof Question[] quests) {
                     int i = 0;
@@ -239,13 +258,13 @@ public class QuizGUI {
                 playRound(questions);
             }
         });
-        categoryButton3.addActionListener(new ActionListener() {
+        categoryButtons[2].addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("Button 3");
                 frame.getContentPane().removeAll();
                 if (myTurn)
-                    serverMessage = sendAndReceive("P1" + categoryButton3.getText());
+                    serverMessage = sendAndReceive("P1" + categoryButtons[2].getText());
 
                 if (serverMessage instanceof Question[] quests) {
                     int i = 0;
