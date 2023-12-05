@@ -35,7 +35,7 @@ public class Client {
         return input.readLine();
     }
     public void flushOutput() throws IOException {
-        out.flush();;
+        out.flush();
     }
 
     public void close() {

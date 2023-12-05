@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class MainMenuGUI {
     JButton startGameButton = new JButton("Starta nytt spel");
@@ -16,14 +17,13 @@ public class MainMenuGUI {
     JPanel menuSubPanel = new JPanel();
     JPanel activeGamesPanel = new JPanel();
     JPanel buttonsPanel = new JPanel();
-    JFrame frame = new JFrame("Quizkampen");
-    int numbOfRounds;
-    int numbOfQuest;
+    JFrame frame = new JFrame();
+    int numbOfRounds, numbOfQuest, opponentScoreCounter, playerScoreCounter;
     boolean[] playerRound = new boolean[]{true, true, false};    //Tillfällig
     boolean[] opponentRound = new boolean[]{true, false, true};  //Tillfällig
     Client client;
-    JLabel playerName = new JLabel("Ditt namn");
-    JLabel opponentName = new JLabel("Motståndare");
+    JLabel playerName = new JLabel();
+    JLabel opponentName = new JLabel();
     JLabel enterName = new JLabel("Skriv in ditt namn: ");
     JTextField enterNameField = new JTextField();
     JLabel currentScore = new JLabel("0-0");
@@ -33,9 +33,12 @@ public class MainMenuGUI {
     int currentRound = 0;
     int[] properties;
     boolean settingUp = true;
+    boolean playersReady = true;
     Object o;
+    boolean firstRound = true;
     boolean startButtonClicked = false;
-    boolean playButtonClicked = false;
+
+
 
     public MainMenuGUI() {
 
@@ -122,29 +125,45 @@ public class MainMenuGUI {
 //                    frame.revalidate();
 
 
-                /*} else if (e.getSource() == settingsButton) {
-                    System.out.println("Öppnar upp en ny JPanel med \"settingsknappar\" som går att justera. Det ska också finnas en apply-knapp");*/
+                } else if (e.getSource() == settingsButton) {
+                    System.out.println("Öppnar upp en ny JPanel med \"settingsknappar\" som går att justera. Det ska också finnas en apply-knapp");
                 } else if (e.getSource() == play) {
-                    if (!playButtonClicked) {
-                        playButtonClicked = true;
-                        System.out.println("PlayButton: " + playButtonClicked);
+                    if (playersReady) {
                         try {
                             playRound();
                             if (currentRound >= numbOfRounds) {
                                 play.setText("Avsluta spel");
                             }
-
+                            else {
+                                play.setText("Få poäng");
+                            }
                         } catch (IOException | ClassNotFoundException | InterruptedException ex) {
                             throw new RuntimeException(ex);
                         }
+                        playersReady = false;
+                        frame.repaint();
+                        frame.revalidate();
+
+
+                    } else {
+                        try {
+//                            play.setText("Väntar på motståndare");
+                            updateScoreAll();
+                        } catch (IOException | ClassNotFoundException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                        playersReady = true;
+                        frame.repaint();
+                        frame.revalidate();
+
                     }
                 }
             }
         };
 
         startGameButton.addActionListener(buttonListener);
-        //settingsButton.addActionListener(buttonListener);
         play.addActionListener(buttonListener);
+
 
         frame.setVisible(true);
     }
@@ -216,11 +235,20 @@ public class MainMenuGUI {
         centerPanel.add(categoryPanel);
         centerPanel.add(opponentScorePanel);
 
+
         frame.repaint();
         frame.revalidate();
     }
 
-    public void updateScore() {
+    public void getOpponentName() {
+        System.out.println("Mitt spelarnamn: " + playerName.getText());
+        send("GetNameRequest" + playerName);
+        do {
+            opponentName.setText((String)receive());
+        }while(opponentName.getText() == null);
+        System.out.println(opponentName.getText());
+    }
+    public void updateScore() throws IOException {
         send("GameUpdateRequest");
         System.out.println("GUR");
         Object input = null;
@@ -228,51 +256,71 @@ public class MainMenuGUI {
         boolean[][] playerBoolArray = new boolean[numbOfRounds][numbOfQuest];
         boolean[][] opponentBoolArray = new boolean[numbOfRounds][numbOfQuest];
 
-        while (true) {
-            input = receive();
-            if (input == "END")
-                break;
+            while (true) {
+                input = receive();
 
-            switch (i) {
-                case 0 -> playerName.setText((String) input);
-                case 1 -> opponentName.setText((String) input);
-                case 2 -> playerBoolArray = (boolean[][]) input;
-                case 3 -> opponentBoolArray = (boolean[][]) input;
-                case 4 -> {
-                    for (int j = 0; j < numbOfRounds; j++) {
-                        String s = ((String[]) input)[j];
-                        if (s != null)
-                            categoryArray.get(j).setText(s);
-                    }
+                while(input == null) {}
+
+                if (input.equals("END")) {
+                    System.out.println("END");
+                    break;
                 }
 
+                switch (i) {
+                    case 0 -> playerName.setText((String) input);
+                    case 1 -> opponentName.setText((String) input);
+                    case 2 -> playerBoolArray = (boolean[][]) input;
+                    case 3 -> opponentBoolArray = (boolean[][]) input;
+                    case 4 -> {
+                        if (!firstRound) {
+                            for (int j = 0; j < numbOfRounds; j++) {
+                                String s = ((String[]) input)[j];
+                                if (s != null)
+                                    categoryArray.get(j).setText(s);
+                            }
+                        }
+                    }
+
+                }
+                i++;
             }
-            i++;
-        }
+
+        firstRound = false;
 
         int playerScoreCounter = 0;
         int opponentScoreCounter = 0;
         int loopCounter = 0;
-        for (int j = 0; j < currentRound - 1; j++) {
+        System.out.println("before filling playerscore array");
+        char f = '\u2612';
+        char r = '\u2611';
+
             for (int k = 0; k < numbOfQuest; k++) {
-                if (playerBoolArray[j][k]) {
-                    playerScoreArray.get(loopCounter).setForeground(Color.GREEN);
+                if (playerBoolArray[currentRound - 1][k]) {
+                    playerScoreArray.get(k + (currentRound - 1) * numbOfQuest).setText(String.valueOf(r));
+                    playerScoreArray.get(k + (currentRound - 1) * numbOfQuest).setForeground(Color.GREEN);
                     playerScoreCounter++;
-                }
-                else
-                    playerScoreArray.get(loopCounter).setForeground(Color.RED);
-
-                if (opponentBoolArray[j][k]) {
-                    opponentScoreArray.get(loopCounter).setForeground(Color.GREEN);
+                } else {
+                    playerScoreArray.get(k + (currentRound - 1) * numbOfQuest).setText(String.valueOf(f));
+                    playerScoreArray.get(k + (currentRound - 1) * numbOfQuest).setForeground(Color.RED);
+                } if (opponentBoolArray[currentRound - 1][k]) {
+                    opponentScoreArray.get(k + (currentRound - 1) * numbOfQuest).setText(String.valueOf(r));
+                    opponentScoreArray.get(k + (currentRound - 1) * numbOfQuest).setForeground(Color.GREEN);
                     opponentScoreCounter++;
+                } else {
+                    opponentScoreArray.get(k + (currentRound - 1) * numbOfQuest).setText(String.valueOf(f));
+                    opponentScoreArray.get(k + (currentRound - 1) * numbOfQuest).setForeground(Color.RED);
                 }
-                else
-                    opponentScoreArray.get(loopCounter).setForeground(Color.RED);
 
-                loopCounter++;
             }
-        }
+
         currentScore.setText(playerScoreCounter + " - " + opponentScoreCounter);
+
+        System.out.println("before flush");
+        client.flushOutput();
+        frame.repaint();
+        frame.revalidate();
+        play.setText("Spela");
+        System.out.println("end of updatescore");
     }
 
     public void playRound() throws IOException, ClassNotFoundException, InterruptedException {
@@ -280,16 +328,13 @@ public class MainMenuGUI {
             System.out.println("current round: " + currentRound);
             QuizGUI quizGUI = new QuizGUI(client, currentRound, properties);
             currentRound++;
-            playButtonClicked = false;
-            System.out.println("PlayButton: " + playButtonClicked);
+
         } else {
             frame.getContentPane().removeAll();
             client.flushOutput();
             client.close();
             client = null;
             startButtonClicked = false;
-            playButtonClicked = false;
-            System.out.println("PlayButton: " + playButtonClicked);
             play.setText("Spela");
             playerName.setText("Ditt namn");
             opponentName.setText("Motståndare");
@@ -327,7 +372,18 @@ public class MainMenuGUI {
             e.printStackTrace();
         }
         return receivedMessage;
+    }
 
+    public void updateScoreAll() throws IOException, ClassNotFoundException { //Får in data från metod updateScore() och verkar inte skicka något själv
+        Object input = null;
+        send("BothPlayersHaveAnsweredQuestions" + currentRound);
+
+        input = receive();
+        System.out.println("updateScoreAll-input: " + input);
+
+        if (input.equals("BothPlayersHaveAnsweredQuestions" + currentRound)) {
+            updateScore();
+        }
     }
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
