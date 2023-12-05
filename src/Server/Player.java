@@ -7,26 +7,30 @@ import POJOs.Question;
 import static POJOs.Category.getShuffledCategoryQuestions;
 import static POJOs.Category.shuffleCategories;
 
+import static POJOs.Category.getShuffledCategoryQuestions;
+import static POJOs.Category.shuffleCategories;
+
 public class Player implements Runnable {
     private int score;
-    protected String Name;
-    Category[] categoryOptions;
-    boolean playerShiftHasBeenMade;
-    private DAO dao = new DAO();
-    private boolean[][] playerScore;
     private Socket socket;
     protected String name;
     private Player opponent; //Can make array (Player[]) for several games w different players;
     private boolean isCurrentPlayer;
     private ObjectInputStream input;
     private ObjectOutputStream output;
+    boolean[][] gameScore;
+    Object inputLine;
+    boolean playerShiftHasBeenMade;
+    Category[] categoryOptions;
+    private DAO dao = new DAO();
+    int currentRound = 0;
     boolean startOfGame = true;
     Question[] q;
     String cat;
-    private boolean roundDone;
     private Properties p = new Properties();
     private String[] gameCategories = new String[6];
-    int currentRound = 0;
+    private boolean[][] playerScore;
+    private boolean roundDone;
     Object o;
 
     public Player(Socket s, String n, boolean isCurrentPlayer) throws IOException {

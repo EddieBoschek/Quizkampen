@@ -248,6 +248,13 @@ public class QuizGUI {
                     serverMessage = sendAndReceive("P1" + categoryButton3.getText());
                 System.out.println(serverMessage);
 
+//                if (roundCounter == 1)
+//                    for (int i = 0; i < 7; i++) {
+//                        System.out.println(serverMessage);
+//                        serverMessage = "servermeddelande: " + receiveMessageFromServer();
+//                    }
+
+
                 if (serverMessage instanceof Question[] quests) {
                     int i = 0;
                     while (i < numbOfQuests) {
