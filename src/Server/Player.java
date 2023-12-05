@@ -105,6 +105,7 @@ public class Player implements Runnable {
         Object inputLine;
         try {
             while (true) {
+                System.out.println(isCurrentPlayer);
                 if (isCurrentPlayer) {
                     if ((inputLine = receive()) != null) {
                         System.out.println("myTurn " + inputLine);
@@ -140,6 +141,8 @@ public class Player implements Runnable {
                                         send(categoryOptions);
                                         opponent.send(categoryOptions);
                                         playerShiftHasBeenMade = true;
+                                        System.out.println(name + " " + isCurrentPlayer);
+                                        System.out.println(opponent.name + " " + opponent.isCurrentPlayer);
                                     } catch (IOException ex) {
                                         throw new RuntimeException(ex);
                                     }
@@ -187,6 +190,12 @@ public class Player implements Runnable {
                             } else {
                                 send(false);
                             }
+                        } else if (((String) inputLine).startsWith("P1")) {
+                            cat = ((String) inputLine).substring(2);
+                            System.out.println("P1");
+                            System.out.println(cat);
+                            q = getShuffledCategoryQuestions(cat, dao.getCategories());
+                            send(q);
                         } else if (inputLine.equals("BothPlayersHaveAnsweredQuestions" + currentRound)) {
                             System.out.println(inputLine);
                             send(inputLine);

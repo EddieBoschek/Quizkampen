@@ -17,8 +17,8 @@ public class MainMenuGUI {
     JPanel activeGamesPanel = new JPanel();
     JPanel buttonsPanel = new JPanel();
     JFrame frame = new JFrame();
-    int numbOfRounds;
-    int numbOfQuest;
+    int numbOfRounds, numbOfQuest, opponentScoreCounter, playerScoreCounter;
+
     boolean[] playerRound = new boolean[]{true, true, false};    //Tillfällig
     boolean[] opponentRound = new boolean[]{true, false, true};  //Tillfällig
     Client client;
@@ -222,26 +222,28 @@ public class MainMenuGUI {
         firstRound = false;
 
 
-        int playerScoreCounter = 0;
-        int opponentScoreCounter = 0;
+
         int loopCounter = 0;
         System.out.println("before filling playerscore array");
+        char f = '\u2612';
+        char r = '\u2611';
 
             for (int k = 0; k < numbOfQuest; k++) {
                 if (playerBoolArray[currentRound - 1][k]) {
+                    playerScoreArray.get(k + (currentRound - 1) * numbOfQuest).setText(String.valueOf(r));
                     playerScoreArray.get(k + (currentRound - 1) * numbOfQuest).setForeground(Color.GREEN);
                     playerScoreCounter++;
-                }
-                else
+                } else {
+                    playerScoreArray.get(k + (currentRound - 1) * numbOfQuest).setText(String.valueOf(f));
                     playerScoreArray.get(k + (currentRound - 1) * numbOfQuest).setForeground(Color.RED);
-
-                if (opponentBoolArray[currentRound - 1][k]) {
+                } if (opponentBoolArray[currentRound - 1][k]) {
+                    opponentScoreArray.get(k + (currentRound - 1) * numbOfQuest).setText(String.valueOf(r));
                     opponentScoreArray.get(k + (currentRound - 1) * numbOfQuest).setForeground(Color.GREEN);
                     opponentScoreCounter++;
-                }
-                else
+                } else {
+                    opponentScoreArray.get(k + (currentRound - 1) * numbOfQuest).setText(String.valueOf(f));
                     opponentScoreArray.get(k + (currentRound - 1) * numbOfQuest).setForeground(Color.RED);
-
+                }
 
             }
 

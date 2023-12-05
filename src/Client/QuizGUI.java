@@ -210,7 +210,7 @@ public class QuizGUI {
                 frame.getContentPane().removeAll();
 
                 serverMessage = sendAndReceive("P1" + categoryButton1.getText());
-
+                System.out.println(serverMessage);
                 if (serverMessage instanceof Question[] quests) {
                     int i = 0;
                     while (i < numbOfQuests) {
@@ -228,7 +228,7 @@ public class QuizGUI {
                 frame.getContentPane().removeAll();
                 if (myTurn)
                     serverMessage = sendAndReceive("P1" + categoryButton2.getText());
-
+                System.out.println(serverMessage);
                 if (serverMessage instanceof Question[] quests) {
                     int i = 0;
                     while (i < numbOfQuests) {
@@ -246,6 +246,7 @@ public class QuizGUI {
                 frame.getContentPane().removeAll();
                 if (myTurn)
                     serverMessage = sendAndReceive("P1" + categoryButton3.getText());
+                System.out.println(serverMessage);
 
                 if (serverMessage instanceof Question[] quests) {
                     int i = 0;
