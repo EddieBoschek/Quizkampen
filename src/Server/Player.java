@@ -1,11 +1,11 @@
 package Server;
-
-import POJOs.Category;
-import POJOs.Question;
-
 import java.io.*;
 import java.net.Socket;
 import java.util.Properties;
+import POJOs.Category;
+import POJOs.Question;
+import static POJOs.Category.getShuffledCategoryQuestions;
+import static POJOs.Category.shuffleCategories;
 
 import static POJOs.Category.getShuffledCategoryQuestions;
 import static POJOs.Category.shuffleCategories;
@@ -29,6 +29,9 @@ public class Player implements Runnable {
     String cat;
     private Properties p = new Properties();
     private String[] gameCategories = new String[6];
+    private boolean[][] playerScore;
+    private boolean roundDone;
+    Object o;
 
     public Player(Socket s, String n, boolean isCurrentPlayer) throws IOException {
 
@@ -41,6 +44,7 @@ public class Player implements Runnable {
         this.output = output;
         this.input = input;
         this.score = 0;
+        this.playerScore = null;
     }
 
     public void setCurrentPlayer(boolean currentPlayer) {
@@ -83,6 +87,14 @@ public class Player implements Runnable {
         return score;
     }
 
+    public boolean[][] getPlayerScore() {
+        return playerScore;
+    }
+
+    public void setPlayerScore(boolean[][] playerScore) {
+        this.playerScore = playerScore;
+    }
+
     public void run() {
         try {
             p.load(new FileInputStream("src/Server/QuestionsRounds.properties"));
@@ -92,61 +104,61 @@ public class Player implements Runnable {
         int[] propArray = new int[2];
         propArray[0] = Integer.parseInt(p.getProperty("questions", "2"));
         propArray[1] = Integer.parseInt(p.getProperty("rounds", "2"));
-        gameScore = new boolean[propArray[1]][propArray[0]];
+        playerScore = new boolean[propArray[1]][propArray[0]];
 
-
+        Object inputLine;
         try {
             while (true) {
-                if ((inputLine = receive()) != null) {
-                    if (isCurrentPlayer) {
+                if (isCurrentPlayer) {
+                    if ((inputLine = receive()) != null) {
+                        System.out.println("myTurn " + inputLine);
                         if (inputLine.equals("PropertiesRequest")) {
                             send(propArray);
                             opponent.send(propArray);
 
-                        } else if (((String) inputLine).startsWith("Start") && !playerShiftHasBeenMade) {
-                            System.out.println((String) inputLine);
-                            try {
-                                int nmbr = Integer.parseInt(((String) inputLine).substring(5));
-                                if (nmbr % 2 == 0) {
-                                    //gameInstance.currentPlayer = player1;
-                                    isCurrentPlayer = true;
-                                    opponent.isCurrentPlayer = false;
-                                } else {
-                                    //GameInstance.currentPlayer = player2;
-                                    isCurrentPlayer = false;
-                                    opponent.isCurrentPlayer = true;
+                        } else if (inputLine instanceof boolean[][]) {
+                            setPlayerScore((boolean[][]) inputLine);
+                            roundDone = true;
+                        } else if (inputLine.equals("BothPlayersDone")) {
+                            while (true) {
+                                if (roundDone && opponent.roundDone) {
+                                    send(true);
+                                    break;
                                 }
-                                send(isCurrentPlayer());
-                                opponent.send(opponent.isCurrentPlayer());
-                                categoryOptions = shuffleCategories(dao.getCategories());
-                                send(categoryOptions);
-                                opponent.send(categoryOptions);
-                                playerShiftHasBeenMade = true;
-                            } catch (IOException ex) {
-                                throw new RuntimeException(ex);
                             }
-                        } else if (inputLine.equals("GameUpdateRequest" + currentRound)) {
-                            if (startOfGame) {
-                                updateCurrentPlayerBoard();
-                                updateNonCurrentPlayerBoard();
-                            }
-                            startOfGame = false;
+                        } else if (((String) inputLine).startsWith("Start")) {
+                                if (Integer.parseInt(((String) inputLine).substring(5)) == currentRound || !playerShiftHasBeenMade) {
+
+                                    try {
+                                        currentRound = Integer.parseInt(((String) inputLine).substring(5));
+                                        if (currentRound % 2 == 0) {
+                                            isCurrentPlayer = true;
+                                            opponent.isCurrentPlayer = false;
+                                        } else {
+                                            isCurrentPlayer = false;
+                                            opponent.isCurrentPlayer = true;
+                                        }
+                                        send(isCurrentPlayer());
+                                        opponent.send(opponent.isCurrentPlayer());
+                                        categoryOptions = shuffleCategories(dao.getCategories());
+                                        send(categoryOptions);
+                                        opponent.send(categoryOptions);
+                                        playerShiftHasBeenMade = true;
+                                    } catch (IOException ex) {
+                                        throw new RuntimeException(ex);
+                                    }
+
+                                }
 
                         } else if (((String) inputLine).startsWith("GetNameRequest")) {
                             setName(((String) inputLine).substring(14));
                             opponent.send(getName());
                         } else if (((String) inputLine).startsWith("GO")) {
                             opponent.send(inputLine);
-                            opponent.getOpponent().send(q);
-
-                            for (int i = 0; i < 3; i++) {
-                                if (((String) inputLine).substring(2).charAt(i) == 't')
-                                    gameScore[currentRound][i] = true;
-                            }
-
+                            opponent.send(q);
                             playerShiftHasBeenMade = false;
                             currentRound++;
-                            //Put in code that saves in gameScore
+                            opponent.currentRound++;
 
 
                         } else if (((String) inputLine).startsWith("P1")) {
@@ -155,26 +167,40 @@ public class Player implements Runnable {
                             System.out.println(cat);
                             q = getShuffledCategoryQuestions(cat, dao.getCategories());
                             send(q);
+                        } else {
+                            o = inputLine;
+                            System.out.println("rest" + o);
                         }
-//                        else if ((inputLine.equals("BothPlayersHaveAnsweredQuestions" + currentRound)) && startOfGame) { //|| currentRound == 1
-//                            System.out.println(inputLine);
-//                            send(inputLine);
-//                            opponent.send(inputLine);
-//                        }
-                    } else {
-
-                        if (inputLine.equals("GameUpdateRequest" + currentRound) && !startOfGame) {
-                            updateNonCurrentPlayerBoard();
+                    }
+                } else {
+                    if((inputLine = receive()) != null) {
+                        System.out.println("!myTurn " + inputLine);
+                        if (inputLine instanceof boolean[][]) {
+                            setPlayerScore((boolean[][]) inputLine);
+                            roundDone = true;
+                        } else if (inputLine.equals("GameUpdateRequest")) {
                             updateCurrentPlayerBoard();
+                            updateNonCurrentPlayerBoard();
+
                         } else if (((String) inputLine).startsWith("GetNameRequest")) {
                             opponent.setName(((String) inputLine).substring(14));
                             send(opponent.getName());
+                        } else if (inputLine.equals("BothPlayersDone")) {
+                            if (roundDone && opponent.roundDone) {
+                                send(true);
+                            } else {
+                                send(false);
+                            }
                         } else if (inputLine.equals("BothPlayersHaveAnsweredQuestions" + currentRound)) {
                             System.out.println(inputLine);
                             send(inputLine);
                             opponent.send(inputLine);
+                        } else {
+                            o = inputLine;
+                            System.out.println("!rest " + o);
                         }
                     }
+
                 }
             }
         } catch (IOException | ClassNotFoundException e) {
@@ -182,26 +208,28 @@ public class Player implements Runnable {
         }
 
     }
-
     public void updateNonCurrentPlayerBoard() throws IOException {
-        opponent.send(opponent.getName());
+
+        opponent.send(opponent.name);
         opponent.send(name);
 
-        opponent.send(opponent.gameScore);
-        opponent.send(gameScore);
 
-        opponent.send(gameCategories);
+        opponent.send(opponent.getPlayerScore());
+        opponent.send(getPlayerScore());
+
+//        opponent.send(gameCategories);
         opponent.send("END");
+
     }
 
     public void updateCurrentPlayerBoard() throws IOException {
         send(name);
         send(opponent.name);
 
-        send(gameScore);
-        send(opponent.gameScore);
+        send(getPlayerScore());
+        send(opponent.getPlayerScore());
 
-        send(gameCategories);
+//        send(gameCategories);
         send("END");
 
     }
