@@ -190,6 +190,7 @@ public class Player implements Runnable {
                             } else {
                                 send(false);
                             }
+
                         } else if (((String) inputLine).startsWith("P1")) {
                             cat = ((String) inputLine).substring(2);
                             System.out.println("P1");
