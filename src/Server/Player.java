@@ -138,8 +138,15 @@ public class Player implements Runnable {
                         } else if (((String) inputLine).startsWith("GO")) {
                             opponent.send(inputLine);
                             opponent.getOpponent().send(q);
+
+                            for (int i = 0; i < 3; i++) {
+                                if (((String) inputLine).substring(2).charAt(i) == 't')
+                                    gameScore[currentRound][i] = true;
+                            }
+
                             playerShiftHasBeenMade = false;
                             currentRound++;
+                            //Put in code that saves in gameScore
 
 
                         } else if (((String) inputLine).startsWith("P1")) {
@@ -177,7 +184,7 @@ public class Player implements Runnable {
     }
 
     public void updateNonCurrentPlayerBoard() throws IOException {
-        opponent.send(opponent.name);
+        opponent.send(opponent.getName());
         opponent.send(name);
 
         opponent.send(opponent.gameScore);

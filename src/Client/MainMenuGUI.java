@@ -321,7 +321,6 @@ public class MainMenuGUI {
             if (input.equals("BothPlayersHaveAnsweredQuestions" + currentRound)) {
                 updateScore();
             }
-
     }
 
     public void playRound() throws IOException, ClassNotFoundException, InterruptedException {
