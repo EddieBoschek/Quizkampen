@@ -113,9 +113,15 @@ public class Player implements Runnable {
                 if (isCurrentPlayer) {
                     if ((inputLine = receive()) != null) {
                         System.out.println("myTurn " + inputLine);
-                        if (inputLine.equals("PropertiesRequest")) {
-                            send(propArray);
-                            opponent.send(propArray);
+                        if (inputLine instanceof String && ((String) inputLine).startsWith("SettingUp")) {
+                                name = ((String) inputLine).substring(9);
+                                System.out.println("Name: " + name);
+                                send(propArray);
+                                System.out.println("MyTurn prop sent");
+                                opponent.send(propArray);
+                                System.out.println("!MyTurn prop sent");
+                                opponent.send(name);
+                                System.out.println("name to !MyTurn sent");
 
                         } else if (inputLine instanceof boolean[][]) {
                             setPlayerScore((boolean[][]) inputLine);
@@ -128,8 +134,9 @@ public class Player implements Runnable {
                                 }
                             }
                         } else if (((String) inputLine).startsWith("Start")) {
+                            System.out.println("förbi första if");
                                 if (Integer.parseInt(((String) inputLine).substring(5)) == currentRound || !playerShiftHasBeenMade) {
-
+                                    System.out.println("förbi andra if");
                                     try {
                                         currentRound = Integer.parseInt(((String) inputLine).substring(5));
                                         if (currentRound % 2 == 0) {
@@ -181,10 +188,19 @@ public class Player implements Runnable {
                         if (inputLine instanceof boolean[][]) {
                             setPlayerScore((boolean[][]) inputLine);
                             roundDone = true;
+                        } else if (((String) inputLine).startsWith("SettingUp")) {
+                            name = ((String) inputLine).substring(9);
+                            System.out.println("Name: " + name);
+                            try {
+                                Thread.sleep(200);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            opponent.send(name);
+                            System.out.println("name to MyTurn sent");
                         } else if (inputLine.equals("GameUpdateRequest")) {
                             updateCurrentPlayerBoard();
                             updateNonCurrentPlayerBoard();
-
                         } else if (((String) inputLine).startsWith("GetNameRequest")) {
                             opponent.setName(((String) inputLine).substring(14));
                             send(opponent.getName());

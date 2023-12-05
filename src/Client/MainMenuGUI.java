@@ -89,28 +89,32 @@ public class MainMenuGUI {
             public void actionPerformed(ActionEvent e) {
                 if (e.getSource() == startGameButton) {
                     if (!startButtonClicked) {
+                        if (!enterNameField.getText().isBlank())
+                            playerName.setText(enterNameField.getText());
                         try {
                             {
                                 client = new Client("127.0.0.1", 12345);
                             }
                             while (settingUp) {
-                                o = sendAndReceive("PropertiesRequest");
+                                o = sendAndReceive("SettingUp" + playerName.getText());
                                 if (o instanceof int[]) {
                                     properties = (int[]) o;
                                     numbOfQuest = properties[0];
                                     numbOfRounds = properties[1];
                                     System.out.println("Frågor: " + properties[0]);
                                     System.out.println("Rundor: " + properties[1]);
-                                    settingUp = false;
                                 }
+                                o = receive();
+                                if (o instanceof String) {
+                                    opponentName.setText((String) o);
+                                }
+                                settingUp = false;
                             }
                         } catch (IOException ex) {
                             throw new RuntimeException(ex);
                         }
                         System.out.println("Startar sökning efter en motståndare -> Startar upp " +
                                 "en GameInstance och öppnar upp spelmenyn");
-                        if (!enterNameField.getText().isBlank())
-                            playerName.setText(enterNameField.getText());
                         frame.getContentPane().removeAll();
                         getGameMenu();
                         startButtonClicked = true;
@@ -120,9 +124,6 @@ public class MainMenuGUI {
 //                    frame.repaint();
 //                    frame.revalidate();
 
-
-                } else if (e.getSource() == settingsButton) {
-                    System.out.println("Öppnar upp en ny JPanel med \"settingsknappar\" som går att justera. Det ska också finnas en apply-knapp");
                 } else if (e.getSource() == play) {
                     if (playersReady) {
                         try {
@@ -323,7 +324,7 @@ public class MainMenuGUI {
     public void playRound() throws IOException, ClassNotFoundException, InterruptedException {
         if (currentRound < numbOfRounds) {
             System.out.println("current round: " + currentRound);
-            QuizGUI quizGUI = new QuizGUI(client, currentRound, properties);
+            QuizGUI quizGUI = new QuizGUI(client, currentRound, properties, playerName.getText(), opponentName.getText());
             currentRound++;
 
         } else {

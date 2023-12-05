@@ -39,13 +39,15 @@ public class QuizGUI {
     JLabel p1Name = new JLabel("Jag");
     JLabel p2Name = new JLabel("Motståndare");
 
-    public QuizGUI(Client client, int roundCounter, int[] properties) throws NullPointerException {
+    public QuizGUI(Client client, int roundCounter, int[] properties, String playerName, String opponentName) throws NullPointerException {
         this.client = client;
         this.roundCounter = roundCounter;
         numbOfQuests = properties[0];
         numbOfRounds = properties[1];
         gameresults = new boolean[numbOfRounds][numbOfQuests];
         roundResults = new boolean[numbOfQuests];
+        this.p1Name.setText(playerName);
+        this.p2Name.setText(opponentName);
         System.out.println("Start of game: " + startOfGame);
 
         System.out.println("innan loopen");
@@ -53,6 +55,7 @@ public class QuizGUI {
 //        }
 
         sendMessageToServer("Start" + roundCounter);
+        System.out.println("Efter start sent");
 
         while((oMessage = receiveMessageFromServer()) != null){
 
