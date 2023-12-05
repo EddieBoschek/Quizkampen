@@ -67,7 +67,7 @@ public class QuizGUI {
 
         frame = new JFrame("Quizkampen");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(850, 450);
+        frame.setSize(700, 450);
         frame.setLocation(300, 0);
         frame.setLayout(new BorderLayout());
 
@@ -86,9 +86,9 @@ public class QuizGUI {
             emptyPanels[i] = emptyPanel;
         }
         emptyPanels[0].setPreferredSize(new Dimension(0, 50));
-        emptyPanels[1].setPreferredSize(new Dimension(250, 0));
-        emptyPanels[2].setPreferredSize(new Dimension(250, 0));
-        emptyPanels[3].setPreferredSize(new Dimension(0, 75));
+        emptyPanels[1].setPreferredSize(new Dimension(175, 0));
+        emptyPanels[2].setPreferredSize(new Dimension(175, 0));
+        emptyPanels[3].setPreferredSize(new Dimension(0, 100));
 
         frame.getContentPane().add(emptyPanels[0], BorderLayout.NORTH);
         frame.getContentPane().add(emptyPanels[1], BorderLayout.WEST);
@@ -173,7 +173,7 @@ public class QuizGUI {
         scorePanel.add(player1Board, BorderLayout.WEST);
         scorePanel.add(emptyPanel, BorderLayout.CENTER);
         scorePanel.add(player2Board, BorderLayout.EAST);
-        scorePanel.setBorder(BorderFactory.createEmptyBorder(0, 250, 0, 250));
+        scorePanel.setBorder(BorderFactory.createEmptyBorder(0, 200, 0, 200));
 
         System.out.println("Innan kategorier ritas upp");
 
@@ -290,7 +290,7 @@ public class QuizGUI {
         questionPanel.add(emptyLabel3);
         answerPanel = new JPanel();
         answerPanel.setLayout(new GridLayout(2, 2));
-        answerPanel.setPreferredSize(new Dimension(850, 100));
+        answerPanel.setPreferredSize(new Dimension(700, 100));
         answerPanel.setBackground(Color.ORANGE);
 
         for (int i = 0; i < 4; i++) {
@@ -298,9 +298,10 @@ public class QuizGUI {
         }
 
         continuePanel = new JPanel();
+        continuePanel.setBorder(BorderFactory.createEmptyBorder(22, 0, 0, 0));
         continuePanel.setBackground(Color.BLUE);
         continueButton = new JButton("Fortsätt");
-        continueButton.setPreferredSize(new Dimension(500, 50));
+        continueButton.setPreferredSize(new Dimension(200, 50));
         continueButton.setFont(f2);
         continuePanel.add(continueButton);
 
