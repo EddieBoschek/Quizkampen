@@ -15,17 +15,14 @@ public class QuizGUI {
     private Object serverMessage;
     private Category[] categories;
     JButton[] categoryButtons = new JButton[3];
-    private Question[] questions = new Question[3];
+    private Question[] questions;
     private boolean[][] gameresults;
     private boolean[] roundResults;
-    boolean[] opponentRoundResults = new boolean[3];
     private boolean myTurn;
     private boolean startOfGame = true;
     private JFrame frame;
-    private String message;
     private Object oMessage;
     private JLabel questionLabel;
-    private int opponentDoClickValue = -1;
     private int qCounter = 0;
     private int roundCounter;
     int numbOfRounds;
@@ -46,6 +43,7 @@ public class QuizGUI {
         numbOfRounds = properties[1];
         gameresults = new boolean[numbOfRounds][numbOfQuests];
         roundResults = new boolean[numbOfQuests];
+        questions = new Question[numbOfQuests];
         this.p1Name.setText(playerName);
         this.p2Name.setText(opponentName);
         System.out.println("Start of game: " + startOfGame);
@@ -130,12 +128,12 @@ public class QuizGUI {
         JPanel emptyPanel = new JPanel();
         emptyPanel.setBackground(Color.BLUE);
         JPanel player1Board = new JPanel();
-        player1Board.setPreferredSize(new Dimension(100, 100));
-        player1Board.setLayout(new GridLayout(2, 0));
+
+        player1Board.setLayout(new GridLayout(numbOfQuests, 0));
         player1Board.setBackground(Color.BLUE);
         JPanel player2Board = new JPanel();
-        player2Board.setPreferredSize(new Dimension(100, 100));
-        player2Board.setLayout(new GridLayout(2, 0));
+
+        player2Board.setLayout(new GridLayout(numbOfQuests, 0));
         player2Board.setBackground(Color.BLUE);
         p1Score = new JPanel();
         p1Score.setBackground(Color.BLUE);

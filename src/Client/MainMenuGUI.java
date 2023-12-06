@@ -9,17 +9,13 @@ import java.util.ArrayList;
 
 public class MainMenuGUI {
     JButton startGameButton = new JButton("Starta nytt spel");
-    JButton settingsButton = new JButton("Inställningar");
     JButton play = new JButton("Spela");
     JLabel gameName = new JLabel("Quizkampen", SwingConstants.CENTER);
     JPanel menuPanelMaster = new JPanel();
     JPanel menuSubPanel = new JPanel();
-    JPanel activeGamesPanel = new JPanel();
     JPanel buttonsPanel = new JPanel();
     JFrame frame = new JFrame();
     int numbOfRounds, numbOfQuest, opponentScoreCounter, playerScoreCounter;
-    boolean[] playerRound = new boolean[]{true, true, false};    //Tillfällig
-    boolean[] opponentRound = new boolean[]{true, false, true};  //Tillfällig
     Client client;
     JLabel playerName = new JLabel();
     JLabel opponentName = new JLabel();
@@ -103,6 +99,18 @@ public class MainMenuGUI {
                                     numbOfRounds = properties[1];
                                     System.out.println("Frågor: " + properties[0]);
                                     System.out.println("Rundor: " + properties[1]);
+                                    playerScoreCounter = 0;
+                                    opponentScoreCounter = 0;
+                                    playersReady = true;
+                                    play.setText("Spela");
+                                    for (Object l:playerScoreArray) {
+                                        ((JLabel) l).setText("□");
+                                        ((JLabel) l).setForeground(Color.black);
+                                    }
+                                    for (Object l:opponentScoreArray) {
+                                        ((JLabel) l).setText("□");
+                                        ((JLabel) l).setForeground(Color.black);
+                                    }
                                 }
                                 o = receive();
                                 if (o instanceof String) {
@@ -128,12 +136,7 @@ public class MainMenuGUI {
                     if (playersReady) {
                         try {
                             playRound();
-                            if (currentRound >= numbOfRounds) {
-                                play.setText("Avsluta spel");
-                            }
-                            else {
                                 play.setText("Få poäng");
-                            }
                         } catch (IOException | ClassNotFoundException | InterruptedException ex) {
                             throw new RuntimeException(ex);
                         }
@@ -177,14 +180,13 @@ public class MainMenuGUI {
             playerScoreArray.get(i).setFont(f);
             opponentScoreArray.add(new JLabel(String.valueOf(c)));
             opponentScoreArray.get(i).setFont(f);
-            if (i % 3 == 0) {
-                int j = i / 3;
-                s = String.valueOf(j + 1);
-                categoryArray.add(new JLabel(s));
-                categoryArray.get(j).setFont(f);
-                categoryArray.get(j).setForeground(Color.ORANGE);
-            }
         }
+        for (int i = 0; i < (numbOfRounds + 1); i++) {
+            categoryArray.add(new JLabel(String.valueOf(i + 1)));
+            categoryArray.get(i).setFont(f);
+            categoryArray.get(i).setForeground(Color.ORANGE);
+        }
+
 
         JPanel northPanel = new JPanel();
         northPanel.setBackground(Color.ORANGE);
@@ -200,12 +202,13 @@ public class MainMenuGUI {
         play.setPreferredSize(new Dimension(50, 50));
         play.setOpaque(true);
 
+
         for (int i = 0; i < numbOfRounds * numbOfQuest; i++) {
             playerScorePanel.add(playerScoreArray.get(i));
             opponentScorePanel.add(opponentScoreArray.get(i));
 
-            if (i % 3 == 0)
-                categoryPanel.add(categoryArray.get(i / 3));
+            if (i % numbOfQuest == 0)
+                categoryPanel.add(categoryArray.get(i / numbOfQuest));
         }
 
         gameMenu.add(northPanel, BorderLayout.NORTH);
@@ -285,9 +288,7 @@ public class MainMenuGUI {
 
         firstRound = false;
 
-        int playerScoreCounter = 0;
-        int opponentScoreCounter = 0;
-        int loopCounter = 0;
+
         System.out.println("before filling playerscore array");
         char f = '\u2612';
         char r = '\u2611';
@@ -317,7 +318,11 @@ public class MainMenuGUI {
         client.flushOutput();
         frame.repaint();
         frame.revalidate();
-        play.setText("Spela");
+        if (currentRound >= numbOfRounds) {
+            play.setText("Avsluta spel");
+        } else {
+            play.setText("Spela");
+        }
         System.out.println("end of updatescore");
     }
 
