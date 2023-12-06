@@ -125,10 +125,6 @@ public class MainMenuGUI {
                         getGameMenu();
                         startButtonClicked = true;
                     }
-//                    updateScore(); //Ska hämta all info, spelarnamn, boolean-poäng-array(s),
-
-//                    frame.repaint();
-//                    frame.revalidate();
 
                 } else if (e.getSource() == play) {
                     if (playersReady) {

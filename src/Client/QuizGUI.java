@@ -333,7 +333,6 @@ public class QuizGUI {
                 } else {
                     gameresults[roundCounter] = roundResults;
 
-
                         StringBuilder s = new StringBuilder();
                         for (boolean b : roundResults) {
                             if (b) {

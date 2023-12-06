@@ -163,7 +163,6 @@ public class Player implements Runnable {
                                     } catch (IOException ex) {
                                         throw new RuntimeException(ex);
                                     }
-
                                 }
 
                         } else if (((String) inputLine).startsWith("GetNameRequest")) {
