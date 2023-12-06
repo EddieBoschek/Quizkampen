@@ -17,8 +17,8 @@ public class MainMenuGUI {
     JFrame frame = new JFrame();
     int numbOfRounds, numbOfQuest, opponentScoreCounter, playerScoreCounter;
     Client client;
-    JLabel playerName = new JLabel();
-    JLabel opponentName = new JLabel();
+    JLabel playerName = new JLabel("Spelare 1");
+    JLabel opponentName = new JLabel("Spelare 2");
     JLabel enterName = new JLabel("Skriv in ditt namn: ");
     JTextField enterNameField = new JTextField();
     JLabel currentScore = new JLabel("0-0");
@@ -29,7 +29,7 @@ public class MainMenuGUI {
     int[] properties;
     boolean settingUp = true;
     boolean playersReady = true;
-    Object o;
+    Object serverMessage;
     boolean firstRound = true;
     boolean startButtonClicked = false;
 
@@ -91,9 +91,9 @@ public class MainMenuGUI {
                                 client = new Client("127.0.0.1", 12345);
                             }
                             while (settingUp) {
-                                o = sendAndReceive("SettingUp" + playerName.getText());
-                                if (o instanceof int[]) {
-                                    properties = (int[]) o;
+                                serverMessage = sendAndReceive("SettingUp" + playerName.getText());
+                                if (serverMessage instanceof int[]) {
+                                    properties = (int[]) serverMessage;
                                     numbOfQuest = properties[0];
                                     numbOfRounds = properties[1];
                                     System.out.println("Frågor: " + properties[0]);
@@ -113,9 +113,13 @@ public class MainMenuGUI {
                                         ((JLabel) l).setForeground(Color.black);
                                     }
                                 }
-                                o = receive();
-                                if (o instanceof String) {
-                                    opponentName.setText((String) o);
+                                serverMessage = receive();
+                                if (serverMessage instanceof String) {
+                                    if (serverMessage.equals("Spelare 1")) {
+                                        opponentName.setText("Spelare 2");
+                                    } else {
+                                        opponentName.setText((String) serverMessage);
+                                    }
                                 }
                                 settingUp = false;
                                 playersReady = true;
@@ -150,7 +154,6 @@ public class MainMenuGUI {
                         playersReady = true;
                         frame.repaint();
                         frame.revalidate();
-
                     }
                 }
             }
@@ -326,8 +329,8 @@ public class MainMenuGUI {
             startButtonClicked = false;
             playersReady = true;
             play.setText("Spela");
-            playerName.setText("Ditt namn");
-            opponentName.setText("Motståndare");
+            playerName.setText("Spelare 1");
+            opponentName.setText("Spelare 2");
             currentScore.setText("0-0");
             currentRound = 0;
             settingUp = true;
