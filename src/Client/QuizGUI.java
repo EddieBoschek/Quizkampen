@@ -33,8 +33,8 @@ public class QuizGUI {
     String s;
     Font f = new Font("serif", Font.PLAIN, 24);
     Font f2 = new Font("dialog", Font.PLAIN, 24);
-    JLabel p1Name = new JLabel("Jag");
-    JLabel p2Name = new JLabel("Motståndare");
+    JLabel p1Name = new JLabel("Spelare 1");
+    JLabel p2Name = new JLabel("spelare 2");
 
     public QuizGUI(Client client, int roundCounter, int[] properties, String playerName, String opponentName) throws NullPointerException {
         this.client = client;
@@ -165,7 +165,7 @@ public class QuizGUI {
         scorePanel.add(player1Board, BorderLayout.WEST);
         scorePanel.add(emptyPanel, BorderLayout.CENTER);
         scorePanel.add(player2Board, BorderLayout.EAST);
-        scorePanel.setBorder(BorderFactory.createEmptyBorder(0, 200, 0, 200));
+        scorePanel.setBorder(BorderFactory.createEmptyBorder(15, 200, 0, 200));
 
         System.out.println("Innan kategorier ritas upp");
 
@@ -174,7 +174,6 @@ public class QuizGUI {
             frame.setVisible(true);
             System.out.println("Inne i if-vilkor myTurn SLUTET");
         }
-
         if (!myTurn) {
             while (true) {
                 System.out.println("Inne i loop !myTurn");
@@ -332,14 +331,11 @@ public class QuizGUI {
                         }
                     if (myTurn) {
                         sendMessageToServer("GO" + s);
-
                     }
-
                     System.out.println("end of round");
                     sendMessageToServer(gameresults);
                     frame.dispose();
                 }
-
             }
         };
         int i = 0;
