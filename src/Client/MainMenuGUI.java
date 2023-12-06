@@ -33,8 +33,6 @@ public class MainMenuGUI {
     boolean firstRound = true;
     boolean startButtonClicked = false;
 
-
-
     public MainMenuGUI() {
 
         getStartMenu();
@@ -106,7 +104,6 @@ public class MainMenuGUI {
                                     playersReady = true;
                                     play.setText("Spela");
 
-
                                     for (Object l:playerScoreArray) {
                                         ((JLabel) l).setText("□");
                                         ((JLabel) l).setForeground(Color.black);
@@ -132,15 +129,11 @@ public class MainMenuGUI {
                         getGameMenu();
                         startButtonClicked = true;
                     }
-
                 } else if (e.getSource() == play) {
                     if (playersReady) {
                         try {
                             playRound();
                                 play.setText("Få poäng");
-
-
-
                         } catch (IOException | ClassNotFoundException | InterruptedException ex) {
                             throw new RuntimeException(ex);
                         }
@@ -148,10 +141,8 @@ public class MainMenuGUI {
                         frame.repaint();
                         frame.revalidate();
 
-
                     } else {
                         try {
-//                            play.setText("Väntar på motståndare");
                             updateScoreAll();
                         } catch (IOException | ClassNotFoundException ex) {
                             throw new RuntimeException(ex);
@@ -195,7 +186,6 @@ public class MainMenuGUI {
             categoryArray.get(i).setForeground(Color.ORANGE);
         }
 
-
         JPanel northPanel = new JPanel();
         northPanel.setBackground(Color.ORANGE);
         JPanel centerPanel = new JPanel();
@@ -209,7 +199,6 @@ public class MainMenuGUI {
         play.setBackground(Color.ORANGE);
         play.setPreferredSize(new Dimension(50, 50));
         play.setOpaque(true);
-
 
         for (int i = 0; i < numbOfRounds * numbOfQuest; i++) {
             playerScorePanel.add(playerScoreArray.get(i));
@@ -244,18 +233,8 @@ public class MainMenuGUI {
         centerPanel.add(categoryPanel);
         centerPanel.add(opponentScorePanel);
 
-
         frame.repaint();
         frame.revalidate();
-    }
-
-    public void getOpponentName() {
-        System.out.println("Mitt spelarnamn: " + playerName.getText());
-        send("GetNameRequest" + playerName);
-        do {
-            opponentName.setText((String)receive());
-        }while(opponentName.getText() == null);
-        System.out.println(opponentName.getText());
     }
     public void updateScore() throws IOException {
 
@@ -277,11 +256,9 @@ public class MainMenuGUI {
                 }
 
                 switch (i) {
-                    case 0 -> playerName.setText((String) input);
-                    case 1 -> opponentName.setText((String) input);
-                    case 2 -> playerBoolArray = (boolean[][]) input;
-                    case 3 -> opponentBoolArray = (boolean[][]) input;
-                    case 4 -> {
+                    case 0 -> playerBoolArray = (boolean[][]) input;
+                    case 1 -> opponentBoolArray = (boolean[][]) input;
+                    case 2 -> {
                         if (!firstRound) {
                             for (int j = 0; j < numbOfRounds; j++) {
                                 String s = ((String[]) input)[j];
@@ -290,13 +267,11 @@ public class MainMenuGUI {
                             }
                         }
                     }
-
                 }
                 i++;
             }
 
         firstRound = false;
-
 
         System.out.println("before filling playerscore array");
         char f = '\u2612';
@@ -318,7 +293,6 @@ public class MainMenuGUI {
                     opponentScoreArray.get(k + (currentRound - 1) * numbOfQuest).setText(String.valueOf(f));
                     opponentScoreArray.get(k + (currentRound - 1) * numbOfQuest).setForeground(Color.RED);
                 }
-
             }
 
         currentScore.setText(playerScoreCounter + " - " + opponentScoreCounter);
@@ -364,7 +338,7 @@ public class MainMenuGUI {
     public void send(Object message) {
         if (message != null) {
             try {
-                client.connectAndSend(message);
+                client.Send(message);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -374,7 +348,7 @@ public class MainMenuGUI {
     public Object receive() {
         Object receivedMessage = null;
         try {
-            receivedMessage = client.connectAndReceive();
+            receivedMessage = client.Receive();
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -383,14 +357,14 @@ public class MainMenuGUI {
     private Object sendAndReceive(String message) {
         Object receivedMessage = null;
         try {
-            receivedMessage = client.connectSendAndReceive(message);
+            receivedMessage = client.SendAndReceive(message);
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
         return receivedMessage;
     }
 
-    public void updateScoreAll() throws IOException, ClassNotFoundException { //Får in data från metod updateScore() och verkar inte skicka något själv
+    public void updateScoreAll() throws IOException, ClassNotFoundException {
         Object input = null;
         send("BothPlayersHaveAnsweredQuestions" + currentRound);
 

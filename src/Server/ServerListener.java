@@ -1,7 +1,5 @@
 package Server;
 
-
-
 import java.io.IOException;
 import java.net.ServerSocket;
 
@@ -18,11 +16,6 @@ public class ServerListener {
                 Thread t2 = new Thread(player2);
                 t1.start();
                 t2.start();
-
-//                GameInstance game = new GameInstance(player1,player2);
-//                game.start();
-//                player1.send("START");
-//                player2.send("START");
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

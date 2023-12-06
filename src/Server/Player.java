@@ -240,28 +240,14 @@ public class Player implements Runnable {
 
     }
     public void updateNonCurrentPlayerBoard() throws IOException {
-
-        opponent.send(opponent.name);
-        opponent.send(name);
-
-
         opponent.send(opponent.getPlayerScore());
         opponent.send(getPlayerScore());
-
-//        opponent.send(gameCategories);
         opponent.send("END");
-
     }
 
     public void updateCurrentPlayerBoard() throws IOException {
-        send(name);
-        send(opponent.name);
-
         send(getPlayerScore());
         send(opponent.getPlayerScore());
-
-//        send(gameCategories);
         send("END");
-
     }
 }
