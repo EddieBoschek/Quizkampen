@@ -9,17 +9,13 @@ import java.util.ArrayList;
 
 public class MainMenuGUI {
     JButton startGameButton = new JButton("Starta nytt spel");
-    JButton settingsButton = new JButton("Inställningar");
     JButton play = new JButton("Spela");
     JLabel gameName = new JLabel("Quizkampen", SwingConstants.CENTER);
     JPanel menuPanelMaster = new JPanel();
     JPanel menuSubPanel = new JPanel();
-    JPanel activeGamesPanel = new JPanel();
     JPanel buttonsPanel = new JPanel();
     JFrame frame = new JFrame();
     int numbOfRounds, numbOfQuest, opponentScoreCounter, playerScoreCounter;
-    boolean[] playerRound = new boolean[]{true, true, false};    //Tillfällig
-    boolean[] opponentRound = new boolean[]{true, false, true};  //Tillfällig
     Client client;
     JLabel playerName = new JLabel();
     JLabel opponentName = new JLabel();
@@ -63,6 +59,7 @@ public class MainMenuGUI {
         }
 
         menuSubPanel.add(buttonsPanel, BorderLayout.CENTER);
+        playersReady = true;
 
         buttonsPanel.setLayout(new GridLayout(3, 1));
         buttonsPanel.setSize(300, 200);
@@ -103,12 +100,21 @@ public class MainMenuGUI {
                                     numbOfRounds = properties[1];
                                     System.out.println("Frågor: " + properties[0]);
                                     System.out.println("Rundor: " + properties[1]);
+                                    for (Object l:playerScoreArray) {
+                                        ((JLabel) l).setText("□");
+                                        ((JLabel) l).setForeground(Color.black);
+                                    }
+                                    for (Object l:opponentScoreArray) {
+                                        ((JLabel) l).setText("□");
+                                        ((JLabel) l).setForeground(Color.black);
+                                    }
                                 }
                                 o = receive();
                                 if (o instanceof String) {
                                     opponentName.setText((String) o);
                                 }
                                 settingUp = false;
+                                playersReady = true;
                             }
                         } catch (IOException ex) {
                             throw new RuntimeException(ex);
@@ -119,21 +125,13 @@ public class MainMenuGUI {
                         getGameMenu();
                         startButtonClicked = true;
                     }
-//                    updateScore(); //Ska hämta all info, spelarnamn, boolean-poäng-array(s),
-
-//                    frame.repaint();
-//                    frame.revalidate();
 
                 } else if (e.getSource() == play) {
                     if (playersReady) {
                         try {
                             playRound();
-                            if (currentRound >= numbOfRounds) {
-                                play.setText("Avsluta spel");
-                            }
-                            else {
-                                play.setText("Få poäng");
-                            }
+                            play.setText("Få poäng");
+
                         } catch (IOException | ClassNotFoundException | InterruptedException ex) {
                             throw new RuntimeException(ex);
                         }
@@ -173,9 +171,13 @@ public class MainMenuGUI {
         Font f = new Font("Serif", Font.PLAIN, 35);
 
         for (int i = 0; i < numbOfRounds * numbOfQuest; i++) {
-            playerScoreArray.add(new JLabel(String.valueOf(c)));
+            JLabel jlb = new JLabel(String.valueOf(c));
+            JLabel jlb2 = new JLabel(String.valueOf(c));
+            jlb.setForeground(Color.black);
+            jlb2.setForeground(Color.black);
+            playerScoreArray.add(jlb);
             playerScoreArray.get(i).setFont(f);
-            opponentScoreArray.add(new JLabel(String.valueOf(c)));
+            opponentScoreArray.add(jlb2);
             opponentScoreArray.get(i).setFont(f);
             if (i % 3 == 0) {
                 int j = i / 3;
@@ -247,6 +249,7 @@ public class MainMenuGUI {
         System.out.println(opponentName.getText());
     }
     public void updateScore() throws IOException {
+
         send("GameUpdateRequest");
         System.out.println("GUR");
         Object input = null;
@@ -287,7 +290,6 @@ public class MainMenuGUI {
 
         int playerScoreCounter = 0;
         int opponentScoreCounter = 0;
-        int loopCounter = 0;
         System.out.println("before filling playerscore array");
         char f = '\u2612';
         char r = '\u2611';
@@ -317,7 +319,12 @@ public class MainMenuGUI {
         client.flushOutput();
         frame.repaint();
         frame.revalidate();
-        play.setText("Spela");
+        if (!opponentScoreArray.get((numbOfQuest * numbOfRounds) - 1).getText().equals("□")) {
+            play.setText("Avsluta spel");
+        } else {
+            play.setText("Spela");
+        }
+
         System.out.println("end of updatescore");
     }
 
@@ -328,11 +335,13 @@ public class MainMenuGUI {
             currentRound++;
 
         } else {
+            firstRound = true;
             frame.getContentPane().removeAll();
             client.flushOutput();
             client.close();
             client = null;
             startButtonClicked = false;
+            playersReady = true;
             play.setText("Spela");
             playerName.setText("Ditt namn");
             opponentName.setText("Motståndare");

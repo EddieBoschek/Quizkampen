@@ -328,11 +328,10 @@ public class QuizGUI {
         ActionListener continueActionListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (qCounter < questions.length) {
+                if (qCounter < numbOfQuests) {
                     displayQuestion(questions[qCounter]);
                 } else {
                     gameresults[roundCounter] = roundResults;
-
 
                         StringBuilder s = new StringBuilder();
                         for (boolean b : roundResults) {
