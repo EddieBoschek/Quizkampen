@@ -122,6 +122,12 @@ public class Player implements Runnable {
                                 System.out.println("!MyTurn prop sent");
                                 opponent.send(name);
                                 System.out.println("name to !MyTurn sent");
+                                currentRound = 0;
+                                opponent.currentRound = 0;
+                                roundDone = false;
+                                opponent.roundDone = false;
+                                playerShiftHasBeenMade = false;
+
 
                         } else if (inputLine instanceof boolean[][]) {
                             setPlayerScore((boolean[][]) inputLine);
@@ -157,7 +163,6 @@ public class Player implements Runnable {
                                     } catch (IOException ex) {
                                         throw new RuntimeException(ex);
                                     }
-
                                 }
 
                         } else if (((String) inputLine).startsWith("GetNameRequest")) {
