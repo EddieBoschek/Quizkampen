@@ -6,18 +6,19 @@ import java.nio.file.Paths;
 import java.util.*;
 
 public class Category implements Serializable {
-    private String subjectName;
+    private String categoryName;
     private ArrayList<Question> qList;
 
-    public Category(String subjectName, ArrayList<Question> qList) {
-        this.subjectName = subjectName;
+    public Category(String categoryName, ArrayList<Question> qList) {
+        this.categoryName = categoryName;
         this.qList = qList;
     }
-    public Question getFromQList(int i) {
+
+    public Question getQuestionFromQList(int i) {
         return qList.get(i);
     }
-    public String getSubjectName() {
-        return subjectName;
+    public String getCategoryName() {
+        return categoryName;
     }
     public static Category[] shuffleCategories(ArrayList<Category> categories) {
         Category[] returnList = new Category[categories.size()];
@@ -40,25 +41,27 @@ public class Category implements Serializable {
         }
         return returnList;
     }
-    public static Question[] getCategoryQuestions(String chosenSubject, ArrayList<Category> categories) {
-        Question[] questions = new Question[3];
-        Random r = new Random();
-        int numberOfSubjects = categories.size();
-        for (Category subject : categories) {
-            if (subject.getSubjectName().equalsIgnoreCase(chosenSubject)) {
-                for (int i = 0; i < 3; i++) {
-                    int randNumber = r.nextInt(1000);
-                    int index = randNumber % numberOfSubjects;
-                    Question qRand = subject.getFromQList(index);
-
-                    if (questions[0] != null && questions[0].equals(qRand) || questions[1] != null &&
-                            questions[1].equals(qRand) || questions[2] != null && questions[2].equals(qRand)) {
-                        i--;
-                    }
-                    else{
-                        questions[i] = qRand;
-                    }
+    public static Question[] getShuffledCategoryQuestions(String chosenCategory, ArrayList<Category> categories) {
+        Question[] questions = new Question[10];
+        Random random = new Random();
+        int randomNumber;
+        boolean inArray;
+        for (Category c : categories) {
+            if (c.getCategoryName().equalsIgnoreCase(chosenCategory)) {
+                for (int i = 0; i < c.qList.size(); i++) {
+                    do {
+                        randomNumber = random.nextInt(c.qList.size());
+                        inArray = false;
+                        for (Question q : questions) {
+                            if (c.getQuestionFromQList(randomNumber) == q) {
+                                inArray = true;
+                                break;
+                            }
+                        }
+                    } while (inArray);
+                    questions[i] = c.getQuestionFromQList(randomNumber);
                 }
+                break;
             }
         }
         return questions;

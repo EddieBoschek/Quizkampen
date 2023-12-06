@@ -17,18 +17,9 @@ public class Question implements Serializable {
     public String getQuestion() {
         return question;
     }
-
     public String getAnswerOption(int i) {
         return answerOptions.get(i);
     }
-    public List<String> getAnswerOptions() {
-        return answerOptions;
-    }
-
-    public String getAnswer(int number) {
-        return answerOptions.get(number);
-    }
-
     public boolean checkAnswer(String answer) {
         return this.correctAnswer.equals(answer);
     }
