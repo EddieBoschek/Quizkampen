@@ -49,8 +49,6 @@ public class QuizGUI {
         System.out.println("Start of game: " + startOfGame);
 
         System.out.println("innan loopen");
-//        while (!Objects.equals(message = (String) receiveMessageFromServer(), "START")) {
-//        }
 
         sendMessageToServer("Start" + roundCounter);
         System.out.println("Efter start sent");
@@ -58,7 +56,6 @@ public class QuizGUI {
         while((oMessage = receiveMessageFromServer()) != null){
 
             System.out.println("1 " + oMessage);
-//            client.flushOutput()
             if (oMessage instanceof Boolean) {
                 myTurn = (boolean) oMessage;
                 System.out.println("It is my turn: " + myTurn);
@@ -75,12 +72,6 @@ public class QuizGUI {
         categories = (Category[]) receiveMessageFromServer();
         System.out.println("cat " + categories);
 
-//if (roundCounter != 0) {
-//    Object trashcan;
-//    while ((trashcan = receiveMessageFromServer()) != null) {
-//        System.out.println(trashcan);
-//    }
-//}
         for (int i = 0; i < emptyPanels.length; i++) {
             JPanel emptyPanel = new JPanel();
             emptyPanel.setBackground(Color.BLUE);
@@ -406,8 +397,6 @@ public class QuizGUI {
         frame.revalidate();
 
         if (!myTurn) {
-
-
             if (s.charAt(qCounter) == 't') {
                 p2Score.getComponent(qCounter).setBackground(Color.green);
             } else {
@@ -415,13 +404,12 @@ public class QuizGUI {
             }
             frame.repaint();
             frame.revalidate();
-
         }
     }
 
     private void sendMessageToServer(Object message) {
         try {
-            client.connectAndSend(message);
+            client.Send(message);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -430,7 +418,7 @@ public class QuizGUI {
     private Object receiveMessageFromServer() {
         Object receivedMessage = null;
         try {
-            receivedMessage = client.connectAndReceive();
+            receivedMessage = client.Receive();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -440,7 +428,7 @@ public class QuizGUI {
     private Object sendAndReceive(String message) {
         Object receivedMessage = null;
         try {
-            receivedMessage = client.connectSendAndReceive(message);
+            receivedMessage = client.SendAndReceive(message);
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }

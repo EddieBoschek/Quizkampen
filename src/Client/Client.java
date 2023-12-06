@@ -20,24 +20,19 @@ public class Client {
         this.in = new ObjectInputStream(addressSocket.getInputStream());
         this.input = new BufferedReader(new InputStreamReader(addressSocket.getInputStream()));
     }
-    public void connectAndSend(Object message) throws IOException {
+    public void Send(Object message) throws IOException {
         out.writeObject(message);
     }
-    public Object connectAndReceive() throws IOException, ClassNotFoundException {
+    public Object Receive() throws IOException, ClassNotFoundException {
         return in.readObject();
     }
-    public Object connectSendAndReceive(Object message) throws IOException, ClassNotFoundException, NullPointerException {
+    public Object SendAndReceive(Object message) throws IOException, ClassNotFoundException, NullPointerException {
         out.writeObject(message);
         return in.readObject();
-    }
-
-    public String connectAndReceiveText() throws IOException {
-        return input.readLine();
     }
     public void flushOutput() throws IOException {
         out.flush();
     }
-
     public void close() {
         try {
             if (in != null) in.close();
