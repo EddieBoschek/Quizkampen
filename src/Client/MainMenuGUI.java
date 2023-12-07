@@ -306,8 +306,13 @@ public class MainMenuGUI {
         frame.revalidate();
 
         if (currentRound >= numbOfRounds) {
-
-            play.setText("Avsluta spel");
+            if (opponentScoreCounter > playerScoreCounter) {
+                play.setText("Du förlorade. Avsluta spel");
+            } else if (opponentScoreCounter == playerScoreCounter) {
+                play.setText("Oavgjort. Avsluta spel");
+            } else {
+                play.setText("Du vann! Avsluta spel");
+            }
         } else {
             play.setText("Spela");
         }
@@ -321,20 +326,7 @@ public class MainMenuGUI {
             currentRound++;
 
         } else {
-            firstRound = true;
-            frame.getContentPane().removeAll();
-            client.flushOutput();
-            client.close();
-            client = null;
-            startButtonClicked = false;
-            playersReady = true;
-            play.setText("Spela");
-            playerName.setText("Spelare 1");
-            opponentName.setText("Spelare 2");
-            currentScore.setText("0-0");
-            currentRound = 0;
-            settingUp = true;
-            getStartMenu();
+            System.exit(0);
         }
     }
 
