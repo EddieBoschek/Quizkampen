@@ -46,19 +46,13 @@ public class QuizGUI {
         questions = new Question[numbOfQuests];
         this.p1Name.setText(playerName);
         this.p2Name.setText(opponentName);
-        System.out.println("Start of game: " + startOfGame);
-
-        System.out.println("innan loopen");
 
         sendMessageToServer("Start" + roundCounter);
-        System.out.println("Efter start sent");
 
         while((oMessage = receiveMessageFromServer()) != null){
 
-            System.out.println("1 " + oMessage);
             if (oMessage instanceof Boolean) {
                 myTurn = (boolean) oMessage;
-                System.out.println("It is my turn: " + myTurn);
                 break;
             }
         }
@@ -70,7 +64,6 @@ public class QuizGUI {
         frame.setLayout(new BorderLayout());
 
         categories = (Category[]) receiveMessageFromServer();
-        System.out.println("cat " + categories);
 
         for (int i = 0; i < emptyPanels.length; i++) {
             JPanel emptyPanel = new JPanel();
@@ -149,7 +142,6 @@ public class QuizGUI {
         p2Name.setForeground(Color.ORANGE);
         for (int i = 0; i < numbOfQuests; i++) {
             p2Score.add(new JButton());
-
         }
         for (Component c : p2Score.getComponents()) {
             if (c instanceof JButton) {
@@ -167,27 +159,17 @@ public class QuizGUI {
         scorePanel.add(player2Board, BorderLayout.EAST);
         scorePanel.setBorder(BorderFactory.createEmptyBorder(15, 200, 0, 200));
 
-        System.out.println("Innan kategorier ritas upp");
-
         if (myTurn) {
-            System.out.println("Inne i if-vilkor myTurn");
             frame.setVisible(true);
-            System.out.println("Inne i if-vilkor myTurn SLUTET");
         }
         if (!myTurn) {
             while (true) {
-                System.out.println("Inne i loop !myTurn");
                 s = (String) receiveMessageFromServer();
-                // s är false;
-
-                System.out.println(s);
 
                 if (s.startsWith("GO")) {
                     s = s.substring(2);
-                    System.out.println(s);
 
                     oMessage = receiveMessageFromServer();
-                    System.out.println(oMessage);
                     if (oMessage instanceof Question[] quests) {
                         int i = 0;
                         while (i < numbOfQuests) {
@@ -198,18 +180,15 @@ public class QuizGUI {
                     break;
                 }
             }
-            System.out.println(questions.length);
             playRound(questions);
         }
 
         categoryButtons[0].addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Button 1");
                 frame.getContentPane().removeAll();
 
                 serverMessage = sendAndReceive("P1" + categoryButtons[0].getText());
-                System.out.println(serverMessage);
                 if (serverMessage instanceof Question[] quests) {
                     int i = 0;
                     while (i < numbOfQuests) {
@@ -223,11 +202,9 @@ public class QuizGUI {
         categoryButtons[1].addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Button 2");
                 frame.getContentPane().removeAll();
                 if (myTurn)
                     serverMessage = sendAndReceive("P1" + categoryButtons[1].getText());
-                System.out.println(serverMessage);
                 if (serverMessage instanceof Question[] quests) {
                     int i = 0;
                     while (i < numbOfQuests) {
@@ -241,11 +218,9 @@ public class QuizGUI {
         categoryButtons[2].addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Button 3");
                 frame.getContentPane().removeAll();
                 if (myTurn)
                     serverMessage = sendAndReceive("P1" + categoryButtons[2].getText());
-
                 if (serverMessage instanceof Question[] quests) {
                     int i = 0;
                     while (i < numbOfQuests) {
@@ -256,7 +231,6 @@ public class QuizGUI {
                 playRound(questions);
             }
         });
-
         frame.setVisible(true);
     }
 
@@ -332,7 +306,6 @@ public class QuizGUI {
                     if (myTurn) {
                         sendMessageToServer("GO" + s);
                     }
-                    System.out.println("end of round");
                     sendMessageToServer(gameresults);
                     frame.dispose();
                 }
@@ -346,7 +319,6 @@ public class QuizGUI {
                 ((JButton) c).addActionListener(commonActionListener);
                 i++;
             }
-
         }
         continueButton.addActionListener(continueActionListener);
         frame.getContentPane().removeAll();

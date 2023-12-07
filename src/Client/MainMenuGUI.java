@@ -96,8 +96,6 @@ public class MainMenuGUI {
                                     properties = (int[]) serverMessage;
                                     numbOfQuest = properties[0];
                                     numbOfRounds = properties[1];
-                                    System.out.println("Frågor: " + properties[0]);
-                                    System.out.println("Rundor: " + properties[1]);
 
                                     playerScoreCounter = 0;
                                     opponentScoreCounter = 0;
@@ -127,8 +125,6 @@ public class MainMenuGUI {
                         } catch (IOException ex) {
                             throw new RuntimeException(ex);
                         }
-                        System.out.println("Startar sökning efter en motståndare -> Startar upp " +
-                                "en GameInstance och öppnar upp spelmenyn");
                         frame.getContentPane().removeAll();
                         getGameMenu();
                         startButtonClicked = true;
@@ -242,7 +238,6 @@ public class MainMenuGUI {
     public void updateScore() throws IOException {
 
         send("GameUpdateRequest");
-        System.out.println("GUR");
         Object input = null;
         int i = 0;
         boolean[][] playerBoolArray = new boolean[numbOfRounds][numbOfQuest];
@@ -257,7 +252,6 @@ public class MainMenuGUI {
                     System.out.println("END");
                     break;
                 }
-
                 switch (i) {
                     case 0 -> playerBoolArray = (boolean[][]) input;
                     case 1 -> opponentBoolArray = (boolean[][]) input;
@@ -276,7 +270,6 @@ public class MainMenuGUI {
 
         firstRound = false;
 
-        System.out.println("before filling playerscore array");
         char f = '\u2612';
         char r = '\u2611';
 
@@ -300,7 +293,6 @@ public class MainMenuGUI {
 
         currentScore.setText(playerScoreCounter + " - " + opponentScoreCounter);
 
-        System.out.println("before flush");
         client.flushOutput();
         frame.repaint();
         frame.revalidate();
@@ -311,12 +303,10 @@ public class MainMenuGUI {
         } else {
             play.setText("Spela");
         }
-        System.out.println("end of updatescore");
     }
 
     public void playRound() throws IOException, ClassNotFoundException, InterruptedException {
         if (currentRound < numbOfRounds) {
-            System.out.println("current round: " + currentRound);
             QuizGUI quizGUI = new QuizGUI(client, currentRound, properties, playerName.getText(), opponentName.getText());
             currentRound++;
 
@@ -372,7 +362,6 @@ public class MainMenuGUI {
         send("BothPlayersHaveAnsweredQuestions" + currentRound);
 
         input = receive();
-        System.out.println("updateScoreAll-input: " + input);
 
         if (input.equals("BothPlayersHaveAnsweredQuestions" + currentRound)) {
             updateScore();
