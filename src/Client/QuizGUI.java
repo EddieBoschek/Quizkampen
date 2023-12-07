@@ -22,7 +22,8 @@ public class QuizGUI {
     private boolean startOfGame = true;
     private JFrame frame;
     private Object oMessage;
-    private JLabel questionLabel;
+    private static JLabel questionLabel = new JLabel();
+    private static JLabel emptyLabel2 = new JLabel();
     private int qCounter = 0;
     private int roundCounter;
     int numbOfRounds;
@@ -267,14 +268,17 @@ public class QuizGUI {
         questionPanel = new JPanel();
         questionPanel.setLayout(new GridLayout(4, 1));
         questionPanel.setBackground(Color.BLUE);
-        questionLabel = new JLabel("(Fråga)");
         questionLabel.setHorizontalAlignment(SwingConstants.CENTER);
         JLabel emptyLabel1 = new JLabel();
-        JLabel emptyLabel2 = new JLabel();
         JLabel emptyLabel3 = new JLabel();
         questionLabel.setBackground(Color.BLUE);
         questionLabel.setForeground(Color.ORANGE);
         questionLabel.setFont(f);
+        emptyLabel2.setBackground(Color.BLUE);
+        emptyLabel2.setForeground(Color.ORANGE);
+        emptyLabel2.setFont(f);
+        emptyLabel2.setHorizontalAlignment(SwingConstants.CENTER);
+        emptyLabel2.setText("");
         questionPanel.add(emptyLabel1);
         questionPanel.add(questionLabel);
         questionPanel.add(emptyLabel2);
@@ -297,7 +301,7 @@ public class QuizGUI {
         continuePanel.add(continueButton);
 
         askedQuest = question;
-        questionLabel.setText(askedQuest.getQuestion());
+        formatQuestion(askedQuest.getQuestion());
 
         ActionListener commonActionListener = new ActionListener() {
             @Override
@@ -400,6 +404,20 @@ public class QuizGUI {
             }
             frame.repaint();
             frame.revalidate();
+        }
+    }
+
+    public static void formatQuestion(String question) {
+        if (question.length() <= 65) {
+            questionLabel.setText(question);
+        } else {
+            int lastSpaceIndex = question.lastIndexOf(" ", 65);
+
+            if (lastSpaceIndex == -1) {
+                lastSpaceIndex = 65;
+            }
+            questionLabel.setText(question.substring(0, lastSpaceIndex));
+            emptyLabel2.setText(question.substring(lastSpaceIndex + 1));
         }
     }
 
